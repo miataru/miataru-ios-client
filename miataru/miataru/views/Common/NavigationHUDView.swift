@@ -11,7 +11,7 @@ struct NavigationHUDView: View {
     @State private var controlsAreVisible = true
     @State private var controlsAutoHideTask: Task<Void, Never>?
 
-    let location: CLLocation?
+    let formattedSpeed: String?
     let destination: String
     let remoteLabel: String
     let routeDistance: String?
@@ -33,121 +33,118 @@ struct NavigationHUDView: View {
     let onToggleMirror: () -> Void
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: 0.5)) { context in
-            let speed = Self.speedText(for: location, now: context.date)
-            VStack(spacing: 0) {
-                HStack {
-                    Button {
-                        registerHUDInteraction()
-                        onClose()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill").font(.title2)
-                    }
-                    .accessibilityLabel(Text("navigation_hud_close", tableName: "MapNavigationHistory"))
-                    Spacer()
-                    Menu {
-                        ForEach(NavigationHUDPalette.allCases) { palette in
-                            Button {
-                                registerHUDInteraction()
-                                onSetPalette(palette)
-                            } label: {
-                                if preferences.palette == palette {
-                                    Label(palette.optionTitle, systemImage: "checkmark")
-                                } else {
-                                    Text(palette.optionTitle)
-                                }
-                            }
-                            .accessibilityIdentifier("navigation_hud_palette_option_\(palette.rawValue)")
-                        }
-                    } label: {
-                        Label(preferences.palette.optionTitle, systemImage: "circle.lefthalf.filled")
-                            .font(.headline)
-                    }
-                    .accessibilityLabel(Text("navigation_hud_palette", tableName: "MapNavigationHistory"))
-                    .accessibilityIdentifier("navigation_hud_palette_menu")
-                    Button {
-                        registerHUDInteraction()
-                        onToggleMirror()
-                    } label: {
-                        Image(systemName: preferences.isMirrored ? "arrow.left.and.right.righttriangle.left.righttriangle.right.fill" : "arrow.left.and.right")
-                            .font(.title2)
-                    }
-                    .accessibilityLabel(Text("navigation_hud_mirror", tableName: "MapNavigationHistory"))
-                    .padding(.leading, 14)
+        VStack(spacing: 0) {
+            HStack {
+                Button {
+                    registerHUDInteraction()
+                    onClose()
+                } label: {
+                    Image(systemName: "xmark.circle.fill").font(.title2)
                 }
-                .foregroundStyle(toolbarForeground)
-                .padding(.horizontal, 22)
-                .padding(.top, 18)
-                .opacity(shouldShowControls ? 1 : 0)
-                .allowsHitTesting(shouldShowControls)
-                .accessibilityHidden(!shouldShowControls)
+                .accessibilityLabel(Text("navigation_hud_close", tableName: "MapNavigationHistory"))
+                Spacer()
+                Menu {
+                    ForEach(NavigationHUDPalette.allCases) { palette in
+                        Button {
+                            registerHUDInteraction()
+                            onSetPalette(palette)
+                        } label: {
+                            if preferences.palette == palette {
+                                Label(palette.optionTitle, systemImage: "checkmark")
+                            } else {
+                                Text(palette.optionTitle)
+                            }
+                        }
+                        .accessibilityIdentifier("navigation_hud_palette_option_\(palette.rawValue)")
+                    }
+                } label: {
+                    Label(preferences.palette.optionTitle, systemImage: "circle.lefthalf.filled")
+                        .font(.headline)
+                }
+                .accessibilityLabel(Text("navigation_hud_palette", tableName: "MapNavigationHistory"))
+                .accessibilityIdentifier("navigation_hud_palette_menu")
+                Button {
+                    registerHUDInteraction()
+                    onToggleMirror()
+                } label: {
+                    Image(systemName: preferences.isMirrored ? "arrow.left.and.right.righttriangle.left.righttriangle.right.fill" : "arrow.left.and.right")
+                        .font(.title2)
+                }
+                .accessibilityLabel(Text("navigation_hud_mirror", tableName: "MapNavigationHistory"))
+                .padding(.leading, 14)
+            }
+            .foregroundStyle(toolbarForeground)
+            .padding(.horizontal, 22)
+            .padding(.top, 18)
+            .opacity(shouldShowControls ? 1 : 0)
+            .allowsHitTesting(shouldShowControls)
+            .accessibilityHidden(!shouldShowControls)
 
-                GeometryReader { geometry in
-                    if geometry.size.width > geometry.size.height {
-                        HStack(spacing: 12) {
-                            VStack(spacing: 8) {
-                                titleAndSpeed(speed, speedSize: 76)
-                                ScrollView(.vertical) {
-                                    routeSummary(isLandscape: true)
-                                }
-                                .scrollIndicators(.hidden)
-                                .frame(maxHeight: .infinity)
+            GeometryReader { geometry in
+                if geometry.size.width > geometry.size.height {
+                    HStack(spacing: 12) {
+                        VStack(spacing: 8) {
+                            titleAndSpeed(formattedSpeed, speedSize: 76)
+                            ScrollView(.vertical) {
+                                routeSummary(isLandscape: true)
                             }
-                            .frame(width: geometry.size.width * 0.42, height: geometry.size.height)
-                            routeVisual
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .padding(.trailing, 16)
+                            .scrollIndicators(.hidden)
+                            .frame(maxHeight: .infinity)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 6)
-                    } else {
-                        VStack(spacing: 0) {
-                            titleAndSpeed(speed, speedSize: 94)
-                                .padding(.top, 14)
-                            routeVisual
-                                .frame(maxWidth: 760, maxHeight: .infinity)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 8)
-                            routeSummary(isLandscape: false)
-                                .padding(18)
-                                .padding(.horizontal, 20)
-                                .padding(.bottom, 18)
-                        }
+                        .frame(width: geometry.size.width * 0.42, height: geometry.size.height)
+                        routeVisual
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .padding(.trailing, 16)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 6)
+                } else {
+                    VStack(spacing: 0) {
+                        titleAndSpeed(formattedSpeed, speedSize: 94)
+                            .padding(.top, 14)
+                        routeVisual
+                            .frame(maxWidth: 760, maxHeight: .infinity)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 8)
+                        routeSummary(isLandscape: false)
+                            .padding(18)
+                            .padding(.horizontal, 20)
+                            .padding(.bottom, 18)
                     }
                 }
-                .foregroundStyle(foreground)
-                .scaleEffect(x: preferences.isMirrored ? -1 : 1, y: 1)
-                .contentShape(Rectangle())
-                .simultaneousGesture(TapGesture().onEnded { registerHUDInteraction() })
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(background.ignoresSafeArea())
-            .preferredColorScheme(.dark)
-            .animation(animationsAllowed && !reduceMotion ? .easeInOut(duration: 0.18) : nil, value: preferences.palette)
-            .animation(animationsAllowed && !reduceMotion ? .easeInOut(duration: 0.65) : nil, value: focusedRouteIsVisible)
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("navigation_hud")
-            .task(id: "\(routeSessionID)-\(canFocusRoute)") {
-                focusedRouteIsVisible = false
-                guard canFocusRoute else { return }
-                try? await Task.sleep(nanoseconds: 2_500_000_000)
-                guard !Task.isCancelled else { return }
-                focusedRouteIsVisible = true
-            }
-            .onAppear { scheduleControlsAutoHide() }
-            .onDisappear { controlsAutoHideTask?.cancel() }
-            .onChange(of: voiceOverEnabled) { _, enabled in
-                if enabled {
-                    controlsAutoHideTask?.cancel()
-                    controlsAreVisible = true
-                } else {
-                    scheduleControlsAutoHide()
-                }
+            .foregroundStyle(foreground)
+            .scaleEffect(x: preferences.isMirrored ? -1 : 1, y: 1)
+            .contentShape(Rectangle())
+            .simultaneousGesture(TapGesture().onEnded { registerHUDInteraction() })
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(background.ignoresSafeArea())
+        .preferredColorScheme(.dark)
+        .animation(animationsAllowed && !reduceMotion ? .easeInOut(duration: 0.18) : nil, value: preferences.palette)
+        .animation(animationsAllowed && !reduceMotion ? .easeInOut(duration: 0.65) : nil, value: focusedRouteIsVisible)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("navigation_hud")
+        .task(id: "\(routeSessionID)-\(canFocusRoute)") {
+            focusedRouteIsVisible = false
+            guard canFocusRoute else { return }
+            try? await Task.sleep(nanoseconds: 2_500_000_000)
+            guard !Task.isCancelled else { return }
+            focusedRouteIsVisible = true
+        }
+        .onAppear { scheduleControlsAutoHide() }
+        .onDisappear { controlsAutoHideTask?.cancel() }
+        .onChange(of: voiceOverEnabled) { _, enabled in
+            if enabled {
+                controlsAutoHideTask?.cancel()
+                controlsAreVisible = true
+            } else {
+                scheduleControlsAutoHide()
             }
         }
     }
 
-    private func titleAndSpeed(_ speed: String, speedSize: CGFloat) -> some View {
+    private func titleAndSpeed(_ speed: String?, speedSize: CGFloat) -> some View {
         VStack(spacing: 8) {
             Text(destination)
                 .font(.title.weight(.semibold))
@@ -155,21 +152,23 @@ struct NavigationHUDView: View {
                 .minimumScaleFactor(0.8)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(foreground.opacity(0.85))
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text(speed)
-                    .font(.system(size: speedSize, weight: .bold, design: .rounded).monospacedDigit())
-                    .foregroundStyle(preferences.palette == .yellow ? .yellow : foreground)
-                    .contentTransition(animationsAllowed && !reduceMotion ? .numericText() : .identity)
-                    .animation(animationsAllowed && !reduceMotion ? .easeOut(duration: 0.22) : nil, value: speed)
-                Text(String(localized: "navigation_speed_kmh_unit", table: "MapNavigationHistory"))
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(foreground.opacity(0.75))
-                    .accessibilityHidden(true)
+            if let speed {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text(speed)
+                        .font(.system(size: speedSize, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(preferences.palette == .yellow ? .yellow : foreground)
+                        .contentTransition(animationsAllowed && !reduceMotion ? .numericText() : .identity)
+                        .animation(animationsAllowed && !reduceMotion ? .easeOut(duration: 0.22) : nil, value: speed)
+                    Text(String(localized: "navigation_speed_kmh_unit", table: "MapNavigationHistory"))
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(foreground.opacity(0.75))
+                        .accessibilityHidden(true)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(Self.speedAccessibilityText(for: speed)))
+                .accessibilityIdentifier("navigation_hud_speed")
             }
-            .frame(maxWidth: .infinity)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(Self.speedAccessibilityText(for: speed)))
-            .accessibilityIdentifier("navigation_hud_speed")
         }
     }
 
@@ -295,18 +294,6 @@ struct NavigationHUDView: View {
                 controlsAreVisible = false
             }
         }
-    }
-
-    static func speedText(for location: CLLocation?, now: Date = Date()) -> String {
-        guard let location, now.timeIntervalSince(location.timestamp) >= 0,
-              now.timeIntervalSince(location.timestamp) <= 15,
-              location.speed.isFinite, location.speed >= 0 else { return "—" }
-        let value = location.speed * 3.6
-        let formatter = NumberFormatter()
-        formatter.locale = .current
-        formatter.maximumFractionDigits = 0
-        formatter.minimumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: value)) ?? "—"
     }
 
     static func speedAccessibilityText(for formattedSpeed: String) -> String {

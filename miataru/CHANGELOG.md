@@ -1,3 +1,6 @@
+version 3.6
+- Made the navigation map chip and full-screen HUD share direction-aware speed: tracked-device speed uses only the latest successful server response for up to five minutes, while own-device speed remains valid for 15 seconds; invalid or unavailable speed is hidden.
+
 version 3.5
 - Stabilized the asynchronous visitor-check regression test used by the release gate; no app behavior changed.
 - Reviewed all ten shipped app languages across the app, widget, onboarding, permission text, Siri shortcuts, and system settings; refined copy, corrected inconsistent informal address, and aligned shared settings labels.

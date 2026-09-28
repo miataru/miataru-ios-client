@@ -97,6 +97,7 @@ struct iPhone_DeviceNavigationView: View {
     @State private var userTimestamp: Date? = nil
     @State private var isLoading: Bool = false
     @State private var now = Date()
+    @State private var latestSuccessfulTargetSpeed: NavigationHUDServerSpeedSample?
     @State private var isAutoRouteUpdateLocked: Bool = false
     /// true = non-reversed route (standard: selected device → user). false = reversed route (user → selected device, "reverse route" button).
     @State private var isRouteFromDeviceToUser: Bool = true
@@ -241,7 +242,7 @@ struct iPhone_DeviceNavigationView: View {
         .overlay(alignment: .top) {
             if isNavigationHUDVisible {
                 NavigationHUDView(
-                    location: effectiveUserLocation,
+                    formattedSpeed: currentNavigationSpeedLabel,
                     destination: isRouteFromDeviceToUser
                         ? String(localized: "navigation_hud_destination_you", table: "MapNavigationHistory")
                         : (device.DeviceName.isEmpty ? device.DeviceID : device.DeviceName),
@@ -773,8 +774,7 @@ struct iPhone_DeviceNavigationView: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            if route != nil {
-                let formattedSpeed = freshUserSpeedLabel ?? "—"
+            if route != nil, let formattedSpeed = currentNavigationSpeedLabel {
                 HStack(spacing: 4) {
                     Text(formattedSpeed)
                     Text(String(localized: "navigation_speed_kmh_unit", table: "MapNavigationHistory"))
@@ -1325,6 +1325,13 @@ struct iPhone_DeviceNavigationView: View {
             guard !Task.isCancelled,
                   isViewActive,
                   generation == targetLocationFetchGeneration else { return }
+            let serverLocation = locations.first {
+                $0.Device.compare(device.DeviceID, options: .caseInsensitive) == .orderedSame
+            }
+            latestSuccessfulTargetSpeed = NavigationHUDSpeedPolicy.sampleFromSuccessfulResponse(
+                metersPerSecond: serverLocation?.Speed,
+                timestamp: serverLocation?.TimestampDate
+            )
             if let loc = locations.first {
                 let coordinate = CLLocationCoordinate2D(latitude: loc.Latitude, longitude: loc.Longitude)
                 let changed = deviceCoordinate?.latitude != coordinate.latitude || deviceCoordinate?.longitude != coordinate.longitude
@@ -1943,9 +1950,13 @@ struct iPhone_DeviceNavigationView: View {
         )
     }
 
-    private var freshUserSpeedLabel: String? {
-        let text = NavigationHUDView.speedText(for: effectiveUserLocation, now: now)
-        return text == "—" ? nil : text
+    private var currentNavigationSpeedLabel: String? {
+        NavigationHUDSpeedPolicy.formattedSpeed(
+            isDeviceToUser: isRouteFromDeviceToUser,
+            trackedSample: latestSuccessfulTargetSpeed,
+            ownLocation: effectiveUserLocation,
+            now: now
+        )
     }
 
     private var navigationHUDRouteCoordinates: [CLLocationCoordinate2D] {

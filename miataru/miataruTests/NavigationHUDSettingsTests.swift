@@ -4,7 +4,7 @@ import CoreLocation
 @testable import miataru
 
 struct NavigationHUDSettingsTests {
-    @Test("HUD speed is always km/h and hides location older than fifteen seconds")
+    @Test("Own-device speed formats fresh locations in km/h and rejects stale or invalid values")
     func speedFormattingUsesFreshLocationAndKilometersPerHour() {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
         func location(speed: CLLocationSpeed, age: TimeInterval) -> CLLocation {
@@ -19,11 +19,115 @@ struct NavigationHUDSettingsTests {
             )
         }
 
-        #expect(NavigationHUDView.speedText(for: location(speed: 10, age: 0), now: now) == "36")
-        #expect(NavigationHUDView.speedText(for: location(speed: 10, age: 15), now: now) == "36")
-        #expect(NavigationHUDView.speedText(for: location(speed: 10, age: 15.01), now: now) == "—")
-        #expect(NavigationHUDView.speedText(for: location(speed: -1, age: 0), now: now) == "—")
-        #expect(NavigationHUDView.speedText(for: nil, now: now) == "—")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: location(speed: 10, age: 0), now: now) == "36")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: location(speed: 10, age: 15), now: now) == "36")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: location(speed: 10, age: 15.01), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: location(speed: 10, age: -0.01), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: location(speed: -1, age: 0), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: nil, now: now) == nil)
+    }
+
+    @Test("Navigation speed uses tracked server samples for five minutes and hides invalid responses")
+    func trackedServerSpeedValidityAndInvalidation() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        func sample(speed: Double?, age: TimeInterval) -> NavigationHUDServerSpeedSample {
+            NavigationHUDServerSpeedSample(metersPerSecond: speed, timestamp: now.addingTimeInterval(-age))
+        }
+
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: sample(speed: 10, age: 0), now: now) == "36")
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: sample(speed: 0, age: 300), now: now) == "0")
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: sample(speed: 10, age: 300.01), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: sample(speed: 10, age: -0.01), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: sample(speed: nil, age: 0), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: sample(speed: -.infinity, age: 0), now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: nil, now: now) == nil)
+    }
+
+    @Test("Successful server responses replace or clear tracked speed samples")
+    func successfulServerResponseReplacesPreviousSpeed() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let previous = NavigationHUDSpeedPolicy.sampleFromSuccessfulResponse(
+            metersPerSecond: 10,
+            timestamp: now
+        )
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: previous, now: now) == "36")
+
+        let missingSpeedResponse = NavigationHUDSpeedPolicy.sampleFromSuccessfulResponse(
+            metersPerSecond: nil,
+            timestamp: now.addingTimeInterval(1)
+        )
+        #expect(missingSpeedResponse == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedTrackedDeviceSpeed(for: missingSpeedResponse, now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.sampleFromSuccessfulResponse(
+            metersPerSecond: -.infinity,
+            timestamp: now
+        ) == nil)
+    }
+
+    @Test("Navigation speed direction selects only its own source")
+    func speedSourceFollowsNavigationDirection() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let remote = NavigationHUDServerSpeedSample(metersPerSecond: 10, timestamp: now)
+        let own = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: 5,
+            timestamp: now
+        )
+
+        #expect(NavigationHUDSpeedPolicy.formattedSpeed(
+            isDeviceToUser: true,
+            trackedSample: remote,
+            ownLocation: own,
+            now: now
+        ) == "36")
+        #expect(NavigationHUDSpeedPolicy.formattedSpeed(
+            isDeviceToUser: false,
+            trackedSample: remote,
+            ownLocation: own,
+            now: now
+        ) == "18")
+        #expect(NavigationHUDSpeedPolicy.formattedSpeed(
+            isDeviceToUser: true,
+            trackedSample: nil,
+            ownLocation: own,
+            now: now
+        ) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedSpeed(
+            isDeviceToUser: false,
+            trackedSample: remote,
+            ownLocation: nil,
+            now: now
+        ) == nil)
+    }
+
+    @Test("Own device speed remains zero-valid and expires after fifteen seconds")
+    func ownDeviceSpeedValidityRemainsShortLived() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let freshStoppedLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: 0,
+            timestamp: now.addingTimeInterval(-15)
+        )
+        let staleLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: 0,
+            timestamp: now.addingTimeInterval(-15.01)
+        )
+
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: freshStoppedLocation, now: now) == "0")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: staleLocation, now: now) == nil)
     }
 
     @Test("HUD palette and mirror choice persist across settings store instances")

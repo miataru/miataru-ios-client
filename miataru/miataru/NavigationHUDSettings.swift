@@ -3,6 +3,81 @@ import Combine
 import CoreLocation
 import MapKit
 
+struct NavigationHUDServerSpeedSample: Equatable {
+    let metersPerSecond: Double?
+    let timestamp: Date
+}
+
+enum NavigationHUDSpeedPolicy {
+    static let ownDeviceMaximumAge: TimeInterval = 15
+    static let trackedDeviceMaximumAge: TimeInterval = 5 * 60
+
+    static func formattedSpeed(
+        metersPerSecond: Double?,
+        timestamp: Date?,
+        now: Date,
+        maximumAge: TimeInterval
+    ) -> String? {
+        guard let metersPerSecond,
+              metersPerSecond.isFinite,
+              metersPerSecond >= 0,
+              let timestamp,
+              maximumAge.isFinite,
+              maximumAge >= 0 else { return nil }
+        let age = now.timeIntervalSince(timestamp)
+        guard age.isFinite, age >= 0, age <= maximumAge else { return nil }
+        let kilometersPerHour = metersPerSecond * 3.6
+        guard kilometersPerHour.isFinite else { return nil }
+
+        let formatter = NumberFormatter()
+        formatter.locale = .current
+        formatter.maximumFractionDigits = 0
+        formatter.minimumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: kilometersPerHour))
+    }
+
+    static func formattedOwnDeviceSpeed(for location: CLLocation?, now: Date) -> String? {
+        formattedSpeed(
+            metersPerSecond: location?.speed,
+            timestamp: location?.timestamp,
+            now: now,
+            maximumAge: ownDeviceMaximumAge
+        )
+    }
+
+    static func formattedTrackedDeviceSpeed(for sample: NavigationHUDServerSpeedSample?, now: Date) -> String? {
+        formattedSpeed(
+            metersPerSecond: sample?.metersPerSecond,
+            timestamp: sample?.timestamp,
+            now: now,
+            maximumAge: trackedDeviceMaximumAge
+        )
+    }
+
+    static func sampleFromSuccessfulResponse(
+        metersPerSecond: Double?,
+        timestamp: Date?
+    ) -> NavigationHUDServerSpeedSample? {
+        guard let metersPerSecond,
+              metersPerSecond.isFinite,
+              metersPerSecond >= 0,
+              let timestamp else { return nil }
+        return NavigationHUDServerSpeedSample(metersPerSecond: metersPerSecond, timestamp: timestamp)
+    }
+
+    static func formattedSpeed(
+        isDeviceToUser: Bool,
+        trackedSample: NavigationHUDServerSpeedSample?,
+        ownLocation: CLLocation?,
+        now: Date
+    ) -> String? {
+        if isDeviceToUser {
+            return formattedTrackedDeviceSpeed(for: trackedSample, now: now)
+        }
+        return formattedOwnDeviceSpeed(for: ownLocation, now: now)
+    }
+}
+
 struct NavigationHUDProjection {
     let route: [CGPoint]
     let user: CGPoint?
