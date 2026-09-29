@@ -1,4 +1,5 @@
 version 3.6
+- Requested a fresh fix after stale cached background location callbacks and protected the one-shot recovery window without uploading the stale sample.
 - Deferred location permission prompts from cold background launches until the app is active, then retried them on foreground activation.
 - Protected Core Location callbacks before asynchronous processing so a short background wake has time to persist and submit its accepted locations.
 - Preserved enabled tracking across temporary location-authorization loss and restarted eligible monitoring when permission returned.

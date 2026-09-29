@@ -1028,6 +1028,75 @@ struct LocationTrackingPolicyTests {
         #expect(requestAction(false, .notDetermined, .active, false, false) == .none)
     }
 
+    @Test("Stale background significant-change callback requests one fresh fix without a retry loop")
+    func staleBackgroundSignificantChangeCallbackRequestsFreshFix() {
+        let now = Date(timeIntervalSince1970: 50_000)
+        let staleLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.82, longitude: 10.80),
+            altitude: 0,
+            horizontalAccuracy: 20,
+            verticalAccuracy: 20,
+            course: -1,
+            speed: -1,
+            timestamp: now.addingTimeInterval(-LocationSamplePolicy.maximumAge - 1)
+        )
+        let freshLocation = CLLocation(
+            coordinate: staleLocation.coordinate,
+            altitude: 0,
+            horizontalAccuracy: 20,
+            verticalAccuracy: 20,
+            course: -1,
+            speed: -1,
+            timestamp: now
+        )
+        #expect(LocationSamplePolicy.processingDecision(
+            for: staleLocation,
+            now: now,
+            latestRawLocation: nil,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .stale)
+        #expect(LocationSamplePolicy.processingDecision(
+            for: freshLocation,
+            now: now,
+            latestRawLocation: nil,
+            currentLocation: nil,
+            smartReferenceLocation: nil
+        ) == .process)
+
+        func shouldRecover(
+            state: UIApplication.State = .background,
+            sourceIsPrimary: Bool = true,
+            receivedStale: Bool = true,
+            processedFresh: Bool = false,
+            authorization: CLAuthorizationStatus = .authorizedAlways,
+            tracking: Bool = true,
+            lastRequestAt: Date? = nil
+        ) -> Bool {
+            LocationTrackingPolicy.shouldRequestFreshLocationAfterStaleBackgroundBatch(
+                isTracking: tracking,
+                authorizationStatus: authorization,
+                applicationState: state,
+                updateSourceIsPrimary: sourceIsPrimary,
+                receivedStaleSample: receivedStale,
+                processedFreshSample: processedFresh,
+                lastRequestAt: lastRequestAt,
+                now: now
+            )
+        }
+
+        #expect(shouldRecover())
+        #expect(shouldRecover(state: .inactive))
+        #expect(!shouldRecover(state: .active))
+        #expect(!shouldRecover(sourceIsPrimary: false))
+        #expect(!shouldRecover(receivedStale: false))
+        #expect(!shouldRecover(processedFresh: true))
+        #expect(!shouldRecover(authorization: .authorizedWhenInUse))
+        #expect(!shouldRecover(tracking: false))
+        #expect(!shouldRecover(lastRequestAt: now.addingTimeInterval(-59)))
+        #expect(shouldRecover(lastRequestAt: now.addingTimeInterval(-60)))
+    }
+
     @Test("Background battery threshold only disables frequent mode when active and known")
     func backgroundBatteryThresholdOnlyDisablesFrequentModeWhenActiveAndKnown() {
         #expect(LocationTrackingPolicy.batteryPercent(from: 0.301) == 30)

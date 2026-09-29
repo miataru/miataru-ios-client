@@ -367,6 +367,29 @@ enum LocationTrackingPolicy {
         authorizationStatus == .denied || authorizationStatus == .restricted
     }
 
+    static func shouldRequestFreshLocationAfterStaleBackgroundBatch(
+        isTracking: Bool,
+        authorizationStatus: CLAuthorizationStatus,
+        applicationState: UIApplication.State,
+        updateSourceIsPrimary: Bool,
+        receivedStaleSample: Bool,
+        processedFreshSample: Bool,
+        lastRequestAt: Date?,
+        now: Date,
+        minimumInterval: TimeInterval = 60
+    ) -> Bool {
+        guard isTracking,
+              authorizationStatus == .authorizedAlways,
+              applicationState != .active,
+              updateSourceIsPrimary,
+              receivedStaleSample,
+              !processedFreshSample else {
+            return false
+        }
+        guard let lastRequestAt else { return true }
+        return now.timeIntervalSince(lastRequestAt) >= max(0, minimumInterval)
+    }
+
     static func authorizationRequestAction(trackAndReportLocation: Bool,
                                            authorizationStatus: CLAuthorizationStatus,
                                            applicationState: UIApplication.State,

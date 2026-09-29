@@ -103,6 +103,9 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundLastMovementThresholdMeters: CLLocationDistance?
     private var smartFrequentBackgroundStartupGuardPending = true
     private var backgroundLocationLaunchPendingForeground = false
+    private var lastStalePrimaryRecoveryRequestAt: Date?
+    private var pendingStalePrimaryRecoveryBackgroundTask: LocationUploadBackgroundTaskToken?
+    private var pendingStalePrimaryRecoveryExpirationTask: Task<Void, Never>?
     private var isSmartFrequentExitFenceActive = false
     private var smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
     private var pendingLargeJumpLocation: PendingLargeJumpLocation?
@@ -195,6 +198,9 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        Task { @MainActor in
+            self.finishStalePrimaryRecoveryBackgroundTask()
+        }
         backgroundLocationLaunchPendingForeground = false
         scheduleStartupHeartbeatIfNeeded()
         smartFrequentBackgroundStartupGuardPending = false
@@ -844,10 +850,10 @@ final class LocationManager: NSObject, ObservableObject {
         return diagnosticsLocationContext(location, extra: fields)
     }
 
-    private func shouldProcessLocationSample(_ location: CLLocation,
-                                             now: Date,
-                                             applicationState: UIApplication.State,
-                                             updateSource: LocationUpdateSource) -> Bool {
+    private func evaluateLocationSampleForProcessing(_ location: CLLocation,
+                                                     now: Date,
+                                                     applicationState: UIApplication.State,
+                                                     updateSource: LocationUpdateSource) -> LocationSampleProcessingDecision {
         let decision = Self.locationSampleProcessingDecision(
             for: location,
             now: now,
@@ -877,9 +883,9 @@ final class LocationManager: NSObject, ObservableObject {
                     ("latestReferenceTimestamp", latestLocationSampleReferenceTimestamp().map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("unknown"))
                 ])
             )
-            return false
+            return decision
         }
-        return true
+        return .process
     }
 
     private func locationSampleRejectionReason(_ decision: LocationSampleProcessingDecision) -> String {
@@ -3361,6 +3367,9 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - App Lifecycle Hooks
     func appDidEnterForeground() {
         debugLog("[LocationManager] App did enter foreground")
+        Task { @MainActor in
+            self.finishStalePrimaryRecoveryBackgroundTask()
+        }
         backgroundLocationLaunchPendingForeground = false
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did enter foreground")
@@ -3389,6 +3398,30 @@ final class LocationManager: NSObject, ObservableObject {
         coreLocationServices.stopFrequentBackgroundActivitySession(reason: "stop all location services")
         stopHeadingUpdates()
         stopForegroundLocationTimer()
+    }
+
+    @MainActor
+    private func holdBackgroundTaskForStalePrimaryRecovery(
+        _ callbackTask: LocationUploadBackgroundTaskToken?,
+        applicationState: UIApplication.State
+    ) -> Bool {
+        finishStalePrimaryRecoveryBackgroundTask()
+        pendingStalePrimaryRecoveryBackgroundTask = callbackTask
+            ?? LocationUploadBackgroundTaskToken.beginForLocationCallbackIfNeeded(applicationState: applicationState)
+        pendingStalePrimaryRecoveryExpirationTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 20_000_000_000)
+            guard !Task.isCancelled else { return }
+            self?.finishStalePrimaryRecoveryBackgroundTask()
+        }
+        return callbackTask != nil
+    }
+
+    @MainActor
+    private func finishStalePrimaryRecoveryBackgroundTask() {
+        pendingStalePrimaryRecoveryExpirationTask?.cancel()
+        pendingStalePrimaryRecoveryExpirationTask = nil
+        pendingStalePrimaryRecoveryBackgroundTask?.end()
+        pendingStalePrimaryRecoveryBackgroundTask = nil
     }
 
     private func locationUpdateSource(for manager: CLLocationManager) -> LocationUpdateSource {
@@ -3450,7 +3483,12 @@ extension LocationManager: CLLocationManagerDelegate {
             )
         } : nil
         Task { @MainActor in
-            defer { callbackBackgroundTask?.end() }
+            var callbackTaskHandedToRecovery = false
+            defer {
+                if !callbackTaskHandedToRecovery {
+                    callbackBackgroundTask?.end()
+                }
+            }
             let orderedLocations = Self.processableLocationUpdates(from: locations)
             guard !orderedLocations.isEmpty else {
                 debugLog("[LocationManager] didUpdateLocations ignored empty/invalid batch count=\(locations.count)")
@@ -3504,17 +3542,26 @@ extension LocationManager: CLLocationManagerDelegate {
             var didSwitchFrequentBackgroundMode = didExpireFrequentBackgroundUpdates || didDisableFrequentBackgroundUpdatesForBattery
             var didCleanUpStaleFrequentCallback = false
             var shouldSuppressCallback = false
+            var receivedStalePrimarySample = false
+            var processedFreshPrimarySample = false
             var locationsPendingUpload: [CLLocation] = []
 
             for location in orderedLocations {
                 let sampleProcessingNow = Date()
-                guard self.shouldProcessLocationSample(
+                let sampleDecision = self.evaluateLocationSampleForProcessing(
                     location,
                     now: sampleProcessingNow,
                     applicationState: applicationState,
                     updateSource: updateSource
-                ) else {
+                )
+                if updateSource == .primary, sampleDecision == .stale {
+                    receivedStalePrimarySample = true
+                }
+                guard sampleDecision == .process else {
                     continue
+                }
+                if updateSource == .primary {
+                    processedFreshPrimarySample = true
                 }
                 self.recordSmartFrequentBackgroundFrequentCallbackIfNeeded(
                     updateSource: updateSource,
@@ -3591,10 +3638,42 @@ extension LocationManager: CLLocationManagerDelegate {
                     didSwitchFrequentBackgroundMode: didSwitchFrequentBackgroundMode
                 )
             }
-            if isSmartFrequentStartupBatch {
+            if isSmartFrequentStartupBatch, processedFreshPrimarySample {
                 self.smartFrequentBackgroundStartupGuardPending = false
             }
             self.reconcileSmartFrequentExitFence(reason: "location update")
+
+            if processedFreshPrimarySample {
+                self.finishStalePrimaryRecoveryBackgroundTask()
+            }
+            let recoveryNow = Date()
+            if LocationTrackingPolicy.shouldRequestFreshLocationAfterStaleBackgroundBatch(
+                isTracking: self.isTracking && self.settings.trackAndReportLocation && !self.settings.deviceKeyAuthBlocked,
+                authorizationStatus: self.locationManager.authorizationStatus,
+                applicationState: applicationState,
+                updateSourceIsPrimary: updateSource == .primary,
+                receivedStaleSample: receivedStalePrimarySample,
+                processedFreshSample: processedFreshPrimarySample,
+                lastRequestAt: self.lastStalePrimaryRecoveryRequestAt,
+                now: recoveryNow
+            ) {
+                self.lastStalePrimaryRecoveryRequestAt = recoveryNow
+                callbackTaskHandedToRecovery = self.holdBackgroundTaskForStalePrimaryRecovery(
+                    callbackBackgroundTask,
+                    applicationState: applicationState
+                )
+                self.diagnosticsLog.append(
+                    level: .warning,
+                    event: "stalePrimaryLocationRecovery",
+                    summary: "Requested a fresh location after a stale background significant-change callback.",
+                    result: "one-shot requested",
+                    reason: "no fresh primary sample in callback batch",
+                    checks: self.trackingEligibilityChecks(status: self.locationManager.authorizationStatus),
+                    context: ["source": .string(updateSource.rawValue)],
+                    persistence: .immediate
+                )
+                self.coreLocationServices.requestPrimaryLocation()
+            }
 
             guard !shouldSuppressCallback,
                   !locationsPendingUpload.isEmpty else {
@@ -3996,6 +4075,9 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Task { @MainActor in
+            if manager === self.locationManager {
+                self.finishStalePrimaryRecoveryBackgroundTask()
+            }
             self.serverUpdateStatus = .failed(error.localizedDescription)
             self.diagnosticsLog.append(
                 level: .error,
