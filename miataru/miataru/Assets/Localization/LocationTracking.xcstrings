@@ -9466,6 +9466,71 @@
         }
       }
     },
+    "location_update_outbox_unavailable_error" : {
+      "comment" : "Error shown when a location update cannot be durably saved because the local outbox is unavailable",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Positionsopdateringer kan ikke gemmes på denne enhed lige nu."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standort-Updates können derzeit nicht auf diesem Gerät gespeichert werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location updates cannot be saved on this device right now."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora no se pueden guardar las actualizaciones de ubicación en este dispositivo."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sijaintipäivityksiä ei voi tallentaa tähän laitteeseen juuri nyt."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mises à jour de position ne peuvent pas être enregistrées sur cet appareil pour le moment."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Al momento non è possibile salvare gli aggiornamenti della posizione su questo dispositivo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在、このデバイスに位置情報の更新を保存できません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locatie-updates kunnen momenteel niet op dit apparaat worden opgeslagen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前无法在此设备上保存位置更新。"
+          }
+        }
+      }
+    },
     "location_update_outbox_discard_pending_button" : {
       "localizations" : {
         "da" : {

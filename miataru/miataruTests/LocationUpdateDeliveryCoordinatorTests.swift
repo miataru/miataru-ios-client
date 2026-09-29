@@ -279,6 +279,94 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(snapshot.map(\.payload.Timestamp) == ["decode-failed"])
     }
 
+    @Test("Unreadable outbox never reports an update as queued or overwrites its bytes")
+    func unreadableOutboxRejectsSubmissionsWithoutOverwriting() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+        try FileManager.default.createDirectory(at: tempURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let originalBytes = Data("protected-outbox-placeholder".utf8)
+        let retainedURL = tempURL.appendingPathExtension("saved")
+        try originalBytes.write(to: retainedURL)
+        try FileManager.default.createDirectory(at: tempURL, withIntermediateDirectories: false)
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let directResult = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "direct"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+        let delayedResult = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "delayed"),
+            enableHistory: true,
+            retentionTime: 60,
+            deliveryDelay: 60
+        )
+
+        for result in [directResult, delayedResult] {
+            if case .failed(let error) = result {
+                #expect((error as? LocationUpdateDeliveryError) == .outboxUnavailable)
+            } else {
+                Issue.record("Expected outbox storage failure instead of a queued or sent update")
+            }
+        }
+        #expect(await sender.callCount == 0)
+        #expect(try Data(contentsOf: retainedURL) == originalBytes)
+        let attributes = try FileManager.default.attributesOfItem(atPath: tempURL.path)
+        #expect(attributes[.type] as? FileAttributeType == .typeDirectory)
+    }
+
+    @Test("Undecodable outbox is retained and a new location still reaches the server")
+    func undecodableOutboxAllowsNewDirectSend() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+        try FileManager.default.createDirectory(at: tempURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let originalBytes = Data("{incomplete-outbox".utf8)
+        try originalBytes.write(to: tempURL)
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "new-location"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+        if case .sent = result {
+        } else {
+            Issue.record("Expected a fresh direct location send after retaining the undecodable outbox")
+        }
+        #expect(await sender.sentTimestamps == ["new-location"])
+        #expect(await store.count() == 0)
+
+        let retainedFiles = try FileManager.default.contentsOfDirectory(
+            at: tempURL.deletingLastPathComponent(),
+            includingPropertiesForKeys: nil
+        ).filter { $0.lastPathComponent.hasPrefix("locationUpdateOutbox.unreadable-") }
+        #expect(retainedFiles.count == 1)
+        if let retainedFile = retainedFiles.first {
+            #expect(try Data(contentsOf: retainedFile) == originalBytes)
+        }
+    }
+
     @Test("Submit queues update after uncertain invalid response")
     func submitQueuesAfterInvalidResponse() async throws {
         let tempURL = temporaryOutboxURL()

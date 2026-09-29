@@ -114,6 +114,78 @@ struct LocationUpdateOutboxStoreTests {
         #expect(snapshot.first?.processKnownVisitorAlerts == true)
     }
 
+    @Test("Temporary read failure preserves the existing outbox and recovers its FIFO contents")
+    func temporaryReadFailurePreservesQueuedUpdates() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let serverURL = URL(string: "https://example.org")!
+        let originalStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 10, ttl: 3600)
+        #expect(await originalStore.enqueue(
+            serverURL: serverURL,
+            payload: payload(timestamp: "before-restart"),
+            enableHistory: true,
+            retentionTime: 60
+        ))
+
+        let savedURL = tempURL.appendingPathExtension("saved")
+        try FileManager.default.moveItem(at: tempURL, to: savedURL)
+        try FileManager.default.createDirectory(at: tempURL, withIntermediateDirectories: false)
+
+        let restartedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 10, ttl: 3600)
+        #expect(!(await restartedStore.isStorageAvailable()))
+        #expect(!(await restartedStore.enqueue(
+            serverURL: serverURL,
+            payload: payload(timestamp: "while-unreadable"),
+            enableHistory: true,
+            retentionTime: 60
+        )))
+        #expect(FileManager.default.fileExists(atPath: savedURL.path))
+
+        try FileManager.default.removeItem(at: tempURL)
+        try FileManager.default.moveItem(at: savedURL, to: tempURL)
+        #expect(await restartedStore.isStorageAvailable())
+        #expect(await restartedStore.itemsSnapshot().map(\.payload.Timestamp) == ["before-restart"])
+        #expect(await restartedStore.enqueue(
+            serverURL: serverURL,
+            payload: payload(timestamp: "after-recovery"),
+            enableHistory: true,
+            retentionTime: 60
+        ))
+
+        let reloadedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 10, ttl: 3600)
+        #expect(await reloadedStore.itemsSnapshot().map(\.payload.Timestamp) == ["before-restart", "after-recovery"])
+    }
+
+    @Test("Undecodable outbox is retained while new location updates remain reportable")
+    func undecodableOutboxStartsFreshQueueAndRetainsOriginal() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+        try FileManager.default.createDirectory(at: tempURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let originalBytes = Data("{incomplete-outbox".utf8)
+        try originalBytes.write(to: tempURL)
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 10, ttl: 3600)
+        #expect(await store.isStorageAvailable())
+        #expect(await store.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "new-location"),
+            enableHistory: true,
+            retentionTime: 60
+        ))
+
+        let reloadedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 10, ttl: 3600)
+        #expect(await reloadedStore.itemsSnapshot().map(\.payload.Timestamp) == ["new-location"])
+        let retainedFiles = try FileManager.default.contentsOfDirectory(
+            at: tempURL.deletingLastPathComponent(),
+            includingPropertiesForKeys: nil
+        ).filter { $0.lastPathComponent.hasPrefix("locationUpdateOutbox.unreadable-") }
+        #expect(retainedFiles.count == 1)
+        if let retainedFile = retainedFiles.first {
+            #expect(try Data(contentsOf: retainedFile) == originalBytes)
+        }
+    }
+
     @Test("Runtime policy can keep aged items and raise max cap")
     func runtimePolicyCanKeepAgedItemsAndRaiseCap() async throws {
         let tempURL = temporaryOutboxURL()

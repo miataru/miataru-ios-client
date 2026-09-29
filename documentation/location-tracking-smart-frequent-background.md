@@ -438,6 +438,7 @@ The app-level retry/outbox architecture is:
 - Reads, writes, and `updateLocation` each retry once with short jittered backoff for transient failures.
 - Uncertain `updateLocation` failures are queued in a persistent FIFO outbox rather than dropped.
 - A direct update is written to that same outbox before the network request starts. Its head remains available after process termination and is removed after a successful acknowledgement; later updates stay behind it in FIFO order. On relaunch, an eligible persisted head gets an immediate flush attempt instead of waiting for the one-minute periodic timer.
+- If the outbox is temporarily unreadable, the existing file is preserved and submissions report a storage failure instead of claiming that a location was durably queued. Later access reloads the original FIFO. If its bytes can be read but cannot be decoded, the file is retained under a separate name in App Support and a fresh active outbox allows new updates to continue.
 - Clear auth/DeviceKey failures remain non-retryable and keep existing auth blocking behavior.
 
 Outbox cases include transient network failures, retryable HTTP status responses, decoding errors, and invalid responses without a clear 401/403 auth context.

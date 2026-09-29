@@ -11,13 +11,20 @@ import Foundation
 import MiataruAPIClient
 import UIKit
 
-enum LocationUpdateDeliveryError: LocalizedError {
+enum LocationUpdateDeliveryError: LocalizedError, Equatable {
     case serverDidNotAcknowledge
+    case outboxUnavailable
 
     var errorDescription: String? {
         switch self {
         case .serverDidNotAcknowledge:
             return "Server response was not successful"
+        case .outboxUnavailable:
+            return NSLocalizedString(
+                "location_update_outbox_unavailable_error",
+                tableName: "LocationTracking",
+                comment: "Error shown when a location update cannot be durably saved because the local outbox is unavailable"
+            )
         }
     }
 }
@@ -190,13 +197,16 @@ actor LocationUpdateDeliveryCoordinator {
         guard await flushEligibilityProvider() else {
             return .dropped
         }
+        guard await outboxStore.isStorageAvailable() else {
+            return .failed(LocationUpdateDeliveryError.outboxUnavailable)
+        }
         let effectiveEnableHistory = await effectiveHistoryEnabled(fallback: enableHistory)
 
         if let deliveryDelay, deliveryDelay > 0 {
             let now = Date()
             let availableAfter = await outboxStore.activeDelayedBatchReleaseDate(now: now)
                 ?? now.addingTimeInterval(deliveryDelay)
-            await outboxStore.enqueue(
+            guard await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: effectiveEnableHistory,
@@ -204,21 +214,21 @@ actor LocationUpdateDeliveryCoordinator {
                 availableAfter: availableAfter,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
-            )
+            ) else { return .failed(LocationUpdateDeliveryError.outboxUnavailable) }
             await notifyOutboxDidChange()
             await scheduleNextFlushIfNeeded(now: now, trigger: "delayedSubmit")
             return .queued
         }
 
         if isDirectSendBlockingQueue {
-            await outboxStore.enqueue(
+            guard await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
-            )
+            ) else { return .failed(LocationUpdateDeliveryError.outboxUnavailable) }
             await notifyOutboxDidChange()
             scheduleFlushSoon(trigger: "submitWithInFlightDirectSend")
             return .queued
@@ -226,28 +236,28 @@ actor LocationUpdateDeliveryCoordinator {
 
         let hasPendingOutbox = !(await outboxStore.isEmpty())
         if isDirectSendBlockingQueue {
-            await outboxStore.enqueue(
+            guard await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
-            )
+            ) else { return .failed(LocationUpdateDeliveryError.outboxUnavailable) }
             await notifyOutboxDidChange()
             scheduleFlushSoon(trigger: "submitWithInFlightDirectSend")
             return .queued
         }
 
         if hasPendingOutbox {
-            await outboxStore.enqueue(
+            guard await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
                 enableHistory: effectiveEnableHistory,
                 retentionTime: retentionTime,
                 visitorCheckMinimumInterval: visitorCheckMinimumInterval,
                 processKnownVisitorAlerts: processKnownVisitorAlerts
-            )
+            ) else { return .failed(LocationUpdateDeliveryError.outboxUnavailable) }
             await notifyOutboxDidChange()
             scheduleFlushSoon(trigger: "submitWithPendingOutbox")
             return .queued
@@ -261,14 +271,17 @@ actor LocationUpdateDeliveryCoordinator {
             queuedRecord: nil,
             serverURL: serverURL
         )
-        await outboxStore.enqueueAtFront(
+        guard await outboxStore.enqueueAtFront(
             serverURL: serverURL,
             payload: payload,
             enableHistory: effectiveEnableHistory,
             retentionTime: retentionTime,
             visitorCheckMinimumInterval: visitorCheckMinimumInterval,
             processKnownVisitorAlerts: processKnownVisitorAlerts
-        )
+        ) else {
+            inFlightDirectSend = nil
+            return .failed(LocationUpdateDeliveryError.outboxUnavailable)
+        }
         if inFlightDirectSend?.discarded == true {
             await outboxStore.removeAll()
             inFlightDirectSend = nil
@@ -471,6 +484,14 @@ actor LocationUpdateDeliveryCoordinator {
                 didReachBatchLimit: false,
                 stoppedOnDeliveryFailure: false,
                 hasPendingItems: await outboxStore.count() > 0
+            )
+        }
+
+        guard await outboxStore.isStorageAvailable() else {
+            return FlushResult(
+                didReachBatchLimit: false,
+                stoppedOnDeliveryFailure: true,
+                hasPendingItems: false
             )
         }
 

@@ -1,4 +1,5 @@
 version 3.6
+- Preserved temporarily unreadable location outboxes without false queued status and retained undecodable files while new location reports continue through a fresh queue.
 - Requested a fresh fix after stale cached background location callbacks and protected the one-shot recovery window without uploading the stale sample.
 - Deferred location permission prompts from cold background launches until the app is active, then retried them on foreground activation.
 - Protected Core Location callbacks before asynchronous processing so a short background wake has time to persist and submit its accepted locations.

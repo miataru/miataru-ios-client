@@ -78,14 +78,20 @@ struct LocationUpdateOutboxItem: Codable {
 }
 
 actor LocationUpdateOutboxStore {
+    private enum LoadResult {
+        case loaded([LocationUpdateOutboxItem])
+        case unavailable
+    }
+
     private var items: [LocationUpdateOutboxItem] = []
+    private var storageUnavailable = false
 
     private let fileURL: URL
     private var maxItems: Int
     private var ttl: TimeInterval?
     private let nowProvider: () -> Date
-    private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
+    private let encoder: JSONEncoder
+    private let decoder: JSONDecoder
 
     init(
         fileURL: URL? = nil,
@@ -93,18 +99,42 @@ actor LocationUpdateOutboxStore {
         ttl: TimeInterval? = 24 * 60 * 60,
         nowProvider: @escaping () -> Date = Date.init
     ) {
-        self.fileURL = fileURL ?? Self.defaultFileURL()
-        self.maxItems = max(1, maxItems)
-        self.ttl = ttl.map { max(1, $0) }
-        self.nowProvider = nowProvider
+        let resolvedFileURL = fileURL ?? Self.defaultFileURL()
+        let resolvedMaxItems = max(1, maxItems)
+        let resolvedTTL = ttl.map { max(1, $0) }
+        let resolvedEncoder = JSONEncoder()
+        let resolvedDecoder = JSONDecoder()
+        let initialItems: [LocationUpdateOutboxItem]
+        let initialStorageUnavailable: Bool
 
-        let loadedItems = Self.loadItems(from: self.fileURL, decoder: self.decoder)
-        let prunedItems = Self.prunedItems(loadedItems, now: self.nowProvider(), ttl: self.ttl)
-        let limitedItems = Self.limitedItems(prunedItems, maxItems: self.maxItems)
-        self.items = limitedItems
-        if limitedItems.count != loadedItems.count {
-            Self.persist(limitedItems, to: self.fileURL, encoder: self.encoder)
+        switch Self.loadItems(from: resolvedFileURL, decoder: resolvedDecoder) {
+        case .loaded(let loadedItems):
+            let prunedItems = Self.prunedItems(loadedItems, now: nowProvider(), ttl: resolvedTTL)
+            let limitedItems = Self.limitedItems(prunedItems, maxItems: resolvedMaxItems)
+            if limitedItems.count == loadedItems.count || Self.persist(limitedItems, to: resolvedFileURL, encoder: resolvedEncoder) {
+                initialItems = limitedItems
+                initialStorageUnavailable = false
+            } else {
+                initialItems = loadedItems
+                initialStorageUnavailable = true
+            }
+        case .unavailable:
+            initialItems = []
+            initialStorageUnavailable = true
         }
+
+        self.fileURL = resolvedFileURL
+        self.maxItems = resolvedMaxItems
+        self.ttl = resolvedTTL
+        self.nowProvider = nowProvider
+        self.encoder = resolvedEncoder
+        self.decoder = resolvedDecoder
+        self.items = initialItems
+        self.storageUnavailable = initialStorageUnavailable
+    }
+
+    func isStorageAvailable() -> Bool {
+        recoverStorageIfNeeded()
     }
 
     func updatePolicy(maxItems: Int, ttl: TimeInterval?) {
@@ -116,20 +146,23 @@ actor LocationUpdateOutboxStore {
 
     func updateServerURLForPendingItems(_ serverURL: URL) -> Bool {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return false }
 
         let serverURLString = serverURL.absoluteString
+        var updatedItems = items
         var didChange = false
-        for index in items.indices where items[index].serverURLString != serverURLString {
-            items[index].serverURLString = serverURLString
+        for index in updatedItems.indices where updatedItems[index].serverURLString != serverURLString {
+            updatedItems[index].serverURLString = serverURLString
             didChange = true
         }
 
         if didChange {
-            persist()
+            return commit(updatedItems)
         }
-        return didChange
+        return false
     }
 
+    @discardableResult
     func enqueue(
         serverURL: URL,
         payload: UpdateLocationPayload,
@@ -138,8 +171,9 @@ actor LocationUpdateOutboxStore {
         availableAfter: Date? = nil,
         visitorCheckMinimumInterval: TimeInterval? = nil,
         processKnownVisitorAlerts: Bool = false
-    ) {
+    ) -> Bool {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return false }
 
         let item = LocationUpdateOutboxItem(
             serverURLString: serverURL.absoluteString,
@@ -153,18 +187,20 @@ actor LocationUpdateOutboxStore {
         )
 
         guard !items.contains(where: { $0.dedupeKey == item.dedupeKey }) else {
-            return
+            return true
         }
 
-        if items.count >= maxItems {
-            let overflow = (items.count - maxItems) + 1
-            items.removeFirst(overflow)
+        var updatedItems = items
+        if updatedItems.count >= maxItems {
+            let overflow = (updatedItems.count - maxItems) + 1
+            updatedItems.removeFirst(overflow)
         }
 
-        items.append(item)
-        persist()
+        updatedItems.append(item)
+        return commit(updatedItems)
     }
 
+    @discardableResult
     func enqueueAtFront(
         serverURL: URL,
         payload: UpdateLocationPayload,
@@ -172,8 +208,9 @@ actor LocationUpdateOutboxStore {
         retentionTime: Int,
         visitorCheckMinimumInterval: TimeInterval? = nil,
         processKnownVisitorAlerts: Bool = false
-    ) {
+    ) -> Bool {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return false }
 
         let item = LocationUpdateOutboxItem(
             serverURLString: serverURL.absoluteString,
@@ -185,18 +222,19 @@ actor LocationUpdateOutboxStore {
             processKnownVisitorAlerts: processKnownVisitorAlerts
         )
 
-        if let existingIndex = items.firstIndex(where: { $0.dedupeKey == item.dedupeKey }) {
-            items.remove(at: existingIndex)
+        var updatedItems = items
+        if let existingIndex = updatedItems.firstIndex(where: { $0.dedupeKey == item.dedupeKey }) {
+            updatedItems.remove(at: existingIndex)
         }
 
-        items.insert(item, at: 0)
+        updatedItems.insert(item, at: 0)
 
-        if items.count > maxItems {
-            let overflow = items.count - maxItems
-            items.removeLast(overflow)
+        if updatedItems.count > maxItems {
+            let overflow = updatedItems.count - maxItems
+            updatedItems.removeLast(overflow)
         }
 
-        persist()
+        return commit(updatedItems)
     }
 
     func pruneExpiredEntries() {
@@ -205,49 +243,53 @@ actor LocationUpdateOutboxStore {
 
     func peekHead() -> LocationUpdateOutboxItem? {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return nil }
         return items.first
     }
 
     func removeHead() {
+        guard recoverStorageIfNeeded() else { return }
         guard !items.isEmpty else { return }
-        items.removeFirst()
-        persist()
+        _ = commit(Array(items.dropFirst()))
     }
 
     func removeHead(matching item: LocationUpdateOutboxItem) -> Bool {
+        guard recoverStorageIfNeeded() else { return false }
         guard let head = items.first,
               Self.isSameQueuedRecord(head, item) else {
             return false
         }
-        items.removeFirst()
-        persist()
-        return true
+        return commit(Array(items.dropFirst()))
     }
 
     func removeAll() {
+        guard recoverStorageIfNeeded() else { return }
         guard !items.isEmpty else { return }
-        items.removeAll()
-        persist()
+        _ = commit([])
     }
 
     func incrementHeadAttemptCount() {
+        guard recoverStorageIfNeeded() else { return }
         guard !items.isEmpty else { return }
-        items[0].attemptCount += 1
-        persist()
+        var updatedItems = items
+        updatedItems[0].attemptCount += 1
+        _ = commit(updatedItems)
     }
 
     func incrementHeadAttemptCount(matching item: LocationUpdateOutboxItem) -> Bool {
+        guard recoverStorageIfNeeded() else { return false }
         guard let head = items.first,
               Self.isSameQueuedRecord(head, item) else {
             return false
         }
-        items[0].attemptCount += 1
-        persist()
-        return true
+        var updatedItems = items
+        updatedItems[0].attemptCount += 1
+        return commit(updatedItems)
     }
 
     func count() -> Int {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return 0 }
         return items.count
     }
 
@@ -257,11 +299,13 @@ actor LocationUpdateOutboxStore {
 
     func itemsSnapshot() -> [LocationUpdateOutboxItem] {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return [] }
         return items
     }
 
     func activeDelayedBatchReleaseDate(now: Date) -> Date? {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return nil }
         return items
             .compactMap(\.availableAfter)
             .filter { $0 > now }
@@ -270,6 +314,7 @@ actor LocationUpdateOutboxStore {
 
     func nextFlushDate(now: Date) -> Date? {
         pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return nil }
         guard let head = items.first else { return nil }
         guard let availableAfter = head.availableAfter, availableAfter > now else {
             return now
@@ -278,28 +323,47 @@ actor LocationUpdateOutboxStore {
     }
 
     private func pruneExpiredEntriesIfNeeded() {
+        guard recoverStorageIfNeeded() else { return }
         guard let ttl else { return }
         let now = nowProvider()
-        let originalCount = items.count
-        items.removeAll { now.timeIntervalSince($0.enqueuedAt) > ttl }
-        if items.count != originalCount {
-            persist()
+        let retainedItems = items.filter { now.timeIntervalSince($0.enqueuedAt) <= ttl }
+        if retainedItems.count != items.count {
+            _ = commit(retainedItems)
         }
     }
 
     private func enforceMaximumItemCountIfNeeded() {
+        guard recoverStorageIfNeeded() else { return }
         guard items.count > maxItems else { return }
-        let overflow = items.count - maxItems
-        items.removeFirst(overflow)
-        persist()
+        _ = commit(Self.limitedItems(items, maxItems: maxItems))
     }
 
-    private func loadItems() -> [LocationUpdateOutboxItem] {
-        Self.loadItems(from: fileURL, decoder: decoder)
+    private func recoverStorageIfNeeded() -> Bool {
+        guard storageUnavailable else { return true }
+        switch Self.loadItems(from: fileURL, decoder: decoder) {
+        case .loaded(let loadedItems):
+            let prunedItems = Self.prunedItems(loadedItems, now: nowProvider(), ttl: ttl)
+            let limitedItems = Self.limitedItems(prunedItems, maxItems: maxItems)
+            if limitedItems.count != loadedItems.count,
+               !Self.persist(limitedItems, to: fileURL, encoder: encoder) {
+                return false
+            }
+            items = limitedItems
+            storageUnavailable = false
+            return true
+        case .unavailable:
+            return false
+        }
     }
 
-    private func persist() {
-        Self.persist(items, to: fileURL, encoder: encoder)
+    private func commit(_ updatedItems: [LocationUpdateOutboxItem]) -> Bool {
+        guard !storageUnavailable else { return false }
+        guard Self.persist(updatedItems, to: fileURL, encoder: encoder) else {
+            storageUnavailable = true
+            return false
+        }
+        items = updatedItems
+        return true
     }
 
     private static func defaultFileURL() -> URL {
@@ -332,26 +396,47 @@ actor LocationUpdateOutboxStore {
             && lhs.serverURLString == rhs.serverURLString
     }
 
-    private static func loadItems(from fileURL: URL, decoder: JSONDecoder) -> [LocationUpdateOutboxItem] {
-        guard let data = try? Data(contentsOf: fileURL) else {
-            return []
-        }
+    private static func loadItems(from fileURL: URL, decoder: JSONDecoder) -> LoadResult {
         do {
-            return try decoder.decode([LocationUpdateOutboxItem].self, from: data)
+            let data = try Data(contentsOf: fileURL)
+            do {
+                return .loaded(try decoder.decode([LocationUpdateOutboxItem].self, from: data))
+            } catch {
+                // The bytes are readable but not a usable queue. Retain the original file
+                // in App Support, then let new location updates use a fresh active outbox.
+                let retainedURL = fileURL.deletingPathExtension()
+                    .appendingPathExtension("unreadable-\(UUID().uuidString)")
+                    .appendingPathExtension(fileURL.pathExtension)
+                do {
+                    try FileManager.default.moveItem(at: fileURL, to: retainedURL)
+                    debugLog("[LocationUpdateOutboxStore] Retained undecodable outbox and started a fresh queue")
+                    return .loaded([])
+                } catch {
+                    debugLog("[LocationUpdateOutboxStore] Could not retain undecodable outbox; preserving original file")
+                    return .unavailable
+                }
+            }
         } catch {
-            debugLog("[LocationUpdateOutboxStore] Failed decoding outbox, starting empty: \(error)")
-            return []
+            let fileError = error as NSError
+            if fileError.domain == NSCocoaErrorDomain,
+               fileError.code == CocoaError.Code.fileReadNoSuchFile.rawValue {
+                return .loaded([])
+            }
+            debugLog("[LocationUpdateOutboxStore] Could not read outbox; preserving existing file")
+            return .unavailable
         }
     }
 
-    private static func persist(_ items: [LocationUpdateOutboxItem], to fileURL: URL, encoder: JSONEncoder) {
+    private static func persist(_ items: [LocationUpdateOutboxItem], to fileURL: URL, encoder: JSONEncoder) -> Bool {
         do {
             let directory = fileURL.deletingLastPathComponent()
             try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
             let data = try encoder.encode(items)
             try data.write(to: fileURL, options: .atomic)
+            return true
         } catch {
             debugLog("[LocationUpdateOutboxStore] Failed persisting outbox: \(error)")
+            return false
         }
     }
 }
