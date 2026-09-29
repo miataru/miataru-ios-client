@@ -47,6 +47,17 @@ actor LocationUpdateDeliveryCoordinator {
         let didReachBatchLimit: Bool
         let stoppedOnDeliveryFailure: Bool
         let hasPendingItems: Bool
+        let deliveredRequestedItem: Bool
+
+        init(didReachBatchLimit: Bool,
+             stoppedOnDeliveryFailure: Bool,
+             hasPendingItems: Bool,
+             deliveredRequestedItem: Bool = false) {
+            self.didReachBatchLimit = didReachBatchLimit
+            self.stoppedOnDeliveryFailure = stoppedOnDeliveryFailure
+            self.hasPendingItems = hasPendingItems
+            self.deliveredRequestedItem = deliveredRequestedItem
+        }
     }
 
     private struct InFlightDirectSend {
@@ -192,7 +203,8 @@ actor LocationUpdateDeliveryCoordinator {
         retentionTime: Int,
         deliveryDelay: TimeInterval? = nil,
         visitorCheckMinimumInterval: TimeInterval? = nil,
-        processKnownVisitorAlerts: Bool = false
+        processKnownVisitorAlerts: Bool = false,
+        flushPendingDuringSubmission: Bool = false
     ) async -> SubmitResult {
         guard await flushEligibilityProvider() else {
             return .dropped
@@ -259,8 +271,19 @@ actor LocationUpdateDeliveryCoordinator {
                 processKnownVisitorAlerts: processKnownVisitorAlerts
             ) else { return .failed(LocationUpdateDeliveryError.outboxUnavailable) }
             await notifyOutboxDidChange()
-            scheduleFlushSoon(trigger: "submitWithPendingOutbox")
-            return .queued
+            guard flushPendingDuringSubmission else {
+                scheduleFlushSoon(trigger: "submitWithPendingOutbox")
+                return .queued
+            }
+
+            // The caller holds a background task for this submission. Attempt delivery
+            // before it ends, because a deferred timer cannot wake a suspended app.
+            let submittedKey = LocationUpdateOutboxItem.makeDedupeKey(for: payload)
+            let flushResult = await flushOutbox(
+                trigger: "backgroundSubmitWithPendingOutbox",
+                requestedDedupeKey: submittedKey
+            )
+            return flushResult.deliveredRequestedItem ? .sent : .queued
         }
 
         // Persist the head before starting the network request. A background process may be
@@ -448,7 +471,8 @@ actor LocationUpdateDeliveryCoordinator {
 
     private func flushOutbox(trigger: String,
                              scheduleContinuation: Bool = true,
-                             includeDelayedItems: Bool = false) async -> FlushResult {
+                             includeDelayedItems: Bool = false,
+                             requestedDedupeKey: String? = nil) async -> FlushResult {
         if isDirectSendBlockingQueue {
             let pendingCount = await outboxStore.count()
             if pendingCount > 0 {
@@ -499,6 +523,7 @@ actor LocationUpdateDeliveryCoordinator {
 
         var processedCount = 0
         var stoppedOnDeliveryFailure = false
+        var deliveredRequestedItem = false
         while processedCount < flushBatchSize {
             guard let head = await outboxStore.peekHead() else { break }
             if !includeDelayedItems,
@@ -527,6 +552,9 @@ actor LocationUpdateDeliveryCoordinator {
                     }
                     await notifyOutboxDidChange()
                     processedCount += 1
+                    if head.dedupeKey == requestedDedupeKey {
+                        deliveredRequestedItem = true
+                    }
                     await notifyOwnLocationUpdateDidSend()
                     var deliveredItem = head
                     deliveredItem.enableHistory = effectiveEnableHistory
@@ -568,7 +596,8 @@ actor LocationUpdateDeliveryCoordinator {
         return FlushResult(
             didReachBatchLimit: processedCount >= flushBatchSize,
             stoppedOnDeliveryFailure: stoppedOnDeliveryFailure,
-            hasPendingItems: shouldContinueAfterBatch
+            hasPendingItems: shouldContinueAfterBatch,
+            deliveredRequestedItem: deliveredRequestedItem
         )
     }
 

@@ -9,7 +9,9 @@
 
 import Testing
 import Foundation
+import CoreLocation
 import MiataruAPIClient
+import UIKit
 @testable import miataru
 
 struct LocationUpdateDeliveryCoordinatorTests {
@@ -496,6 +498,91 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await store.count() == 0)
         #expect(await sender.sentTimestamps == ["old", "new"])
         await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Background upload drains a pending outbox before its protected submission ends")
+    @MainActor
+    func backgroundUploadDrainsPendingOutboxBeforeReturning() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let serverURL = URL(string: "https://example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: serverURL, payload: payload(timestamp: "old"), enableHistory: true, retentionTime: 60)
+        let sender = MockUpdateSender(outcomes: [.success(true), .success(true)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushInterval: 60,
+            deferredFlushDelay: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+        let service = LocationUpdateUploadService(coordinator: coordinator)
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 50, longitude: 8),
+            altitude: 0,
+            horizontalAccuracy: 15,
+            verticalAccuracy: 15,
+            timestamp: Date(timeIntervalSince1970: 2_000)
+        )
+
+        let result = await service.submit(
+            location: location,
+            serverURL: serverURL,
+            deviceID: "TEST_DEVICE",
+            deviceKey: "KEY",
+            enableHistory: true,
+            retentionTime: 60,
+            deliveryDelay: nil,
+            visitorCheckMinimumInterval: nil,
+            processKnownVisitorAlerts: false,
+            applicationState: .background,
+            batteryLevel: 0.8
+        )
+
+        if case .delivery(.sent) = result {
+        } else {
+            Issue.record("Expected the protected background submission to deliver both queued updates")
+        }
+        #expect(await sender.sentTimestamps == ["old", "2000"])
+        #expect(await store.count() == 0)
+    }
+
+    @Test("Background submission retains new and old updates when the queued head is not acknowledged")
+    func backgroundSubmissionRetainsFIFOAfterHeadFailure() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let serverURL = URL(string: "https://example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: serverURL, payload: payload(timestamp: "old"), enableHistory: true, retentionTime: 60)
+        let sender = MockUpdateSender(outcomes: [.success(false)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushInterval: 60,
+            deferredFlushDelay: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let result = await coordinator.submit(
+            serverURL: serverURL,
+            payload: payload(timestamp: "new"),
+            enableHistory: true,
+            retentionTime: 60,
+            flushPendingDuringSubmission: true
+        )
+
+        if case .queued = result {
+        } else {
+            Issue.record("Expected the new update to stay queued behind a failed head")
+        }
+        #expect(await sender.sentTimestamps == ["old"])
+        #expect(await store.itemsSnapshot().map(\.payload.Timestamp) == ["old", "new"])
     }
 
     @Test("Submit during in-flight direct send queues without waiting")

@@ -79,7 +79,8 @@ final class LocationUpdateUploadService {
             retentionTime: retentionTime,
             deliveryDelay: deliveryDelay,
             visitorCheckMinimumInterval: visitorCheckMinimumInterval,
-            processKnownVisitorAlerts: processKnownVisitorAlerts
+            processKnownVisitorAlerts: processKnownVisitorAlerts,
+            flushPendingDuringSubmission: applicationState != .active && (deliveryDelay ?? 0) <= 0
         )
         return .delivery(result)
     }
