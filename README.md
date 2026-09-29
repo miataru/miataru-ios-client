@@ -2,9 +2,9 @@
 
 **miataru** is an open-source iPhone and iPad app for privacy-focused location sharing, device management, and navigation through Miataru servers chosen by the user.
 
-Current checkout: **development version 3.5 (build 4)**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
+Current checkout: **development version 3.6 (build 9)**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**.
 
-App Store Connect accepted the upload of 3.5 build 4 on 2026-09-26. Apple processing started; completion, App Review, and store availability remain unverified.
+App Store Connect accepted the upload of 3.6 build 9 on 2026-09-29. Apple processing started; completion and TestFlight availability remain unverified. App Review and store availability are separate states.
 
 ## Overview
 
