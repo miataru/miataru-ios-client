@@ -1,6 +1,6 @@
 version 3.6
 - Made the navigation map chip and full-screen HUD share direction-aware speed: tracked-device speed uses only the latest successful server response for up to five minutes, while own-device speed remains valid for 15 seconds; invalid or unavailable speed is hidden.
-- Added copy-ready App Store Connect fields for all ten supported locales, with version 3.6 notes limited to the navigation-speed direction correction.
+- Added copy-ready fenced Markdown App Store Connect fields for all ten supported locales, using the supplied Promotional Text and complete 3.6 navigation-speed notes.
 
 version 3.5
 - Stabilized the asynchronous visitor-check regression test used by the release gate; no app behavior changed.
