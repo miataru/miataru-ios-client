@@ -3430,7 +3430,15 @@ final class LocationManager: NSObject, ObservableObject {
 // MARK: - CLLocationManagerDelegate
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // Core Location can relaunch the app with only a short background execution window.
+        // Protect the callback before hopping to MainActor and before creating upload tasks.
+        let callbackBackgroundTask = Thread.isMainThread ? MainActor.assumeIsolated {
+            LocationUploadBackgroundTaskToken.beginForLocationCallbackIfNeeded(
+                applicationState: currentTrackingApplicationState
+            )
+        } : nil
         Task { @MainActor in
+            defer { callbackBackgroundTask?.end() }
             let orderedLocations = Self.processableLocationUpdates(from: locations)
             guard !orderedLocations.isEmpty else {
                 debugLog("[LocationManager] didUpdateLocations ignored empty/invalid batch count=\(locations.count)")
@@ -3581,11 +3589,13 @@ extension LocationManager: CLLocationManagerDelegate {
                 return
             }
 
-            let uploadLocations = locationsPendingUpload
-            for location in uploadLocations {
+            let uploadTasks = locationsPendingUpload.map { location in
                 Task { @MainActor in
                     await self.sendLocationToServer(location)
                 }
+            }
+            for uploadTask in uploadTasks {
+                await uploadTask.value
             }
         }
     }

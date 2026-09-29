@@ -11,7 +11,7 @@ import MiataruAPIClient
 import UIKit
 
 @MainActor
-private final class LocationUploadBackgroundTaskToken {
+final class LocationUploadBackgroundTaskToken {
     private var identifier: UIBackgroundTaskIdentifier = .invalid
 
     init(name: String) {
@@ -26,6 +26,11 @@ private final class LocationUploadBackgroundTaskToken {
         guard identifier != .invalid else { return }
         UIApplication.shared.endBackgroundTask(identifier)
         identifier = .invalid
+    }
+
+    static func beginForLocationCallbackIfNeeded(applicationState: UIApplication.State) -> LocationUploadBackgroundTaskToken? {
+        guard applicationState != .active else { return nil }
+        return LocationUploadBackgroundTaskToken(name: "MiataruLocationCallback")
     }
 }
 

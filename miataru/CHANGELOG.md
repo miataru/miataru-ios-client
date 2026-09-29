@@ -1,4 +1,5 @@
 version 3.6
+- Protected Core Location callbacks before asynchronous processing so a short background wake has time to persist and submit its accepted locations.
 - Preserved enabled tracking across temporary location-authorization loss and restarted eligible monitoring when permission returned.
 - Kept Smart frequent recovery state through interrupted launches and authorization gaps; background-launched callbacks now retain background processing semantics.
 - Kept background location-launch recovery in background mode until actual foreground activation, so a later startup reconciliation cannot stop frequent monitoring.
