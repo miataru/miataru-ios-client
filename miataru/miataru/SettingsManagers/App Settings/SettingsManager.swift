@@ -12,6 +12,7 @@ import Combine
 
 class SettingsManager: ObservableObject {
     private let defaults: UserDefaults
+    private let diagnosticsLog: LocationDiagnosticsLogStore
     private var isApplyingExternalDefaultsRefresh = false
     
     // MARK: - Properties
@@ -413,8 +414,10 @@ class SettingsManager: ObservableObject {
     }
     
     // MARK: - Initialwerte laden
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = .standard,
+         diagnosticsLog: LocationDiagnosticsLogStore = .shared) {
         self.defaults = defaults
+        self.diagnosticsLog = diagnosticsLog
         let d = defaults
         SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: d)
         SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: d)
@@ -631,7 +634,7 @@ class SettingsManager: ObservableObject {
 
         if let expiresAt = frequentBackgroundLocationUpdatesExpiresAt {
             if expiresAt <= now {
-                frequentBackgroundLocationUpdatesEnabled = false
+                _ = disableExpiredFrequentBackgroundLocationUpdatesIfNeeded(now: now)
             }
         } else {
             refreshFrequentBackgroundLocationUpdatesExpiration(now: now)
@@ -647,6 +650,20 @@ class SettingsManager: ObservableObject {
         }
 
         frequentBackgroundLocationUpdatesEnabled = false
+        diagnosticsLog.append(
+            level: .info,
+            event: "frequentBackgroundAutoDisable",
+            summary: "Manual frequent background updates ended after the configured duration.",
+            result: "duration expired",
+            reason: "manual frequent duration",
+            context: [
+                "expiredAt": .string(ISO8601DateFormatter().string(from: expiresAt)),
+                "checkedAt": .string(ISO8601DateFormatter().string(from: now)),
+                "smartSettingEnabled": .bool(smartFrequentBackgroundLocationUpdatesEnabled)
+            ],
+            timestamp: now,
+            persistence: .immediate
+        )
         return true
     }
 

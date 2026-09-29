@@ -2,7 +2,7 @@
 
 ## Current State
 
-miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The development checkout has app and widget metadata **3.6 build 9** with an iOS deployment target of **18.6**. This is source metadata, not proof of App Store availability. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
+miataru is a privacy-focused iPhone and iPad app for location sharing through user-selected Miataru servers. The development checkout has app and widget metadata **3.6 build 10** with an iOS deployment target of **18.6**. This is source metadata, not proof of App Store availability. The app target is SwiftUI-based, includes a WidgetKit extension, and is localized for ten app locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, and `zh-Hans`.
 
 Mac-specific view files exist for previews/scaffolding only. The shipping project targets iPhone and iPad.
 

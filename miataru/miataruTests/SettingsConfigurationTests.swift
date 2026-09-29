@@ -847,6 +847,56 @@ struct SettingsConfigurationTests {
         #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
     }
 
+    @Test("Expired manual frequent mode logs its reason on cold restoration only once")
+    @MainActor
+    func expiredManualFrequentModeLogsOnColdRestoration() throws {
+        let suiteName = "FrequentExpirationDiagnosticsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.register(defaults: SettingsDefaultValues.registrations)
+
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("FrequentExpirationDiagnosticsTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+
+        let expiresAt = Date(timeIntervalSince1970: 1_000)
+        let restoredAt = Date(timeIntervalSince1970: 2_000)
+        defaults.set(true, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        defaults.set(true, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+        defaults.set(expiresAt, forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt)
+        let log = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
+        let manager = SettingsManager(defaults: defaults, diagnosticsLog: log)
+
+        #expect(manager.frequentBackgroundLocationUpdatesEnabled)
+        manager.ensureFrequentBackgroundLocationUpdatesExpiration(now: restoredAt)
+        #expect(!manager.frequentBackgroundLocationUpdatesEnabled)
+        #expect(manager.frequentBackgroundLocationUpdatesExpiresAt == nil)
+
+        let entry = try #require(log.entries.first)
+        #expect(entry.event == "frequentBackgroundAutoDisable")
+        #expect(entry.result == "duration expired")
+        #expect(entry.context["expiredAt"] == .string(ISO8601DateFormatter().string(from: expiresAt)))
+        #expect(entry.context["checkedAt"] == .string(ISO8601DateFormatter().string(from: restoredAt)))
+        #expect(FileManager.default.fileExists(atPath: fileURL.path))
+
+        manager.ensureFrequentBackgroundLocationUpdatesExpiration(now: restoredAt)
+        #expect(log.entries.count == 1)
+        let reloadedLog = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            automaticallyFlushesDeferredPersistence: false,
+            registersLifecycleFlushObservers: false
+        )
+        #expect(reloadedLog.entries.map(\.event) == ["frequentBackgroundAutoDisable"])
+    }
+
     @Test("KnownDevice visitor notification flag archives and legacy archives default off")
     func knownDeviceVisitorNotificationFlagArchivesAndLegacyArchivesDefaultOff() throws {
         let device = KnownDevice(

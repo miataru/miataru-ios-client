@@ -1671,6 +1671,8 @@ final class LocationManager: NSObject, ObservableObject {
             return false
         }
 
+        let manualFrequentWasEnabled = settings.frequentBackgroundLocationUpdatesEnabled
+        let smartRuntimeWasActive = smartFrequentBackgroundRuntimeActive
         if settings.frequentBackgroundLocationUpdatesEnabled {
             settings.frequentBackgroundLocationUpdatesEnabled = false
         }
@@ -1679,6 +1681,21 @@ final class LocationManager: NSObject, ObservableObject {
         }
         scheduleFrequentBackgroundLocationExpirationTimer()
         debugLog("[LocationManager] Effective frequent background updates disabled because battery is at \(batteryPercent)% (threshold \(thresholdPercent)%)")
+        diagnosticsLog.append(
+            level: .warning,
+            event: "frequentBackgroundAutoDisable",
+            summary: "Frequent background updates were disabled at the configured battery threshold.",
+            result: "battery threshold reached",
+            reason: "low battery",
+            context: [
+                "batteryPercent": .integer(batteryPercent),
+                "thresholdPercent": .integer(thresholdPercent),
+                "manualFrequentWasEnabled": .bool(manualFrequentWasEnabled),
+                "smartRuntimeWasActive": .bool(smartRuntimeWasActive),
+                "smartSettingEnabled": .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
+            ],
+            persistence: .immediate
+        )
 
         Task {
             await Self.recordLowBatteryDisabledFrequentTrackingEvent(
