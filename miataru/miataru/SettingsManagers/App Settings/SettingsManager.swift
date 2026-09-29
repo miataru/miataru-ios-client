@@ -269,9 +269,7 @@ class SettingsManager: ObservableObject {
     @Published var locationDiagnosticsLoggingEnabled: Bool {
         didSet {
             defaults.set(locationDiagnosticsLoggingEnabled, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
-            Task { @MainActor in
-                LocationDiagnosticsLogStore.shared.setEnabled(locationDiagnosticsLoggingEnabled)
-            }
+            diagnosticsLog.setEnabled(locationDiagnosticsLoggingEnabled)
         }
     }
 

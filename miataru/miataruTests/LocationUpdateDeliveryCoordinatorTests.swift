@@ -15,6 +15,30 @@ import UIKit
 @testable import miataru
 
 struct LocationUpdateDeliveryCoordinatorTests {
+    @Test("Location payloads reject an unavailable device identity")
+    func locationPayloadRejectsUnavailableDeviceIdentity() {
+        let location = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 49.8, longitude: 10.8),
+            altitude: 250,
+            horizontalAccuracy: 10,
+            verticalAccuracy: 10,
+            timestamp: Date(timeIntervalSince1970: 2_000)
+        )
+
+        #expect(LocationUpdateUploadService.payload(
+            from: location,
+            deviceID: "  ",
+            deviceKey: nil,
+            batteryLevel: 0.5
+        ) == nil)
+        #expect(LocationUpdateUploadService.payload(
+            from: location,
+            deviceID: "stored-device",
+            deviceKey: nil,
+            batteryLevel: 0.5
+        )?.Device == "stored-device")
+    }
+
     @Test("Submit queues update after transient failure")
     func submitQueuesAfterTransientFailure() async throws {
         let tempURL = temporaryOutboxURL()

@@ -471,6 +471,8 @@ Launch hardening:
 - If a primary background callback contains only stale cached locations, the app keeps the Smart startup guard, requests one fresh primary fix with a short retry throttle, and holds background execution through that one-shot response or timeout. The stale sample itself is never uploaded.
 - A background Core Location callback starts its background task before asynchronous processing begins and holds it through the resulting upload submissions. Uploads also keep their own background-task protection.
 - `authorizedWhenInUse` is foreground-only; background recovery requires Always authorization.
+- The persisted own Device ID is never replaced merely because its file cannot be read during a cold launch. The app keeps location monitoring armed, defers uploads and own-device cache writes while the identity is unavailable, and retries the same identity on a later callback. A newly generated ID becomes active only after its file write succeeds.
+- A launch while protected data is unavailable reconciles saved settings and monitoring when protected data becomes available. Known-device and widget data are not rewritten from an unavailable identity, and startup cleanup does not prune stores during that protected launch.
 
 Session hardening:
 
@@ -487,6 +489,7 @@ iOS boundaries:
 - When In Use authorization is not reboot-capable background tracking.
 - Simulator reboot is not a reliable proof of significant-change relaunch.
 - iOS may defer or coalesce significant-change delivery based on movement, radio state, power, and scheduling.
+- Files with the default until-first-unlock protection cannot be read before the first unlock after reboot. Reconciliation after unlock improves recovery, but does not make iOS deliver a location event on a fixed schedule.
 
 ## Diagnostics And Re-Arm
 
@@ -501,9 +504,11 @@ iOS boundaries:
 
 Entries include ID, timestamp, level, event, summary, result, reason, checks, and context. The log records location/tracking decisions only, not generic UI/map/device-cache logs.
 
-When diagnostics are enabled, `locationPowerSample` records the expected tracking mode, app state, battery-monitoring state, battery percentage when available, charging state, Low Power Mode, and counts of location callbacks, accepted locations, and directly acknowledged uploads since the previous sample. Samples are written on background restoration, foreground opening, mode changes, and at most once per 30 minutes when existing location callbacks arrive. The location manager already enables battery monitoring for upload data and the frequent-tracking battery threshold. Turning diagnostics on also ensures monitoring is active after launch; turning diagnostics off leaves the location manager’s monitoring in place. Readings that iOS cannot provide remain `unknown`. Samples are persisted immediately so a later process termination does not erase the latest sample. Sampling schedules no timer, requests no extra location, and never wakes the app on its own. A quiet suspended period is observable only at the next launch, foreground opening, or location callback. Activity counters restart after process relaunch. Battery percentages are device-wide and cannot attribute drain to Miataru alone; charging and Low Power Mode must be considered when comparing intervals. Direct-upload counts exclude later outbox replay, which has its own `locationUpload|flushed` coalesced count.
+When diagnostics are enabled, `locationPowerSample` records the expected tracking mode, app state, battery-monitoring state, battery percentage when available, charging state, Low Power Mode, and counts of location callbacks, accepted locations, and directly acknowledged uploads since the previous sample. Switching diagnostics on in the triple-tap settings panel applies synchronously, enables battery monitoring, and writes an immediate baseline. Further samples are written on background restoration, foreground opening, mode changes, and at most once per 30 minutes when existing location callbacks arrive. The location manager already enables battery monitoring for upload data and the frequent-tracking battery threshold; turning diagnostics off leaves that monitoring in place. Readings that iOS cannot provide remain `unknown`. Samples are persisted immediately so a later process termination does not erase the latest sample. Sampling schedules no timer, requests no extra location, and never wakes the app on its own. A quiet suspended period is observable only at the next launch, foreground opening, or location callback. Activity counters restart after process relaunch. Battery percentages are device-wide and cannot attribute drain to Miataru alone; charging and Low Power Mode must be considered when comparing intervals. Direct-upload counts exclude later outbox replay, which has its own `locationUpload|flushed` coalesced count.
 
 `frequentBackgroundAutoDisable` is written immediately when the manual Frequent duration expires, including during settings restoration after a cold launch, or the effective Frequent mode is disabled at the configured battery threshold. Duration entries include the configured expiry and evaluation time. Battery entries include the observed percentage, threshold, and whether manual Frequent or Smart runtime was active just before deactivation. These entries identify an intentional mode change; they do not assert that iOS delivered subsequent significant-change callbacks.
+
+`locationIdentity` and `locationUpload` with result `deferred` identify accepted callbacks that could not be attributed to a readable, durable own Device ID. They record protected-data availability without logging the ID. A later callback can retry the original identity; these entries alone do not prove that an upload was eventually accepted.
 
 Privacy:
 

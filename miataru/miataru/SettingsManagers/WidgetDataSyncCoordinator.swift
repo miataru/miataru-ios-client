@@ -21,9 +21,10 @@ import WidgetKit
 enum WidgetDataSyncCoordinator {
     /// Syncs all known devices and cached locations into the shared payload and refreshes widgets.
     static func syncAllDevices() {
+        guard let ownDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable else { return }
+        guard !KnownDeviceStore.shared.hasUnresolvedReadFailure else { return }
         let devices = KnownDeviceStore.shared.devices
         let locations = DeviceLocationCacheStore.shared.locations
-        let ownDeviceID = thisDeviceIDManager.shared.deviceID
 
         let payload = preservingNewerExistingWidgetData(
             in: buildPayload(devices: devices, locations: locations, ownDeviceID: ownDeviceID),
@@ -47,7 +48,10 @@ enum WidgetDataSyncCoordinator {
 
     /// Imports newer locations written by the widget extension back into the app cache.
     static func importNewerWidgetLocationsIntoAppCache() {
-        guard let payload = SharedWidgetDataManager.read(),
+        guard UIApplication.shared.isProtectedDataAvailable,
+              thisDeviceIDManager.shared.deviceIDIfAvailable != nil,
+              !KnownDeviceStore.shared.hasUnresolvedReadFailure,
+              let payload = SharedWidgetDataManager.read(),
               !payload.devices.isEmpty else {
             return
         }
@@ -75,6 +79,8 @@ enum WidgetDataSyncCoordinator {
                                  ownDeviceID: String,
                                  ownDeviceKey: String? = nil,
                                  shouldReloadTimelines: Bool = true) {
+        guard !ownDeviceID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !KnownDeviceStore.shared.hasUnresolvedReadFailure else { return }
         let config = SharedWidgetConfig(
             miataruServerURL: serverURL,
             deviceIDs: deviceIDs,

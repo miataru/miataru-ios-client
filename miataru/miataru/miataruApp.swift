@@ -149,8 +149,10 @@ fileprivate final class RotationLockController {
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     private var didRestoreTrackingForLocationLaunch = false
+    private var shouldReconcileAfterProtectedDataBecomesAvailable = false
 
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        shouldReconcileAfterProtectedDataBecomesAvailable = !application.isProtectedDataAvailable
         restoreTrackingForLocationLaunchIfNeeded(launchOptions)
         return true
     }
@@ -160,6 +162,16 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         NavigationLiveActivityBackgroundRefreshScheduler.shared.register()
         restoreTrackingForLocationLaunchIfNeeded(launchOptions)
         return true
+    }
+
+    func applicationProtectedDataDidBecomeAvailable(_ application: UIApplication) {
+        guard shouldReconcileAfterProtectedDataBecomesAvailable else { return }
+        shouldReconcileAfterProtectedDataBecomesAvailable = false
+        SettingsManager.shared.refreshFromUserDefaultsForAppActivation(clearExpiredTrackingPause: false)
+        LocationManager.shared.reconcileTrackingStateForIntent(reason: "protected data became available")
+        KnownDeviceStore.shared.reloadAfterProtectedDataBecomesAvailable()
+        WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
+        WidgetDataSyncCoordinator.syncAllDevices()
     }
 
     func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool { false }
@@ -311,9 +323,6 @@ struct miataruApp: App {
         //SettingsManager.shared.loadSettingsFromPlist(plistName: "Root")
         _appState = StateObject(wrappedValue: AppState())
 
-        let deviceID = thisDeviceIDManager.shared.deviceID
-        debugLog("this devices ID: \(deviceID)")
-        
         // LocationManager initialisieren und Tracking nach App-/Location-Launch rekonstruieren.
         let locationManager = LocationManager.shared
         if SettingsManager.shared.trackAndReportLocation {
@@ -423,6 +432,9 @@ struct miataruApp: App {
         .onChange(of: scenePhase) {
             switch scenePhase {
             case .active:
+                if KnownDeviceStore.shared.reloadAfterProtectedDataBecomesAvailable() {
+                    WidgetDataSyncCoordinator.syncAllDevices()
+                }
                 WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
                 LocationManager.shared.appDidEnterForeground()
                 NavigationLiveActivityCoordinator.shared.sceneDidBecomeActive()

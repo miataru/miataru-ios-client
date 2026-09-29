@@ -349,6 +349,67 @@ struct LocationBackgroundForensicsTests {
         #expect(batteryMonitoringChanges == [true, true])
     }
 
+    @Test("Enabling diagnostics starts battery monitoring and records an immediate baseline")
+    func enablingDiagnosticsRecordsPowerBaseline() throws {
+        let suiteName = "LocationDiagnosticsActivationTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("location-diagnostics-activation-\(UUID().uuidString).json")
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+
+        let notificationCenter = NotificationCenter()
+        var batteryMonitoringEnabled = false
+        let log = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            notificationCenter: notificationCenter,
+            batteryMonitoringControl: LocationDiagnosticsBatteryMonitoringControl(
+                isEnabled: { batteryMonitoringEnabled },
+                setEnabled: { batteryMonitoringEnabled = $0 }
+            )
+        )
+        let recorder = LocationBackgroundForensicsRecorder(
+            userDefaults: defaults,
+            diagnosticsLog: log,
+            powerReading: {
+                LocationDiagnosticsPowerReading(
+                    batteryMonitoringEnabled: batteryMonitoringEnabled,
+                    batteryLevel: 0.65,
+                    batteryState: .unplugged,
+                    lowPowerModeEnabled: false
+                )
+            }
+        )
+        let enabledAt = Date(timeIntervalSince1970: 90_000)
+        let observer = notificationCenter.addObserver(
+            forName: .locationDiagnosticsDidEnable,
+            object: log,
+            queue: nil
+        ) { _ in
+            recorder.recordDiagnosticsEnabled(applicationState: .active, now: enabledAt)
+        }
+        defer { notificationCenter.removeObserver(observer) }
+
+        log.setEnabled(true)
+        #expect(batteryMonitoringEnabled)
+        let baseline = try #require(log.entries.last)
+        #expect(baseline.event == "locationPowerSample")
+        #expect(baseline.reason == "diagnosticsEnabled")
+        #expect(baseline.context["batteryPercent"] == .integer(65))
+        #expect(baseline.context["batteryMonitoringEnabled"] == .bool(true))
+        #expect(baseline.context["callbacksSincePreviousSample"] == .integer(0))
+
+        log.setEnabled(true)
+        #expect(log.entries.count == 1)
+        log.setEnabled(false)
+        log.setEnabled(true)
+        #expect(log.entries.count == 2)
+    }
+
     @Test("Recorder logs foreground recovery burst after background gap")
     func recorderLogsForegroundRecoveryBurstAfterBackgroundGap() throws {
         let (recorder, diagnosticsLog, defaults, suiteName, fileURL) = try makeRecorderFixture()

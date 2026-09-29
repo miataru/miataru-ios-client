@@ -1,4 +1,7 @@
 version 3.6
+- Enabling the triple-tap location diagnostics now activates logging and battery monitoring synchronously, then captures an immediate battery and tracking baseline.
+- Preserved the existing Device ID when storage is temporarily unreadable after a background launch or reboot; new identities are used only after successful persistence, and uploads wait for a valid saved ID.
+- Retried tracking and settings reconciliation after protected data becomes available, and prevented unavailable identity data from overwriting known-device or widget state.
 - Logged immediate diagnostic events when manual frequent tracking expires, including during cold restoration, or frequent tracking is disabled at the battery threshold; expiry and battery causes now remain explicit after relaunch.
 - Added event-driven battery and tracking-state samples to opt-in location diagnostics, including charging and Low Power Mode context; enabling diagnostics also ensures battery monitoring remains active for readable samples, without additional location requests or background timers.
 - Attempted FIFO delivery while a protected background location callback is still active when a new update joins an existing outbox, avoiding reliance on a timer that iOS may suspend before it fires.

@@ -29,6 +29,8 @@ class KnownDeviceStore: ObservableObject {
     private var cancellables: [AnyCancellable] = []
     private var isInitializing = true
     private var isBatchUpdating = false
+    private var needsReloadAfterReadFailure = false
+    var hasUnresolvedReadFailure: Bool { needsReloadAfterReadFailure }
 
     private var fileURL: URL {
         AppDirectories.applicationSupportFile(named: fileName)
@@ -38,20 +40,38 @@ class KnownDeviceStore: ObservableObject {
     private init() {
         self.devices = load()
         var shouldSaveAfterInitialization = normalizeDevicePositions()
-        // Sicherstellen, dass das eigene Gerät immer in der Liste ist
-        let myDeviceID = thisDeviceIDManager.shared.deviceID
-        if !self.devices.contains(where: { $0.DeviceID == myDeviceID }) {
-            let myDeviceName = NSLocalizedString("my_device", tableName: "Devices", comment: "Name for the user's own device in the device list")
-            let myDevice = KnownDevice(name: myDeviceName, deviceID: myDeviceID, color: UIColor.systemBlue)
-            self.devices.insert(myDevice, at: 0)
-            shouldSaveAfterInitialization = normalizeDevicePositions() || shouldSaveAfterInitialization
-            debugLog("[DEBUG] Eigenes Gerät mit DeviceID \(myDeviceID) wurde automatisch als erstes Device hinzugefügt.")
-        }
+        shouldSaveAfterInitialization = ensureOwnDevice() || shouldSaveAfterInitialization
         setupSubscribers()
-        if shouldSaveAfterInitialization {
+        if shouldSaveAfterInitialization && !needsReloadAfterReadFailure {
             save()
         }
         isInitializing = false
+    }
+
+    @discardableResult
+    func reloadAfterProtectedDataBecomesAvailable() -> Bool {
+        guard needsReloadAfterReadFailure else { return false }
+        let recoveredDevices = load()
+        guard !needsReloadAfterReadFailure else { return false }
+
+        isInitializing = true
+        devices = recoveredDevices
+        var shouldSave = normalizeDevicePositions()
+        shouldSave = ensureOwnDevice() || shouldSave
+        setupSubscribers()
+        if shouldSave { save() }
+        isInitializing = false
+        return true
+    }
+
+    @discardableResult
+    private func ensureOwnDevice() -> Bool {
+        guard let myDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable,
+              !devices.contains(where: { $0.DeviceID == myDeviceID }) else { return false }
+        let myDeviceName = NSLocalizedString("my_device", tableName: "Devices", comment: "Name for the user's own device in the device list")
+        devices.insert(KnownDevice(name: myDeviceName, deviceID: myDeviceID, color: UIColor.systemBlue), at: 0)
+        _ = normalizeDevicePositions()
+        return true
     }
 
     private func setupSubscribers() {
@@ -68,7 +88,8 @@ class KnownDeviceStore: ObservableObject {
     }
 
     private func save() {
-       do {
+        guard !needsReloadAfterReadFailure else { return }
+        do {
             let data = try NSKeyedArchiver.archivedData(withRootObject: devices, requiringSecureCoding: true)
             try data.write(to: fileURL)
         } catch {
@@ -78,9 +99,18 @@ class KnownDeviceStore: ObservableObject {
     }
 
     private func load() -> [KnownDevice] {
-        guard let data = try? Data(contentsOf: fileURL) else { return [] }
+        let data: Data
+        do {
+            data = try Data(contentsOf: fileURL)
+        } catch {
+            let nsError = error as NSError
+            let isMissing = nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError
+            needsReloadAfterReadFailure = !isMissing || !UIApplication.shared.isProtectedDataAvailable
+            return []
+        }
         do {
             if let devices = try NSKeyedUnarchiver.unarchivedObject(ofClasses: [NSArray.self, KnownDevice.self, UIColor.self], from: data) as? [KnownDevice] {
+                needsReloadAfterReadFailure = false
                 // Nach gespeicherter Reihenfolge sortieren
                 return devices.enumerated()
                     .sorted {
@@ -94,6 +124,7 @@ class KnownDeviceStore: ObservableObject {
         } catch {
             debugLog("Fehler beim Laden der KnownDevices: \(error)")
         }
+        needsReloadAfterReadFailure = true
         return []
     }
 

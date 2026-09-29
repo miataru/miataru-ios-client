@@ -11,6 +11,10 @@ import Foundation
 import CoreLocation
 import UIKit
 
+extension Notification.Name {
+    static let locationDiagnosticsDidEnable = Notification.Name("locationDiagnosticsDidEnable")
+}
+
 enum LocationDiagnosticsLogLevel: String, Codable, Equatable {
     case info
     case warning
@@ -276,6 +280,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     }
 
     func setEnabled(_ enabled: Bool) {
+        let wasEnabled = isEnabled
         if !enabled {
             flushPendingPersistence()
             cancelDeferredPersistence()
@@ -283,6 +288,9 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         isEnabled = enabled
         userDefaults.set(enabled, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
         ensureBatteryMonitoringWhenEnabled()
+        if enabled && !wasEnabled {
+            notificationCenter.post(name: .locationDiagnosticsDidEnable, object: self)
+        }
     }
 
     private func ensureBatteryMonitoringWhenEnabled() {

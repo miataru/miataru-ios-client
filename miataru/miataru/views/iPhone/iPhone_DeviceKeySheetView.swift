@@ -317,7 +317,9 @@ struct iPhone_DeviceKeySheetView: View {
             return NSLocalizedString("device_key_error_invalid_server", tableName: "Devices", comment: "Error when server URL is invalid")
         }
 
-        let oldDeviceID = thisDeviceIDManager.shared.deviceID
+        guard let oldDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable else {
+            return CocoaError(.fileReadUnknown).localizedDescription
+        }
         let snapshot = captureIdentityMigrationSnapshot(oldDeviceID: oldDeviceID)
         let newDeviceID = UUID().uuidString
         let newDeviceKey = UUID().uuidString
@@ -336,7 +338,9 @@ struct iPhone_DeviceKeySheetView: View {
             )
             createdServerSideIdentity = true
 
-            thisDeviceIDManager.shared.setDeviceID(newDeviceID)
+            guard thisDeviceIDManager.shared.setDeviceID(newDeviceID) else {
+                throw CocoaError(.fileWriteUnknown)
+            }
             settings.deviceKey = newDeviceKey
             settings.deviceKeyLastChanged = Date()
             settings.deviceKeyAuthBlocked = false
@@ -539,7 +543,11 @@ struct iPhone_DeviceKeySheetView: View {
         snapshot: DeviceIdentityMigrationSnapshot,
         transientNewDeviceID: String
     ) {
-        thisDeviceIDManager.shared.setDeviceID(snapshot.oldDeviceID)
+        // If the identity cannot be restored, keep the new identity and its key
+        // together instead of rolling settings back to a mismatched old key.
+        guard thisDeviceIDManager.shared.setDeviceID(snapshot.oldDeviceID) else {
+            return
+        }
         restoreRetainedSettings(
             from: snapshot.settingsSnapshot,
             oldDeviceID: snapshot.oldDeviceID,

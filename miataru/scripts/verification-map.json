@@ -14,7 +14,8 @@
         "SmartFrequentBackgroundPolicyTests",
         "LocationSamplePolicyTests",
         "LocationBackgroundForensicsTests",
-        "LocationUpdateMetricsStorePolicyTests"
+        "LocationUpdateMetricsStorePolicyTests",
+        "LocationUpdateDeliveryCoordinatorTests"
       ]
     },
     {
@@ -38,6 +39,7 @@
       ],
       "unit": [
         "SettingsConfigurationTests",
+        "ThisDeviceIDManagerTests",
         "UnknownVisitorAlertLocalizationTests",
         "NavigationHUDSettingsTests"
       ]

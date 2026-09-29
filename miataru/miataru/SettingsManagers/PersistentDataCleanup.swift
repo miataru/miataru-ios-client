@@ -8,6 +8,7 @@
  */
 
 import Foundation
+import UIKit
 
 struct PersistentDataCleanupResult: Equatable {
     let removedLocationCount: Int
@@ -25,7 +26,14 @@ enum PersistentDataCleanup {
 
     @discardableResult
     static func run(now: Date = Date()) -> PersistentDataCleanupResult {
-        run(retainedDeviceIDs: currentRetainedDeviceIDs(), now: now)
+        // A background launch while protected files are unavailable must not
+        // mistake unreadable stores for empty stores and prune valid user data.
+        guard UIApplication.shared.isProtectedDataAvailable,
+              let ownDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable,
+              !KnownDeviceStore.shared.hasUnresolvedReadFailure else {
+            return PersistentDataCleanupResult(removedLocationCount: 0, removedSloganCount: 0, removedSnapshotCount: 0)
+        }
+        return run(retainedDeviceIDs: currentRetainedDeviceIDs(ownDeviceID: ownDeviceID), now: now)
     }
 
     @discardableResult
@@ -58,9 +66,9 @@ enum PersistentDataCleanup {
         return result
     }
 
-    private static func currentRetainedDeviceIDs() -> Set<String> {
+    private static func currentRetainedDeviceIDs(ownDeviceID: String) -> Set<String> {
         var deviceIDs = Set(KnownDeviceStore.shared.devices.map(\.DeviceID))
-        deviceIDs.insert(thisDeviceIDManager.shared.deviceID)
+        deviceIDs.insert(ownDeviceID)
 
         if let payload = SharedWidgetDataManager.read() {
             deviceIDs.formUnion(payload.devices.map(\.id))

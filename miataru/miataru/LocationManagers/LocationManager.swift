@@ -143,6 +143,7 @@ final class LocationManager: NSObject, ObservableObject {
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeSettings()
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(diagnosticsDidEnable), name: .locationDiagnosticsDidEnable, object: diagnosticsLog)
         NotificationCenter.default.addObserver(self, selector: #selector(locationUpdateOutboxDidChange), name: .locationUpdateOutboxDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(ownLocationUpdateDidSend), name: .didSendOwnLocationUpdate, object: nil)
         observeActivityType()
@@ -216,6 +217,10 @@ final class LocationManager: NSObject, ObservableObject {
             await locationUpdateDeliveryCoordinator.appDidBecomeActive()
         }
         refreshPendingLocationUpdateCount()
+    }
+
+    @objc private func diagnosticsDidEnable() {
+        backgroundForensicsRecorder.recordDiagnosticsEnabled(applicationState: UIApplication.shared.applicationState)
     }
 
     @objc private func locationUpdateOutboxDidChange() {
@@ -3088,6 +3093,20 @@ final class LocationManager: NSObject, ObservableObject {
             )
             return
         }
+        guard let ownDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable else {
+            serverUpdateStatus = .idle
+            diagnosticsLog.append(
+                level: .warning,
+                event: "locationUpload",
+                summary: "Deferred location upload until the saved device identity is available.",
+                result: "deferred",
+                reason: "persistent device identity unavailable",
+                checks: [LocationDiagnosticsLogStore.check("deviceIDAvailable", false, detail: "The saved identity could not be read or created.")],
+                context: ["protectedDataAvailable": .bool(UIApplication.shared.isProtectedDataAvailable)],
+                persistence: .immediate
+            )
+            return
+        }
         let applicationState = currentTrackingApplicationState
         let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
         let processKnownVisitorAlerts = frequentBackgroundVisitorChecksEnabled(for: applicationState)
@@ -3097,7 +3116,7 @@ final class LocationManager: NSObject, ObservableObject {
         let submission = await locationUpdateUploadService.submit(
             location: location,
             serverURL: serverURL,
-            deviceID: thisDeviceIDManager.shared.deviceID,
+            deviceID: ownDeviceID,
             deviceKey: settings.deviceKey,
             enableHistory: settings.saveLocationHistoryOnServer,
             retentionTime: settings.locationDataRetentionTime,
@@ -3204,7 +3223,6 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func scheduleStartupHeartbeatIfNeeded() {
         guard !didScheduleStartupHeartbeat else { return }
-        didScheduleStartupHeartbeat = true
 
         let heartbeatTimestamp = Date()
         guard Self.shouldSendStartupHeartbeat(
@@ -3213,8 +3231,9 @@ final class LocationManager: NSObject, ObservableObject {
                 now: heartbeatTimestamp
               ),
               !settings.isTrackingPaused,
+              let ownDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable,
               let cachedLocation = DeviceLocationCacheStore.shared.getLocation(
-                for: thisDeviceIDManager.shared.deviceID
+                for: ownDeviceID
               ),
               let heartbeatLocation = Self.startupHeartbeatLocation(
                 from: cachedLocation,
@@ -3222,6 +3241,7 @@ final class LocationManager: NSObject, ObservableObject {
               ) else {
             return
         }
+        didScheduleStartupHeartbeat = true
 
         Task { @MainActor [weak self] in
             await Task.yield()
@@ -3976,8 +3996,23 @@ extension LocationManager: CLLocationManagerDelegate {
         let batteryLevelRaw = UIDevice.current.batteryLevel
         let batteryPercent: Double? = batteryLevelRaw >= 0 ? Double(Int(batteryLevelRaw * 100)) : nil
 
+        guard let ownDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable else {
+            diagnosticsLog.append(
+                level: .warning,
+                event: "locationIdentity",
+                summary: "Accepted a location but could not access the saved device identity.",
+                result: "upload deferred",
+                reason: "persistent device identity unavailable",
+                checks: [LocationDiagnosticsLogStore.check("deviceIDAvailable", false, detail: "The saved identity could not be read or created.")],
+                context: ["protectedDataAvailable": .bool(UIApplication.shared.isProtectedDataAvailable)],
+                persistence: .immediate
+            )
+            addUpdateLogEntry(mode: mode)
+            return
+        }
+
         DeviceLocationCacheStore.shared.setLocation(
-            for: thisDeviceIDManager.shared.deviceID,
+            for: ownDeviceID,
             latitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude,
             accuracy: location.horizontalAccuracy,

@@ -129,6 +129,10 @@ final class LocationBackgroundForensicsRecorder {
         recordPowerSample(reason: "foregroundOpen", applicationState: .active, now: now, force: true)
     }
 
+    func recordDiagnosticsEnabled(applicationState: UIApplication.State, now: Date = Date()) {
+        recordPowerSample(reason: "diagnosticsEnabled", applicationState: applicationState, now: now, force: true)
+    }
+
     func evaluateGap(trigger: String,
                      now: Date = Date(),
                      prepareForegroundRecovery: Bool = false) {

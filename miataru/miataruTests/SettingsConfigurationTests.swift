@@ -847,6 +847,36 @@ struct SettingsConfigurationTests {
         #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
     }
 
+    @Test("Diagnostics settings switch updates the injected log synchronously")
+    @MainActor
+    func diagnosticsSettingTakesEffectBeforeReturning() throws {
+        let suiteName = "ImmediateLocationDiagnosticsSettingsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("immediate-location-diagnostics-\(UUID().uuidString).json")
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+
+        let log = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            registersLifecycleFlushObservers: false
+        )
+        let settings = SettingsManager(defaults: defaults, diagnosticsLog: log)
+        #expect(!log.isEnabled)
+
+        settings.locationDiagnosticsLoggingEnabled = true
+        #expect(log.isEnabled)
+        #expect(defaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled))
+
+        settings.locationDiagnosticsLoggingEnabled = false
+        #expect(!log.isEnabled)
+        #expect(!defaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled))
+    }
+
     @Test("Expired manual frequent mode logs its reason on cold restoration only once")
     @MainActor
     func expiredManualFrequentModeLogsOnColdRestoration() throws {

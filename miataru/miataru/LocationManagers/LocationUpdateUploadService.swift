@@ -89,6 +89,9 @@ final class LocationUpdateUploadService {
                         deviceID: String,
                         deviceKey: String?,
                         batteryLevel: Float) -> UpdateLocationPayload? {
+        guard !deviceID.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return nil
+        }
         let longitude = location.coordinate.longitude
         let latitude = location.coordinate.latitude
         let accuracy = location.horizontalAccuracy
