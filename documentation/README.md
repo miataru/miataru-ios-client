@@ -10,7 +10,8 @@ The current structure favors living topic references over many small dated notes
 - `../miataru/PROJECT_OVERVIEW.md` - architecture and domain overview for development context
 - `../miataru/APP_FEATURES.md` - user/developer feature guide
 - `../miataru/DEVELOPMENT.md` - local development, testing, debugging, and implementation rules
-- `../miataru/APP_STORE_DESCRIPTION.md` - App Store copy source and screenshot guidance
+- [App Store copy source and screenshot guidance](../miataru/APP_STORE_DESCRIPTION.md)
+- [Copy-ready English App Store fields](app-store/en.md) with links to the other nine locale files
 - `../miataru/CHANGELOG.md` - release notes by marketing version
 - `../3rd party licenses.md` - dependency license summary
 - `../miataru/Libraries/MiataruClientSwift/README.md` - local Miataru API client usage

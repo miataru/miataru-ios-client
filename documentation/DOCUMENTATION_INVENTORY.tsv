@@ -26,6 +26,16 @@ documentation/Intent-Sprint/06-testing-and-rollout.md	Testing And Rollout	histor
 documentation/Places-Sprint/00-overview-concept.md	Places UI/UX Overview And Concept	P0 target	Place store and App Intents code	Retain future visible-UI contract
 documentation/README.md	Documentation Map	Current	App code and project settings	Keep topic facts and links verified
 documentation/app-intents-current-shortcuts-and-manual-validation.md	App Intents, Shortcuts, And Manual Validation	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/da.md	Dansk	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/de.md	Deutsch	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/en.md	English	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/es.md	Español	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/fi.md	Suomi	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/fr.md	Français	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/it.md	Italiano	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/ja.md	日本語	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/nl.md	Nederlands	Current	App code and project settings	Keep topic facts and links verified
+documentation/app-store/zh-Hans.md	简体中文	Current	App code and project settings	Keep topic facts and links verified
 documentation/audits/documentation-audit-2026-05-22.md	Documentation Audit - 2026-05-22	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
 documentation/audits/ipad-iphone-audit-2026-03-04.md	iPad vs iPhone Audit (2026-03-04)	historisch	Dated implementation evidence	Retain; do not cite as Current without recheck
 documentation/device-history-cache-map-and-analysis.md	Device History Cache, Map, And Analysis	Current	App code and project settings	Keep topic facts and links verified
@@ -469,7 +479,7 @@ miataru/.specstory/history/2026-08-25_19-59-56Z-navigation-live-activity-bgappre
 miataru/.specstory/history/2026-08-25_22-05-47Z-startup-heartbeat-history-preservation.md	Historical chat record	historisch	Git history	Retain; never require new chat records
 miataru/AGENTS.md	Agent Rules	Current	Active repository workflow	Keep requirements consistent across tools
 miataru/APP_FEATURES.md	miataru App - Feature and Developer Guide	Current	App code and project settings	Keep verified against current implementation
-miataru/APP_STORE_DESCRIPTION.md	miataru - App Store Description	Current	Verified app behavior and release record	Update copy only for accepted capabilities
+miataru/APP_STORE_DESCRIPTION.md	App Store Copy Source	Current	Verified app behavior and release record	Update copy only for accepted capabilities
 miataru/CHANGELOG.md	CHANGELOG	Current	Completed commits and release evidence	Append completed changes under project version
 miataru/DEVELOPMENT.md	Development Guide - miataru iOS App	Current	App code and project settings	Keep verified against current implementation
 miataru/Libraries/CodeScanner-main/README.md	CodeScanner	Current	Vendored upstream snapshot	Retain external text; recheck on dependency update

@@ -6,7 +6,7 @@ The [complete TSV inventory](DOCUMENTATION_INVENTORY.tsv) has one row per versio
 
 ## Review decisions
 
-- The project overview, feature guide, development guide, root README, and App Store copy had stale 3.2-series headings in an earlier review. The living documents distinguish checkout metadata from distribution status. The App Store copy is a draft; release-facing claims need validation during a requested release.
+- The project overview, feature guide, development guide, root README, and App Store copy had stale 3.2-series headings in an earlier review. The living documents distinguish checkout metadata from distribution status. Ten language-specific, copy-ready App Store field files now live in `documentation/app-store/`; their prepared copy does not establish App Store status.
 - The test catalog's 338-case figure was a June snapshot. The current test sources, synchronized targets, test plans, and `.xcresult` summary define active execution; the catalog now labels its detailed rows as a historical baseline. The gap matrix preserves dated decisions and records the new affected selector.
 - The 30 Cursor plans are individually linked from the documentation map as historical proposals. Current behavior belongs to app code and living topic references. Existing `.specstory` records remain untouched, while active rules no longer request new records.
 - SwiftProjectGraph and Codex Team configuration are repository process documents. Generated graph data and test artifacts remain ignored.

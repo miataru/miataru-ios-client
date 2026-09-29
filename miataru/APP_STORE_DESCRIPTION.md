@@ -1,118 +1,15 @@
-# miataru - App Store Description
+# App Store Copy Source
 
-This is editable copy for a future submission. Current source metadata is 3.5 build 3; this document does not establish an App Store release or upload.
+The copy-ready App Store Connect fields live in `documentation/app-store/`, with one file per supported language: [Danish](../documentation/app-store/da.md), [German](../documentation/app-store/de.md), [English](../documentation/app-store/en.md), [Spanish](../documentation/app-store/es.md), [Finnish](../documentation/app-store/fi.md), [French](../documentation/app-store/fr.md), [Italian](../documentation/app-store/it.md), [Japanese](../documentation/app-store/ja.md), [Dutch](../documentation/app-store/nl.md), and [Simplified Chinese](../documentation/app-store/zh-Hans.md). Each file contains the Promotional Text, Description, What's New, and Keywords fields in that order.
 
-## Subtitle (30 characters max)
+The development checkout metadata is version 3.6, build 1. Source metadata does not establish App Store availability. Keep public copy aligned with verified app behavior, and describe only the 3.6 navigation-speed direction correction as new in 3.6; the navigation HUD and Settings search were introduced in 3.5.
 
-Your Location, Your Control
+## Screenshot Guidance
 
-## Description Prompt
+- Show the device list with available distance, battery, place, and visitor context.
+- Show a device map with its marker and any available location details.
+- Show either navigation direction with route guidance and ETA.
+- Show the QR flow for adding a device or the current device.
+- Show the iPad layout or a widget using selected devices.
 
-Translate the description text below in this exact order: English, Danish, Dutch, Finnish, French, Italian, German, Japanese, Spanish, Simplified Chinese.
-
-Output each language as its own copyable markdown block with a small language note before the block and no markdown headline inside the block.
-
-## Description Text
-
-Take control of your location sharing with miataru, the privacy-focused location app for people who want their location data to stay under their own control.
-
-miataru lets you share your device location through the Miataru server you choose. Use your own server or a trusted community server, add only the devices you trust, and decide which privacy and tracking features fit your situation.
-
-Privacy First:
-Your location data belongs to you. miataru does not depend on unwanted third-party tracking services. You configure the server, manage your own device identity, and decide who may access your location.
-
-DeviceKey Protection:
-Protect your device with DeviceKey authentication for location updates, visitor history, device info, and access-control settings. miataru includes setup, restore, reset, and recovery flows so you stay in control of your identity.
-
-Smart Location Tracking:
-* Foreground and background location sharing
-* Efficient significant-change background tracking by default
-* Optional Smart frequent updates that automatically switch to high-detail background tracking when movement is detected
-* Manual frequent background updates for temporary or always-on high-detail tracking
-* Configurable speed threshold, update distance, inactivity window, duration, delivery delay, and low-battery auto-disable
-* Optional notifications when Smart frequent updates automatically switch modes
-* Offline queueing for location updates when the network is unavailable
-
-Multi-Device Management:
-* Track multiple devices from one app
-* Organize devices into custom groups
-* See distance, last update, battery, altitude, speed, and place information when available
-* Add devices with QR codes, deep links, or manual entry
-* Use an Allowed Device List to restrict access where supported by your server
-
-Maps and Navigation:
-* Interactive maps with accuracy indicators
-* Nearby device movements glide smoothly on overview maps with a subtle movement trail
-* Device history playback marker glides smoothly between nearby samples
-* Off-screen arrows for devices outside the current map view
-* Route planning with ETA, distance, arrival time, and progress
-* Focused navigation mode for following a route
-* Turn-by-turn instruction overlay, haptics, and sound cues
-
-Visitor Awareness:
-* View recent devices that requested your location
-* Get optional alerts for unknown visitors
-* Allow or ignore unknown devices directly from the app
-
-Widgets:
-* Add text or map widgets for selected devices
-* Keep device selection synced with the app
-* Use cached map snapshots and shared app data for quick glanceable updates
-
-Siri and Shortcuts:
-* Ask for the last known location of configured devices
-* Open Apple Maps routes to a device's last known location
-* Keep shortcut output privacy-friendly without exposing raw device identifiers
-
-Designed for iPhone and iPad:
-* Native SwiftUI interface
-* Dedicated iPad layout with split views and device windows
-* Localized for Danish, Dutch, English, Finnish, French, German, Italian, Japanese, Spanish, and Simplified Chinese
-
-Perfect For:
-* Families who want privacy-respecting location sharing
-* Friends coordinating during trips
-* People managing multiple devices
-* Users who prefer self-hosted services
-* Anyone who wants location sharing without giving up control
-
-Download miataru and use location sharing on your own terms.
-
-## Promotional Text (170 characters max)
-
-Private location sharing on your terms with DeviceKey protection, widgets, Siri Shortcuts, route navigation, and self-hosted server support.
-
-## Keywords (100 characters max)
-
-location,tracking,privacy,map,navigation,device,group,QR,DeviceKey,widget,self-hosted,server
-
-## What's New - Version 3.5 Draft
-
-* Search Settings by individual control, including Advanced Options.
-* View your live speed during navigation and use the new full-screen navigation HUD with three palettes and optional mirroring.
-* See improved route and device guidance with accessible controls in the HUD.
-
-These are draft notes for a future submission. The changelog records the complete 3.5 development changes; release copy must be checked against the release candidate and App Store Connect state.
-
-## Screenshot Suggestions
-
-**Screenshot 1:** Devices list with distance, battery, slogan/place, and recent visitor indicator
-
-**Screenshot 2:** Device map with marker, accuracy circle, speed/distance, and off-screen arrow context
-
-**Screenshot 3:** Navigation view with route, ETA, arrival time, and turn-by-turn overlay
-
-**Screenshot 4:** QR tab with current-device QR code, DeviceKey action, and visitor history
-
-**Screenshot 5:** Advanced Options showing Smart/manual frequent background tracking and privacy controls
-
-**Screenshot 6:** iPad split view with device or group map
-
-**Screenshot 7:** Widget selection and map/text widget output
-
-## Marketing Notes
-
-- Lead with privacy, control, and user-selected server.
-- Show the real app UI rather than abstract privacy graphics.
-- Emphasize DeviceKey, Allowed Device List, unknown visitor awareness, widgets, and route navigation as current differentiators.
-- Avoid implying a cloud account, analytics service, or centralized tracking backend.
+Use current app captures and avoid implying that server-dependent details are always available.
