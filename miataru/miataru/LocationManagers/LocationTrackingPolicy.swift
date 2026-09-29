@@ -51,6 +51,12 @@ enum LocationTrackingPolicy {
         case applyTrackingMode
     }
 
+    enum AuthorizationRequestAction: Equatable {
+        case none
+        case requestWhenInUse
+        case requestAlways
+    }
+
     enum PrimaryLocationServiceCommand: Equatable {
         case stopUpdatingLocation
         case stopMonitoringSignificantLocationChanges
@@ -359,6 +365,24 @@ enum LocationTrackingPolicy {
 
     static func shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: CLAuthorizationStatus) -> Bool {
         authorizationStatus == .denied || authorizationStatus == .restricted
+    }
+
+    static func authorizationRequestAction(trackAndReportLocation: Bool,
+                                           authorizationStatus: CLAuthorizationStatus,
+                                           applicationState: UIApplication.State,
+                                           didAttemptAlwaysAuthorization: Bool,
+                                           hasPendingAlwaysAuthorizationRequest: Bool) -> AuthorizationRequestAction {
+        guard trackAndReportLocation, applicationState == .active else { return .none }
+        switch authorizationStatus {
+        case .notDetermined:
+            return .requestWhenInUse
+        case .authorizedWhenInUse:
+            return !didAttemptAlwaysAuthorization && !hasPendingAlwaysAuthorizationRequest ? .requestAlways : .none
+        case .authorizedAlways, .denied, .restricted:
+            return .none
+        @unknown default:
+            return .none
+        }
     }
 
     static func shouldMaintainFrequentBackgroundActivitySession(trackAndReportLocation: Bool,

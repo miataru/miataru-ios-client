@@ -169,8 +169,8 @@ final class LocationManager: NSObject, ObservableObject {
         scheduleTrackingPauseExpirationTimer()
         refreshFrequentBackgroundTrackingReminder()
         refreshLocationTrackingHealthReminder()
-        // Ensure permission state is handled on startup
-        ensureAuthorizationIfNeeded()
+        // Authorization prompts wait for an actual active foreground session. A location
+        // relaunch may initialize this singleton before its background launch flag is set.
         applyLocationUpdateMetricsSnapshot(locationUpdateMetricsStore.load())
         // Load persisted lastServerUpdate
         if let savedDate = userDefaults.object(forKey: lastServerUpdateKey) as? Date {
@@ -204,6 +204,7 @@ final class LocationManager: NSObject, ObservableObject {
             applicationStateContext: .forceForeground,
             refreshExternalSettings: true
         )
+        ensureAuthorizationIfNeeded()
         recordLocationTrackingHealthReminderActivity(reason: "app did become active")
         Task {
             await locationUpdateDeliveryCoordinator.appDidBecomeActive()
@@ -490,24 +491,31 @@ final class LocationManager: NSObject, ObservableObject {
         guard !Self.shouldPreserveEnabledTrackingPreferenceForUITests else { return }
 
         let status = locationManager.authorizationStatus
-        if settings.trackAndReportLocation {
-            switch status {
-            case .notDetermined:
-                // Trigger first-time prompt
-                locationManager.requestWhenInUseAuthorization()
-            case .authorizedWhenInUse:
-                requestAlwaysAuthorizationIfPossible(reason: "ensure authorization")
-            default:
-                break
-            }
+        let action = LocationTrackingPolicy.authorizationRequestAction(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            authorizationStatus: status,
+            applicationState: currentTrackingApplicationState,
+            didAttemptAlwaysAuthorization: didAttemptAlwaysAuthorizationInCurrentSession,
+            hasPendingAlwaysAuthorizationRequest: pendingAlwaysAuthorizationRequestTask != nil
+        )
+        switch action {
+        case .requestWhenInUse:
+            locationManager.requestWhenInUseAuthorization()
+        case .requestAlways:
+            requestAlwaysAuthorizationIfPossible(reason: "ensure authorization")
+        case .none:
+            break
         }
     }
 
     private func requestAlwaysAuthorizationIfPossible(reason: String, delay: TimeInterval = 0.6) {
-        guard settings.trackAndReportLocation,
-              locationManager.authorizationStatus == .authorizedWhenInUse,
-              !didAttemptAlwaysAuthorizationInCurrentSession,
-              pendingAlwaysAuthorizationRequestTask == nil else {
+        guard LocationTrackingPolicy.authorizationRequestAction(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            authorizationStatus: locationManager.authorizationStatus,
+            applicationState: currentTrackingApplicationState,
+            didAttemptAlwaysAuthorization: didAttemptAlwaysAuthorizationInCurrentSession,
+            hasPendingAlwaysAuthorizationRequest: pendingAlwaysAuthorizationRequestTask != nil
+        ) == .requestAlways else {
             return
         }
 
@@ -519,9 +527,13 @@ final class LocationManager: NSObject, ObservableObject {
             guard !Task.isCancelled else { return }
             guard let self else { return }
             self.pendingAlwaysAuthorizationRequestTask = nil
-            guard self.settings.trackAndReportLocation,
-                  self.locationManager.authorizationStatus == .authorizedWhenInUse,
-                  !self.didAttemptAlwaysAuthorizationInCurrentSession else {
+            guard LocationTrackingPolicy.authorizationRequestAction(
+                trackAndReportLocation: self.settings.trackAndReportLocation,
+                authorizationStatus: self.locationManager.authorizationStatus,
+                applicationState: self.currentTrackingApplicationState,
+                didAttemptAlwaysAuthorization: self.didAttemptAlwaysAuthorizationInCurrentSession,
+                hasPendingAlwaysAuthorizationRequest: false
+            ) == .requestAlways else {
                 return
             }
 

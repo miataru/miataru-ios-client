@@ -464,6 +464,7 @@ Launch hardening:
 - The same recovery check remains in `didFinishLaunchingWithOptions`, deduped per launch.
 - A background location launch retains its forced background tracking mode until the app really enters the foreground. Location callbacks, Smart fences and watchdogs, and upload delivery use that same effective state even if UIKit briefly reports active.
 - Authorization callbacks reconcile against the primary manager's current status. A transient denied/restricted status stops services while preserving the saved tracking choice; restored authorization restarts monitoring.
+- Location permission prompts wait for an actual active foreground session. A background location relaunch leaves a missing or When In Use authorization request pending for the next foreground activation instead of spending its one-time Always request in the background.
 - A confirmed Smart runtime marker is read without removing it. If Always authorization is temporarily unavailable, the marker remains recoverable until its inactivity window expires.
 - A background Core Location callback starts its background task before asynchronous processing begins and holds it through the resulting upload submissions. Uploads also keep their own background-task protection.
 - `authorizedWhenInUse` is foreground-only; background recovery requires Always authorization.

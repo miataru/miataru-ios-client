@@ -1013,6 +1013,21 @@ struct LocationTrackingPolicyTests {
         ) == .stopDeviceKeyBlocked)
     }
 
+    @Test("Background relaunch defers location permission requests until the app becomes active")
+    func backgroundRelaunchDefersLocationPermissionRequestsUntilActive() {
+        let requestAction = LocationTrackingPolicy.authorizationRequestAction
+
+        #expect(requestAction(true, .notDetermined, .background, false, false) == .none)
+        #expect(requestAction(true, .authorizedWhenInUse, .background, false, false) == .none)
+        #expect(requestAction(true, .authorizedWhenInUse, .inactive, false, false) == .none)
+        #expect(requestAction(true, .notDetermined, .active, false, false) == .requestWhenInUse)
+        #expect(requestAction(true, .authorizedWhenInUse, .active, false, false) == .requestAlways)
+        #expect(requestAction(true, .authorizedWhenInUse, .active, false, true) == .none)
+        #expect(requestAction(true, .authorizedWhenInUse, .active, true, false) == .none)
+        #expect(requestAction(true, .authorizedAlways, .active, false, false) == .none)
+        #expect(requestAction(false, .notDetermined, .active, false, false) == .none)
+    }
+
     @Test("Background battery threshold only disables frequent mode when active and known")
     func backgroundBatteryThresholdOnlyDisablesFrequentModeWhenActiveAndKnown() {
         #expect(LocationTrackingPolicy.batteryPercent(from: 0.301) == 30)
