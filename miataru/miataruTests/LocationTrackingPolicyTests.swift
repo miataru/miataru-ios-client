@@ -674,11 +674,21 @@ struct LocationTrackingPolicyTests {
 
     @Test("Background lifecycle context keeps frequent mode active even before UIKit reports background")
     func backgroundLifecycleContextKeepsFrequentModeActiveBeforeUIKitStateCatchesUp() {
-        #expect(LocationTrackingPolicy.effectiveApplicationState(
+        let pendingBackgroundState = LocationTrackingPolicy.effectiveApplicationState(
             currentState: .active,
             context: .current,
             backgroundLocationLaunchPendingForeground: true
-        ) == .background)
+        )
+        #expect(pendingBackgroundState == .background)
+        #expect(LocationTrackingPolicy.shouldEvaluateSmartFrequentRuntime(applicationState: pendingBackgroundState))
+        #expect(LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: true,
+            authorizationStatus: .authorizedAlways,
+            applicationState: pendingBackgroundState,
+            frequentUpdatesEnabled: true,
+            distanceFilterMeters: 50,
+            hasNavigationLocationSession: false
+        ) == .backgroundFrequent(distanceFilter: 50, desiredAccuracy: kCLLocationAccuracyNearestTenMeters))
         #expect(LocationTrackingPolicy.effectiveApplicationState(
             currentState: .active,
             context: .forceForeground,
@@ -945,12 +955,13 @@ struct LocationTrackingPolicyTests {
         #expect(!AppDelegate.shouldRestoreLocationLaunch(nil, didRestore: false))
     }
 
-    @Test("Tracking reconcile disables unavailable authorization but keeps When-In-Use intent")
-    func trackingReconcileDisablesUnavailableAuthorizationButKeepsWhenInUseIntent() {
-        #expect(LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: .denied))
-        #expect(LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: .restricted))
-        #expect(!LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: .authorizedWhenInUse))
-        #expect(!LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: .authorizedAlways))
+    @Test("Tracking reconcile suspends unavailable authorization and resumes retained tracking intent")
+    func trackingReconcileSuspendsUnavailableAuthorizationAndResumesRetainedTrackingIntent() {
+        #expect(LocationTrackingPolicy.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: .denied))
+        #expect(LocationTrackingPolicy.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: .restricted))
+        #expect(!LocationTrackingPolicy.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: .notDetermined))
+        #expect(!LocationTrackingPolicy.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: .authorizedWhenInUse))
+        #expect(!LocationTrackingPolicy.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: .authorizedAlways))
 
         #expect(LocationTrackingPolicy.trackingReconcileAction(
             trackAndReportLocation: true,

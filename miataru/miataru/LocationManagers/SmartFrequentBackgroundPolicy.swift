@@ -32,6 +32,7 @@ enum SmartFrequentBackgroundPolicy {
 
     enum RestartRecoveryAction: String, Equatable {
         case resume
+        case waitForEligibility
         case notifyDeactivation
         case ignore
     }
@@ -438,23 +439,37 @@ enum SmartFrequentBackgroundPolicy {
                                       isTracking: Bool,
                                       deviceKeyAuthBlocked: Bool,
                                       modeChangeNotificationsEnabled: Bool) -> RestartRecoveryAction {
-        let runtimeEligible = marker.phase == .confirmedActive &&
+        let runtimeConfigured = marker.phase == .confirmedActive &&
         smartEnabled &&
         !manualFrequentEnabled &&
-        authorizationStatus == .authorizedAlways &&
         trackAndReportLocation &&
-        isTracking &&
         !deviceKeyAuthBlocked
 
-        guard runtimeEligible else {
+        guard runtimeConfigured else {
             return .ignore
         }
 
-        if isRuntimeMarkerFresh(marker, now: now, inactivityWindow: inactivityWindow) {
-            return .resume
+        guard isRuntimeMarkerFresh(marker, now: now, inactivityWindow: inactivityWindow) else {
+            return authorizationStatus == .authorizedAlways &&
+                isTracking &&
+                marker.activationNotificationDelivered &&
+                modeChangeNotificationsEnabled ? .notifyDeactivation : .ignore
         }
 
-        return marker.activationNotificationDelivered && modeChangeNotificationsEnabled ? .notifyDeactivation : .ignore
+        guard authorizationStatus == .authorizedAlways, isTracking else {
+            return .waitForEligibility
+        }
+        return .resume
+    }
+
+    static func shouldRetainRuntimeMarkerWhileTrackingIntended(trackAndReportLocation: Bool,
+                                                              smartEnabled: Bool,
+                                                              manualFrequentEnabled: Bool,
+                                                              deviceKeyAuthBlocked: Bool) -> Bool {
+        trackAndReportLocation &&
+        smartEnabled &&
+        !manualFrequentEnabled &&
+        !deviceKeyAuthBlocked
     }
 
     static func recoveryDiagnosticsContext(now: Date,
@@ -633,11 +648,5 @@ struct SmartFrequentBackgroundRuntimeMarkerStore {
 
     func clear() {
         defaults.removeObject(forKey: Self.markerKey)
-    }
-
-    func consume() -> SmartFrequentBackgroundRuntimeMarker? {
-        let marker = load()
-        clear()
-        return marker
     }
 }

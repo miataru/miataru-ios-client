@@ -364,11 +364,28 @@ final class LocationManager: NSObject, ObservableObject {
     
     var currentBackgroundTrackingDisplayMode: BackgroundTrackingDisplayMode {
         Self.backgroundTrackingDisplayMode(
-            applicationState: UIApplication.shared.applicationState,
+            applicationState: currentTrackingApplicationState,
             smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
             manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
             smartRuntimeActive: smartFrequentBackgroundRuntimeActive,
             trackingPaused: settings.isTrackingPaused
+        )
+    }
+
+    private var currentTrackingApplicationState: UIApplication.State {
+        LocationTrackingPolicy.effectiveApplicationState(
+            currentState: UIApplication.shared.applicationState,
+            context: .current,
+            backgroundLocationLaunchPendingForeground: backgroundLocationLaunchPendingForeground
+        )
+    }
+
+    private var shouldRetainSmartRuntimeMarkerWhileTrackingIntended: Bool {
+        SmartFrequentBackgroundPolicy.shouldRetainRuntimeMarkerWhileTrackingIntended(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked
         )
     }
 
@@ -533,17 +550,14 @@ final class LocationManager: NSObject, ObservableObject {
         ensureAuthorizationIfNeeded()
         let status = locationManager.authorizationStatus
         authorizationStatus = status
-        if Self.shouldDisableTrackingPreference(authorizationStatus: status) {
-            debugLog("startTracking disabled because location authorization is denied/restricted")
+        if Self.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: status) {
+            debugLog("startTracking suspended because location authorization is denied/restricted")
             isTracking = false
-            if settings.trackAndReportLocation {
-                settings.trackAndReportLocation = false
-            }
-            stopAllLocationServices()
+            stopAllLocationServices(preserveSmartRuntimeMarker: shouldRetainSmartRuntimeMarkerWhileTrackingIntended)
             diagnosticsLog.append(
                 level: .warning,
                 event: "trackingReconcile",
-                summary: "Tracking was disabled because location authorization is unavailable.",
+                summary: "Tracking was suspended because location authorization is unavailable.",
                 result: TrackingReconcileAction.stopAuthorizationUnavailable.rawValue,
                 reason: "start tracking",
                 checks: trackingEligibilityChecks(status: status),
@@ -588,7 +602,7 @@ final class LocationManager: NSObject, ObservableObject {
         ensureAuthorizationIfNeeded()
         isTracking = true
         restorePersistedSmartFrequentBackgroundSeedIfNeeded()
-        let didResumeSmartFrequentRuntime = consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: reason)
+        let didResumeSmartFrequentRuntime = restorePersistedSmartFrequentBackgroundRuntimeMarkerIfNeeded(reason: reason)
         debugLog("[LocationManager] restoreTrackingAfterLaunch reason=\(reason), status=\(authorizationStatus.rawValue), frequentEnabled=\(settings.frequentBackgroundLocationUpdatesEnabled), expiresAt=\(String(describing: settings.frequentBackgroundLocationUpdatesExpiresAt)), context=\(applicationStateContext)")
         recordLocationTrackingHealthReminderActivity(reason: "restore tracking after launch: \(reason)")
         diagnosticsLog.append(
@@ -1037,10 +1051,7 @@ final class LocationManager: NSObject, ObservableObject {
         switch action {
         case .stopAuthorizationUnavailable:
             isTracking = false
-            if settings.trackAndReportLocation {
-                settings.trackAndReportLocation = false
-            }
-            stopAllLocationServices()
+            stopAllLocationServices(preserveSmartRuntimeMarker: shouldRetainSmartRuntimeMarkerWhileTrackingIntended)
         case .stopTrackingDisabled, .stopDeviceKeyBlocked:
             isTracking = false
             stopAllLocationServices()
@@ -1048,6 +1059,15 @@ final class LocationManager: NSObject, ObservableObject {
             startTracking(applicationStateContext: applicationStateContext)
         case .applyTrackingMode:
             applyTrackingMode(reason: effectiveReason, applicationStateContext: applicationStateContext)
+        }
+
+        if locationManager.authorizationStatus == .authorizedAlways,
+           restorePersistedSmartFrequentBackgroundRuntimeMarkerIfNeeded(reason: effectiveReason) {
+            applyTrackingMode(reason: "restored Smart frequent during reconciliation", applicationStateContext: applicationStateContext)
+            requestSmartFrequentRestartRecoveryLocationIfNeeded(
+                didResume: true,
+                applicationStateContext: applicationStateContext
+            )
         }
 
         publishFrequentBackgroundRefreshEligibilityIfNeeded()
@@ -1091,12 +1111,9 @@ final class LocationManager: NSObject, ObservableObject {
         }
         syncFrequentBackgroundAccuracyRecoveryEligibility(applicationState: state)
 
-        if Self.shouldDisableTrackingPreference(authorizationStatus: status) {
-            debugLog("Location permission denied/restricted; disabling trackAndReportLocation and stopping services")
+        if Self.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: status) {
+            debugLog("Location permission denied/restricted; suspending tracking and stopping services")
             isTracking = false
-            if settings.trackAndReportLocation {
-                settings.trackAndReportLocation = false
-            }
         }
 
         let mode = Self.resolvedTrackingMode(
@@ -1195,7 +1212,7 @@ final class LocationManager: NSObject, ObservableObject {
         syncBackgroundLocationIndicator(for: mode)
         switch mode {
         case .stopped:
-            stopAllLocationServices()
+            stopAllLocationServices(preserveSmartRuntimeMarker: shouldRetainSmartRuntimeMarkerWhileTrackingIntended)
         case .foregroundHighAccuracy:
             startHighAccuracyUpdates()
         case .backgroundSignificantChange:
@@ -1370,7 +1387,8 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func reconcileSmartFrequentExitFence(reason: String,
-                                                applicationState: UIApplication.State = UIApplication.shared.applicationState) {
+                                                applicationState: UIApplication.State? = nil) {
+        let effectiveApplicationState = applicationState ?? currentTrackingApplicationState
         let regionMonitoringAvailable = CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self)
         let shouldMaintainFence = Self.shouldMaintainSmartFrequentExitFence(
             trackAndReportLocation: settings.trackAndReportLocation,
@@ -1382,7 +1400,7 @@ final class LocationManager: NSObject, ObservableObject {
             smartRuntimeActive: smartFrequentBackgroundRuntimeActive,
             regionMonitoringAvailable: regionMonitoringAvailable
         ) &&
-        applicationState != .active &&
+        effectiveApplicationState != .active &&
         smartFrequentBackgroundRuntimePhase != .probing &&
         !smartFrequentExitFenceRecoveryAwaitingLocationUpdate
 
@@ -1512,7 +1530,7 @@ final class LocationManager: NSObject, ObservableObject {
         }
 
         let now = Date()
-        let applicationState = UIApplication.shared.applicationState
+        let applicationState = currentTrackingApplicationState
         guard let circularRegion = region as? CLCircularRegion else {
             diagnosticsLog.append(
                 level: .warning,
@@ -1897,9 +1915,10 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     @discardableResult
-    private func consumePersistedSmartFrequentBackgroundRuntimeMarkerAfterLaunchIfNeeded(reason: String,
-                                                                                        now: Date = Date()) -> Bool {
-        guard let marker = smartFrequentBackgroundRuntimeMarkerStore.consume() else {
+    private func restorePersistedSmartFrequentBackgroundRuntimeMarkerIfNeeded(reason: String,
+                                                                             now: Date = Date()) -> Bool {
+        guard !smartFrequentBackgroundRuntimeActive,
+              let marker = smartFrequentBackgroundRuntimeMarkerStore.load() else {
             return false
         }
 
@@ -1927,7 +1946,7 @@ final class LocationManager: NSObject, ObservableObject {
         diagnosticsLog.append(
             level: restartAction == .ignore ? .info : .warning,
             event: "smartFrequentRestartRecovery",
-            summary: restartAction == .resume ? "Restored persisted Smart frequent runtime after launch." : "Consumed persisted Smart frequent runtime marker after launch.",
+            summary: restartAction == .resume ? "Restored persisted Smart frequent runtime after launch." : "Evaluated persisted Smart frequent runtime marker after launch.",
             result: restartAction.rawValue,
             reason: reason,
             checks: [
@@ -1983,7 +2002,12 @@ final class LocationManager: NSObject, ObservableObject {
             resumePersistedSmartFrequentBackgroundRuntime(marker: marker, referenceAt: markerReferenceAt, now: now)
             return true
 
+        case .waitForEligibility:
+            // A temporary authorization gap must not consume the last confirmed runtime state.
+            return false
+
         case .notifyDeactivation:
+            smartFrequentBackgroundRuntimeMarkerStore.clear()
             notifySmartFrequentBackgroundModeChangeIfEnabled(
                 isActive: false,
                 deactivationReason: .restartRecovery
@@ -1991,6 +2015,7 @@ final class LocationManager: NSObject, ObservableObject {
             return false
 
         case .ignore:
+            smartFrequentBackgroundRuntimeMarkerStore.clear()
             return false
         }
     }
@@ -2584,7 +2609,7 @@ final class LocationManager: NSObject, ObservableObject {
         return wasActive
     }
 
-    private func resetSmartFrequentBackgroundRuntime() {
+    private func resetSmartFrequentBackgroundRuntime(preservePersistedMarker: Bool = false) {
         smartFrequentBackgroundRuntimeActive = false
         smartFrequentBackgroundRuntimePhase = .waiting
         smartFrequentBackgroundLastActivationReason = nil
@@ -2606,7 +2631,9 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
         resetFrequentBackgroundAccuracyRecoveryState()
-        clearPersistedSmartFrequentBackgroundRuntimeMarker()
+        if !preservePersistedMarker {
+            clearPersistedSmartFrequentBackgroundRuntimeMarker()
+        }
     }
 
     @discardableResult
@@ -2704,7 +2731,7 @@ final class LocationManager: NSObject, ObservableObject {
 
         case .expired:
             setSmartFrequentBackgroundNextInactivityTimeout(nil)
-            guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+            guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: currentTrackingApplicationState) else {
                 return
             }
             if handleSmartFrequentBackgroundInactivityIfNeeded(now: now, applicationState: .background), isTracking {
@@ -2722,7 +2749,7 @@ final class LocationManager: NSObject, ObservableObject {
 
             let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
                 guard let self else { return }
-                guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+                guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: self.currentTrackingApplicationState) else {
                     return
                 }
                 if self.handleSmartFrequentBackgroundInactivityIfNeeded(applicationState: .background), self.isTracking {
@@ -2822,7 +2849,7 @@ final class LocationManager: NSObject, ObservableObject {
         smartFrequentBackgroundWatchdogTimer?.invalidate()
         smartFrequentBackgroundWatchdogTimer = nil
 
-        guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: UIApplication.shared.applicationState) else {
+        guard Self.shouldEvaluateSmartFrequentRuntime(applicationState: currentTrackingApplicationState) else {
             return
         }
 
@@ -3026,7 +3053,7 @@ final class LocationManager: NSObject, ObservableObject {
             )
             return
         }
-        let applicationState = UIApplication.shared.applicationState
+        let applicationState = currentTrackingApplicationState
         let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
         let processKnownVisitorAlerts = frequentBackgroundVisitorChecksEnabled(for: applicationState)
         let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
@@ -3340,12 +3367,12 @@ final class LocationManager: NSObject, ObservableObject {
         reconcileTrackingState(reason: "app did enter background", applicationStateContext: .forceBackground)
     }
 
-    private func stopAllLocationServices() {
+    private func stopAllLocationServices(preserveSmartRuntimeMarker: Bool = false) {
         debugLog("[LocationManager] Stopping all location services")
         recordForensicServiceAssertion(mode: .stopped)
         coreLocationServices.stopManagedLocationUpdates()
         stopSmartFrequentExitFence(reason: "stop all location services")
-        resetSmartFrequentBackgroundRuntime()
+        resetSmartFrequentBackgroundRuntime(preservePersistedMarker: preserveSmartRuntimeMarker)
         coreLocationServices.stopLocationServiceSession(reason: "stop all location services")
         coreLocationServices.stopFrequentBackgroundActivitySession(reason: "stop all location services")
         stopHeadingUpdates()
@@ -3425,7 +3452,7 @@ extension LocationManager: CLLocationManagerDelegate {
                 return
             }
 
-            let applicationState = UIApplication.shared.applicationState
+            let applicationState = self.currentTrackingApplicationState
             let updateSource = self.locationUpdateSource(for: manager)
             let isSmartFrequentStartupBatch = self.smartFrequentBackgroundStartupGuardPending &&
             applicationState != .active &&
@@ -3897,15 +3924,18 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     @available(iOS 14.0, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        handleAuthorizationChange(manager.authorizationStatus)
+        handleAuthorizationChange()
     }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        handleAuthorizationChange(status)
+        handleAuthorizationChange()
     }
 
-    private func handleAuthorizationChange(_ status: CLAuthorizationStatus) {
+    private func handleAuthorizationChange() {
         Task { @MainActor in
+            // Delegate callbacks can be queued from both managers. Reconcile against the
+            // primary manager's current authorization, not a captured, potentially stale event.
+            let status = self.locationManager.authorizationStatus
             self.authorizationStatus = status
             switch status {
             case .notDetermined, .denied, .restricted:

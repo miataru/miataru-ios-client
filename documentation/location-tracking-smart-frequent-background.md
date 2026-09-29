@@ -59,6 +59,7 @@ Shared preconditions:
 - `authorizedAlways` can run background tracking.
 - `authorizedWhenInUse` can run foreground tracking while active, but background tracking resolves to stopped.
 - Denied, restricted, or not determined authorization resolves to stopped.
+- A missing authorization suspends the active services without changing the user's saved tracking preference. When authorization returns, reconciliation restarts eligible monitoring.
 
 Resolver logic:
 
@@ -108,7 +109,7 @@ Actions:
 - Stop the secondary frequent manager.
 - Stop heading and foreground timers.
 - Stop frequent background activity sessions.
-- Stop Smart frequent runtime state.
+- Stop Smart frequent runtime state. Keep a confirmed Smart marker while tracking remains configured so a temporary authorization gap can recover within the inactivity window; explicit tracking, Smart, or DeviceKey shutdown clears it.
 
 No uploads are expected. Stale callbacks after service shutdown still flow through duplicate and stale-callback cleanup.
 
@@ -461,7 +462,9 @@ Launch hardening:
 
 - `AppDelegate` restores tracking in `application(_:willFinishLaunchingWithOptions:)` for location launches.
 - The same recovery check remains in `didFinishLaunchingWithOptions`, deduped per launch.
-- A background location launch retains its forced background tracking mode until the app really enters the foreground; a later generic app-initializer restore cannot replace it.
+- A background location launch retains its forced background tracking mode until the app really enters the foreground. Location callbacks, Smart fences and watchdogs, and upload delivery use that same effective state even if UIKit briefly reports active.
+- Authorization callbacks reconcile against the primary manager's current status. A transient denied/restricted status stops services while preserving the saved tracking choice; restored authorization restarts monitoring.
+- A confirmed Smart runtime marker is read without removing it. If Always authorization is temporarily unavailable, the marker remains recoverable until its inactivity window expires.
 - Background location uploads get explicit background-task protection.
 - `authorizedWhenInUse` is foreground-only; background recovery requires Always authorization.
 

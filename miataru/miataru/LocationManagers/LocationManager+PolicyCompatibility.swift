@@ -548,8 +548,8 @@ extension LocationManager {
         )
     }
 
-    static func shouldDisableTrackingPreference(authorizationStatus: CLAuthorizationStatus) -> Bool {
-        LocationTrackingPolicy.shouldDisableTrackingPreference(authorizationStatus: authorizationStatus)
+    static func shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: CLAuthorizationStatus) -> Bool {
+        LocationTrackingPolicy.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: authorizationStatus)
     }
 
     static func significantChangeRearmDecision(buildIdentifier: String,

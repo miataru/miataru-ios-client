@@ -351,13 +351,13 @@ enum LocationTrackingPolicy {
             return .stopDeviceKeyBlocked
         }
 
-        if shouldDisableTrackingPreference(authorizationStatus: authorizationStatus) {
+        if shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: authorizationStatus) {
             return .stopAuthorizationUnavailable
         }
         return isTracking ? .applyTrackingMode : .startTracking
     }
 
-    static func shouldDisableTrackingPreference(authorizationStatus: CLAuthorizationStatus) -> Bool {
+    static func shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: CLAuthorizationStatus) -> Bool {
         authorizationStatus == .denied || authorizationStatus == .restricted
     }
 

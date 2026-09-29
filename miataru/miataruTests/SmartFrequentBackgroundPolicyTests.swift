@@ -569,8 +569,8 @@ struct SmartFrequentBackgroundPolicyTests {
         #expect(!LocationTrackingPolicy.shouldEvaluateSmartFrequentRuntime(applicationState: .active))
     }
 
-    @Test("Smart frequent confirmed runtime marker persists, consumes, and rejects non-confirmed phases")
-    func smartFrequentConfirmedRuntimeMarkerPersistsConsumesAndRejectsNonConfirmedPhases() throws {
+    @Test("Smart frequent confirmed runtime marker survives repeated reads and rejects non-confirmed phases")
+    func smartFrequentConfirmedRuntimeMarkerSurvivesRepeatedReadsAndRejectsNonConfirmedPhases() throws {
         let suiteName = "SmartFrequentRuntimeMarkerTests.\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suiteName))
         defer {
@@ -589,8 +589,8 @@ struct SmartFrequentBackgroundPolicyTests {
 
         store.save(confirmedMarker)
         #expect(store.load() == confirmedMarker)
-        #expect(store.consume() == confirmedMarker)
-        #expect(store.load() == nil)
+        #expect(SmartFrequentBackgroundRuntimeMarkerStore(defaults: defaults).load() == confirmedMarker)
+        #expect(store.load() == confirmedMarker)
 
         store.save(SmartFrequentBackgroundRuntimeMarker(
             phase: .probing,
@@ -634,6 +634,31 @@ struct SmartFrequentBackgroundPolicyTests {
             deviceKeyAuthBlocked: false,
             modeChangeNotificationsEnabled: true
         ) == .resume)
+
+        #expect(SmartFrequentBackgroundPolicy.restartRecoveryAction(
+            marker: freshMarker,
+            now: now,
+            inactivityWindow: inactivityWindow,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            authorizationStatus: .denied,
+            trackAndReportLocation: true,
+            isTracking: false,
+            deviceKeyAuthBlocked: false,
+            modeChangeNotificationsEnabled: true
+        ) == .waitForEligibility)
+        #expect(SmartFrequentBackgroundPolicy.shouldRetainRuntimeMarkerWhileTrackingIntended(
+            trackAndReportLocation: true,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            deviceKeyAuthBlocked: false
+        ))
+        #expect(!SmartFrequentBackgroundPolicy.shouldRetainRuntimeMarkerWhileTrackingIntended(
+            trackAndReportLocation: false,
+            smartEnabled: true,
+            manualFrequentEnabled: false,
+            deviceKeyAuthBlocked: false
+        ))
 
         let staleMarker = SmartFrequentBackgroundRuntimeMarker(
             phase: .confirmedActive,
