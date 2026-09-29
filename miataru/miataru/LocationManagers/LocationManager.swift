@@ -102,6 +102,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var smartFrequentBackgroundLastMovementDistanceMeters: CLLocationDistance?
     private var smartFrequentBackgroundLastMovementThresholdMeters: CLLocationDistance?
     private var smartFrequentBackgroundStartupGuardPending = true
+    private var backgroundLocationLaunchPendingForeground = false
     private var isSmartFrequentExitFenceActive = false
     private var smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
     private var pendingLargeJumpLocation: PendingLargeJumpLocation?
@@ -194,6 +195,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        backgroundLocationLaunchPendingForeground = false
         scheduleStartupHeartbeatIfNeeded()
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did become active")
@@ -559,6 +561,9 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     func restoreTrackingAfterLaunch(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
+        if applicationStateContext == .forceBackground {
+            backgroundLocationLaunchPendingForeground = true
+        }
         debugLog("[LocationManager] Restoring tracking after launch: \(reason)")
         authorizationStatus = locationManager.authorizationStatus
         if applicationStateContext == .forceBackground || UIApplication.shared.applicationState != .active {
@@ -1056,9 +1061,10 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
-        let state = Self.effectiveApplicationStateForTracking(
+        let state = LocationTrackingPolicy.effectiveApplicationState(
             currentState: UIApplication.shared.applicationState,
-            context: applicationStateContext
+            context: applicationStateContext,
+            backgroundLocationLaunchPendingForeground: backgroundLocationLaunchPendingForeground
         )
         let status = locationManager.authorizationStatus
         if Self.shouldPreserveEnabledTrackingPreferenceForUITests,
@@ -2024,9 +2030,10 @@ final class LocationManager: NSObject, ObservableObject {
         didResume: Bool,
         applicationStateContext: TrackingApplicationStateContext
     ) {
-        let applicationState = Self.effectiveApplicationStateForTracking(
+        let applicationState = LocationTrackingPolicy.effectiveApplicationState(
             currentState: UIApplication.shared.applicationState,
-            context: applicationStateContext
+            context: applicationStateContext,
+            backgroundLocationLaunchPendingForeground: backgroundLocationLaunchPendingForeground
         )
         guard didResume,
               applicationState != .active,
@@ -3315,6 +3322,7 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - App Lifecycle Hooks
     func appDidEnterForeground() {
         debugLog("[LocationManager] App did enter foreground")
+        backgroundLocationLaunchPendingForeground = false
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did enter foreground")
         // Check daily reset on foreground entry so UI reflects a new day immediately

@@ -252,10 +252,11 @@ enum LocationTrackingPolicy {
     }
 
     static func effectiveApplicationState(currentState: UIApplication.State,
-                                          context: ApplicationStateContext) -> UIApplication.State {
+                                          context: ApplicationStateContext,
+                                          backgroundLocationLaunchPendingForeground: Bool = false) -> UIApplication.State {
         switch context {
         case .current:
-            return currentState
+            return backgroundLocationLaunchPendingForeground ? .background : currentState
         case .forceForeground:
             return .active
         case .forceBackground:

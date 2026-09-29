@@ -1,4 +1,6 @@
 version 3.6
+- Kept background location-launch recovery in background mode until actual foreground activation, so a later startup reconciliation cannot stop frequent monitoring.
+- Persisted each direct location update in the existing FIFO outbox before sending it and retried pending updates immediately after process relaunch.
 - Made the navigation map chip and full-screen HUD share direction-aware speed: tracked-device speed uses only the latest successful server response for up to five minutes, while own-device speed remains valid for 15 seconds; invalid or unavailable speed is hidden.
 - Added copy-ready fenced Markdown App Store Connect fields for all ten supported locales, using the supplied Promotional Text and complete 3.6 navigation-speed notes.
 

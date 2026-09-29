@@ -436,6 +436,7 @@ The app-level retry/outbox architecture is:
 - `MiataruRequestExecutor` centralizes retry behavior.
 - Reads, writes, and `updateLocation` each retry once with short jittered backoff for transient failures.
 - Uncertain `updateLocation` failures are queued in a persistent FIFO outbox rather than dropped.
+- A direct update is written to that same outbox before the network request starts. Its head remains available after process termination and is removed after a successful acknowledgement; later updates stay behind it in FIFO order. On relaunch, an eligible persisted head gets an immediate flush attempt instead of waiting for the one-minute periodic timer.
 - Clear auth/DeviceKey failures remain non-retryable and keep existing auth blocking behavior.
 
 Outbox cases include transient network failures, retryable HTTP status responses, decoding errors, and invalid responses without a clear 401/403 auth context.
@@ -453,14 +454,14 @@ User behavior:
 
 The recovery architecture separates concerns:
 
-- The primary manager handles foreground high-accuracy updates, standard background mode switching, and frequent background `startUpdatingLocation()`.
-- A dedicated recovery-anchor manager handles significant-change monitoring for reboot/system-termination recovery.
-- Frequent background mode clears significant-change monitoring from the primary manager before starting standard updates; the recovery anchor remains active separately.
+- The primary manager handles foreground high-accuracy updates and keeps significant-change monitoring registered for background relaunch.
+- A secondary manager runs frequent background `startUpdatingLocation()` while the primary significant-change monitor remains registered.
 
 Launch hardening:
 
 - `AppDelegate` restores tracking in `application(_:willFinishLaunchingWithOptions:)` for location launches.
 - The same recovery check remains in `didFinishLaunchingWithOptions`, deduped per launch.
+- A background location launch retains its forced background tracking mode until the app really enters the foreground; a later generic app-initializer restore cannot replace it.
 - Background location uploads get explicit background-task protection.
 - `authorizedWhenInUse` is foreground-only; background recovery requires Always authorization.
 
@@ -469,7 +470,7 @@ Session hardening:
 - Active Always-authorized tracking holds an Always `CLServiceSession`.
 - Frequent background mode additionally holds a `CLBackgroundActivitySession`.
 - Sessions stop when tracking stops, authorization is lost, DeviceKey blocks tracking, frequent mode is disabled/expired, or low battery disables it.
-- A primary significant-change callback can reassert frequent standard updates only if frequent updates were already active in the current process, avoiding aggressive frequent restoration after cold reboot.
+- An eligible primary significant-change callback reasserts frequent standard updates when manual frequent or Smart runtime is active, including after a cold background relaunch.
 - In standard significant-change mode, a background primary callback reasserts significant-change monitoring again.
 - The secondary frequent manager is stopped defensively when frequent mode is inactive.
 

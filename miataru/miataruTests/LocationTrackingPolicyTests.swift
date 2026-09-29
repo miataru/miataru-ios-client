@@ -674,6 +674,16 @@ struct LocationTrackingPolicyTests {
 
     @Test("Background lifecycle context keeps frequent mode active even before UIKit reports background")
     func backgroundLifecycleContextKeepsFrequentModeActiveBeforeUIKitStateCatchesUp() {
+        #expect(LocationTrackingPolicy.effectiveApplicationState(
+            currentState: .active,
+            context: .current,
+            backgroundLocationLaunchPendingForeground: true
+        ) == .background)
+        #expect(LocationTrackingPolicy.effectiveApplicationState(
+            currentState: .active,
+            context: .forceForeground,
+            backgroundLocationLaunchPendingForeground: true
+        ) == .active)
         let forcedBackgroundState = LocationTrackingPolicy.effectiveApplicationState(
             currentState: .active,
             context: .forceBackground

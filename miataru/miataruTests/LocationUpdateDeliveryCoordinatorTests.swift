@@ -449,7 +449,10 @@ struct LocationUpdateDeliveryCoordinatorTests {
 
         try await Task.sleep(nanoseconds: 50_000_000)
         let snapshotWhileFirstSendIsBlocked = await store.itemsSnapshot()
-        #expect(snapshotWhileFirstSendIsBlocked.map(\.payload.Timestamp) == ["second"])
+        #expect(snapshotWhileFirstSendIsBlocked.map(\.payload.Timestamp) == ["first", "second"])
+
+        let restartedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        #expect(await restartedStore.itemsSnapshot().map(\.payload.Timestamp) == ["first", "second"])
 
         await sender.releaseFirstCall()
         if case .sent = await firstTask.value {
@@ -460,6 +463,112 @@ struct LocationUpdateDeliveryCoordinatorTests {
         } else {
             Issue.record("Expected second submit to queue while first send is in flight")
         }
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Direct send survives process termination before the server responds")
+    func inFlightDirectSendIsPersistedBeforeNetworkCompletion() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let sendTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "survives-relaunch"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+
+        let restartedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        #expect(await restartedStore.itemsSnapshot().map(\.payload.Timestamp) == ["survives-relaunch"])
+
+        await sender.releaseFirstCall()
+        if case .sent = await sendTask.value {
+        } else {
+            Issue.record("Expected the direct send to succeed")
+        }
+        #expect(await store.count() == 0)
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Relaunch immediately retries a persisted direct-send head")
+    func relaunchRetriesPersistedDirectSendHead() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let originalStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await originalStore.enqueue(
+            serverURL: URL(string: "https://example.org")!,
+            payload: payload(timestamp: "interrupted"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+
+        let relaunchedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = MockUpdateSender(outcomes: [.success(true)])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: relaunchedStore,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        await coordinator.start()
+        #expect(await relaunchedStore.count() == 0)
+        #expect(await sender.sentTimestamps == ["interrupted"])
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Discard during a direct send does not resurrect its queued head")
+    func discardDuringDirectSendDoesNotRestoreHead() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender(firstOutcome: .failure(
+            MiataruAPIClient.APIError.requestFailed(URLError(.timedOut))
+        ))
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushInterval: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+
+        let sendTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "discarded"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+        await coordinator.discardPendingOutbox()
+        await sender.releaseFirstCall()
+
+        if case .dropped = await sendTask.value {
+        } else {
+            Issue.record("Expected discarded direct send to stay discarded")
+        }
+        #expect(await store.count() == 0)
         await coordinator.stopPeriodicFlushTaskForTesting()
     }
 
