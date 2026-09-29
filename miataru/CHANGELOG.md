@@ -1,4 +1,5 @@
 version 3.6
+- Added event-driven battery and tracking-state samples to opt-in location diagnostics, including charging and Low Power Mode context; enabling diagnostics also ensures battery monitoring remains active for readable samples, without additional location requests or background timers.
 - Attempted FIFO delivery while a protected background location callback is still active when a new update joins an existing outbox, avoiding reliance on a timer that iOS may suspend before it fires.
 - Preserved temporarily unreadable location outboxes without false queued status and retained undecodable files while new location reports continue through a fresh queue.
 - Requested a fresh fix after stale cached background location callbacks and protected the one-shot recovery window without uploading the stale sample.

@@ -494,18 +494,21 @@ iOS boundaries:
 
 - Setting key: `location_diagnostics_logging_enabled`, default false.
 - JSON in Application Support.
-- Ring buffer capped at 1000 entries.
+- Ring buffer capped at 2500 entries, with up to 250 coalesced event summaries.
 - UI shows newest 20 entries.
-- Export includes the full buffer and metadata.
+- Export includes the full buffer, metadata, and whether logging is enabled at export time.
 - Disabling logging keeps old entries until the user clears them.
 
 Entries include ID, timestamp, level, event, summary, result, reason, checks, and context. The log records location/tracking decisions only, not generic UI/map/device-cache logs.
+
+When diagnostics are enabled, `locationPowerSample` records the expected tracking mode, app state, battery-monitoring state, battery percentage when available, charging state, Low Power Mode, and counts of location callbacks, accepted locations, and directly acknowledged uploads since the previous sample. Samples are written on background restoration, foreground opening, mode changes, and at most once per 30 minutes when existing location callbacks arrive. The location manager already enables battery monitoring for upload data and the frequent-tracking battery threshold. Turning diagnostics on also ensures monitoring is active after launch; turning diagnostics off leaves the location manager’s monitoring in place. Readings that iOS cannot provide remain `unknown`. Samples are persisted immediately so a later process termination does not erase the latest sample. Sampling schedules no timer, requests no extra location, and never wakes the app on its own. A quiet suspended period is observable only at the next launch, foreground opening, or location callback. Activity counters restart after process relaunch. Battery percentages are device-wide and cannot attribute drain to Miataru alone; charging and Low Power Mode must be considered when comparing intervals. Direct-upload counts exclude later outbox replay, which has its own `locationUpload|flushed` coalesced count.
 
 Privacy:
 
 - Latitude/longitude rounded to four decimal places.
 - Accuracy, speed, distance stored numerically.
 - DeviceKey and exact coordinates are not logged.
+- Power samples add no coordinates, DeviceKey, or server URL.
 - Disabled logging exits cheaply through autoclosure-based context construction.
 
 Significant-change re-arm:

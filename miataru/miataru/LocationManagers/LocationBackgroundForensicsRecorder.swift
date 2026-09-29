@@ -9,6 +9,22 @@ import Foundation
 import CoreLocation
 import UIKit
 
+struct LocationDiagnosticsPowerReading {
+    let batteryMonitoringEnabled: Bool
+    let batteryLevel: Float
+    let batteryState: UIDevice.BatteryState
+    let lowPowerModeEnabled: Bool
+
+    static func current() -> LocationDiagnosticsPowerReading {
+        return LocationDiagnosticsPowerReading(
+            batteryMonitoringEnabled: UIDevice.current.isBatteryMonitoringEnabled,
+            batteryLevel: UIDevice.current.batteryLevel,
+            batteryState: UIDevice.current.batteryState,
+            lowPowerModeEnabled: ProcessInfo.processInfo.isLowPowerModeEnabled
+        )
+    }
+}
+
 final class LocationBackgroundForensicsRecorder {
     private static let significantChangeRearmedBuildIdentifierKey = "miataru_significantChangeRearmedBuildIdentifier"
     private static let lastSignificantChangeRearmStatusKey = "miataru_lastSignificantChangeRearmStatus"
@@ -16,14 +32,24 @@ final class LocationBackgroundForensicsRecorder {
 
     private let userDefaults: UserDefaults
     private let diagnosticsLog: LocationDiagnosticsLogStore
+    private let powerReading: () -> LocationDiagnosticsPowerReading
+
+    private static let powerSampleInterval: TimeInterval = 30 * 60
+    private var lastPowerSampleAt: Date?
+    private var lastPowerSampleMode: String?
+    private var callbacksSincePowerSample = 0
+    private var acceptedLocationsSincePowerSample = 0
+    private var directUploadAcknowledgementsSincePowerSample = 0
 
     private(set) var state: LocationBackgroundForensics.State
     private(set) var lastSignificantChangeRearmStatus: LocationSignificantChangeRearmStatus?
 
     init(userDefaults: UserDefaults = .standard,
-         diagnosticsLog: LocationDiagnosticsLogStore = .shared) {
+         diagnosticsLog: LocationDiagnosticsLogStore = .shared,
+         powerReading: @escaping () -> LocationDiagnosticsPowerReading = LocationDiagnosticsPowerReading.current) {
         self.userDefaults = userDefaults
         self.diagnosticsLog = diagnosticsLog
+        self.powerReading = powerReading
         self.lastSignificantChangeRearmStatus = Self.loadLastSignificantChangeRearmStatus(from: userDefaults)
         self.state = Self.loadBackgroundTrackingForensicState(from: userDefaults)
     }
@@ -60,6 +86,7 @@ final class LocationBackgroundForensicsRecorder {
         state.lastRestoreAfterLaunchAt = now
         evaluateGap(trigger: trigger, now: now)
         persistState()
+        recordPowerSample(reason: "restoreAfterLaunch", now: now, force: true)
     }
 
     func recordModeResolution(mode: LocationTrackingPolicy.TrackingMode,
@@ -81,6 +108,7 @@ final class LocationBackgroundForensicsRecorder {
             state.backgroundTrackingExpectedSince = nil
         }
         persistState()
+        recordPowerSample(reason: "modeResolution", applicationState: applicationState, now: now)
     }
 
     func recordServiceAssertion(mode: LocationTrackingPolicy.TrackingMode, now: Date = Date()) {
@@ -98,6 +126,7 @@ final class LocationBackgroundForensicsRecorder {
         evaluateGap(trigger: trigger, now: now, prepareForegroundRecovery: true)
         state.lastForegroundOpenAt = now
         persistState()
+        recordPowerSample(reason: "foregroundOpen", applicationState: .active, now: now, force: true)
     }
 
     func evaluateGap(trigger: String,
@@ -167,6 +196,10 @@ final class LocationBackgroundForensicsRecorder {
             state.lastBackgroundCallbackAt = timestamp
         }
         persistState()
+        if diagnosticsLog.isEnabled {
+            callbacksSincePowerSample += 1
+            recordPowerSample(reason: "locationCallback", applicationState: applicationState, now: timestamp)
+        }
     }
 
     func recordAcceptedLocation(applicationState: UIApplication.State,
@@ -182,6 +215,9 @@ final class LocationBackgroundForensicsRecorder {
             state.lastAcceptedBackgroundLocationAt = timestamp
         }
         persistState()
+        if diagnosticsLog.isEnabled {
+            acceptedLocationsSincePowerSample += 1
+        }
     }
 
     func recordUpload(applicationState: UIApplication.State, timestamp: Date = Date()) {
@@ -194,6 +230,9 @@ final class LocationBackgroundForensicsRecorder {
             state.lastBackgroundUploadAt = timestamp
         }
         persistState()
+        if diagnosticsLog.isEnabled {
+            directUploadAcknowledgementsSincePowerSample += 1
+        }
     }
 
     func recordSmartActivation(at timestamp: Date) {
@@ -251,6 +290,64 @@ final class LocationBackgroundForensicsRecorder {
         case .backgroundFrequent(let distanceFilter, let desiredAccuracy):
             return "backgroundFrequent(distanceFilter: \(distanceFilter), desiredAccuracy: \(desiredAccuracy))"
         }
+    }
+
+    private func recordPowerSample(reason: String,
+                                   applicationState: UIApplication.State? = nil,
+                                   now: Date,
+                                   force: Bool = false) {
+        guard diagnosticsLog.isEnabled else { return }
+
+        let mode = state.currentExpectedMode ?? "unknown"
+        let modeChanged = mode != lastPowerSampleMode
+        let elapsed = lastPowerSampleAt.map { now.timeIntervalSince($0) }
+        let intervalDue = elapsed.map { $0 < 0 || $0 >= Self.powerSampleInterval } ?? true
+        guard force || modeChanged || intervalDue else {
+            return
+        }
+
+        let reading = powerReading()
+        let batteryPercent: LocationDiagnosticsValue = reading.batteryLevel.isFinite && reading.batteryLevel >= 0
+            ? .integer(Int((min(reading.batteryLevel, 1) * 100).rounded()))
+            : .string("unknown")
+        let batteryState: String
+        switch reading.batteryState {
+        case .charging: batteryState = "charging"
+        case .full: batteryState = "full"
+        case .unplugged: batteryState = "unplugged"
+        case .unknown: batteryState = "unknown"
+        @unknown default: batteryState = "unknown"
+        }
+
+        var context: [String: LocationDiagnosticsValue] = [
+            "expectedMode": .string(mode),
+            "applicationState": .integer((applicationState?.rawValue ?? state.lastKnownApplicationState) ?? -1),
+            "batteryMonitoringEnabled": .bool(reading.batteryMonitoringEnabled),
+            "batteryPercent": batteryPercent,
+            "batteryState": .string(batteryState),
+            "lowPowerModeEnabled": .bool(reading.lowPowerModeEnabled),
+            "callbacksSincePreviousSample": .integer(callbacksSincePowerSample),
+            "acceptedLocationsSincePreviousSample": .integer(acceptedLocationsSincePowerSample),
+            "directUploadAcknowledgementsSincePreviousSample": .integer(directUploadAcknowledgementsSincePowerSample)
+        ]
+        if let elapsed {
+            context["secondsSincePreviousSample"] = .integer(Int(elapsed.rounded(.towardZero)))
+        }
+        diagnosticsLog.append(
+            level: .info,
+            event: "locationPowerSample",
+            summary: "Recorded event-driven tracking and battery state.",
+            result: mode,
+            reason: reason,
+            context: context,
+            timestamp: now,
+            persistence: .immediate
+        )
+        lastPowerSampleAt = now
+        lastPowerSampleMode = mode
+        callbacksSincePowerSample = 0
+        acceptedLocationsSincePowerSample = 0
+        directUploadAcknowledgementsSincePowerSample = 0
     }
 
     private func preparePendingForegroundRecovery(assessment: LocationBackgroundForensics.GapAssessment, now: Date) {

@@ -28,6 +28,16 @@ enum LocationDiagnosticsPersistencePolicy: Equatable {
     case immediate
 }
 
+struct LocationDiagnosticsBatteryMonitoringControl {
+    let isEnabled: () -> Bool
+    let setEnabled: (Bool) -> Void
+
+    static let device = LocationDiagnosticsBatteryMonitoringControl(
+        isEnabled: { UIDevice.current.isBatteryMonitoringEnabled },
+        setEnabled: { UIDevice.current.isBatteryMonitoringEnabled = $0 }
+    )
+}
+
 enum LocationDiagnosticsValue: Codable, Equatable {
     case bool(Bool)
     case integer(Int)
@@ -160,6 +170,7 @@ struct LocationDiagnosticsCoalescedCount: Codable, Equatable, Identifiable {
 struct LocationDiagnosticsExport: Codable, Equatable {
     let schemaVersion: Int
     let generatedAt: Date
+    let loggingEnabledAtExport: Bool?
     let diagnosticsSourceID: String
     let exportID: String
     let appVersion: String
@@ -187,7 +198,7 @@ struct LocationSignificantChangeRearmStatus: Codable, Equatable {
 }
 
 final class LocationDiagnosticsLogStore: ObservableObject {
-    static let shared = LocationDiagnosticsLogStore()
+    static let shared = LocationDiagnosticsLogStore(batteryMonitoringControl: .device)
 
     static let schemaVersion = 3
     static let defaultMaxEntries = 2_500
@@ -215,6 +226,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private let decoder = JSONDecoder()
     private let deferredPersistenceInterval: TimeInterval
     private let automaticallyFlushesDeferredPersistence: Bool
+    private let batteryMonitoringControl: LocationDiagnosticsBatteryMonitoringControl?
     private var deferredPersistenceWorkItem: DispatchWorkItem?
     private var lifecycleObserverTokens: [NSObjectProtocol] = []
 
@@ -226,7 +238,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
          notificationCenter: NotificationCenter = .default,
          deferredPersistenceInterval: TimeInterval = LocationDiagnosticsLogStore.defaultDeferredPersistenceInterval,
          automaticallyFlushesDeferredPersistence: Bool = true,
-         registersLifecycleFlushObservers: Bool = true) {
+         registersLifecycleFlushObservers: Bool = true,
+         batteryMonitoringControl: LocationDiagnosticsBatteryMonitoringControl? = nil) {
         self.userDefaults = userDefaults
         self.fileManager = fileManager
         self.notificationCenter = notificationCenter
@@ -237,6 +250,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         self.diagnosticsSourceID = Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
         self.deferredPersistenceInterval = max(0.1, deferredPersistenceInterval)
         self.automaticallyFlushesDeferredPersistence = automaticallyFlushesDeferredPersistence
+        self.batteryMonitoringControl = batteryMonitoringControl
         persistenceEncoder.dateEncodingStrategy = .iso8601
         exportEncoder.dateEncodingStrategy = .iso8601
         exportEncoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -253,6 +267,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
             hasPendingPersistence = true
             flushPendingPersistence()
         }
+        ensureBatteryMonitoringWhenEnabled()
     }
 
     deinit {
@@ -267,6 +282,14 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         }
         isEnabled = enabled
         userDefaults.set(enabled, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        ensureBatteryMonitoringWhenEnabled()
+    }
+
+    private func ensureBatteryMonitoringWhenEnabled() {
+        guard isEnabled, let batteryMonitoringControl else { return }
+        if !batteryMonitoringControl.isEnabled() {
+            batteryMonitoringControl.setEnabled(true)
+        }
     }
 
     func clear() {
@@ -375,6 +398,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         return LocationDiagnosticsExport(
             schemaVersion: Self.schemaVersion,
             generatedAt: generatedAt,
+            loggingEnabledAtExport: isEnabled,
             diagnosticsSourceID: diagnosticsSourceID,
             exportID: exportID,
             appVersion: appVersion,

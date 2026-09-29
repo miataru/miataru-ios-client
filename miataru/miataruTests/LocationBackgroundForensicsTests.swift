@@ -207,6 +207,148 @@ struct LocationBackgroundForensicsTests {
         #expect(repeatedDecision.status.reason == "already re-armed for this build")
     }
 
+    @Test("Power diagnostics sample existing tracking events and survive log reload")
+    func powerDiagnosticsSamplesExistingEventsWithoutExtraWakeups() throws {
+        let suiteName = "LocationPowerDiagnosticsTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults.set(true, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        let fileURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("location-power-diagnostics-\(UUID().uuidString).json")
+        defer {
+            defaults.removePersistentDomain(forName: suiteName)
+            try? FileManager.default.removeItem(at: fileURL)
+        }
+
+        var batteryMonitoringEnabled = false
+        var batteryMonitoringChanges: [Bool] = []
+        let batteryMonitoringControl = LocationDiagnosticsBatteryMonitoringControl(
+            isEnabled: { batteryMonitoringEnabled },
+            setEnabled: {
+                batteryMonitoringEnabled = $0
+                batteryMonitoringChanges.append($0)
+            }
+        )
+        let diagnosticsLog = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            batteryMonitoringControl: batteryMonitoringControl
+        )
+        #expect(batteryMonitoringEnabled)
+        #expect(batteryMonitoringChanges == [true])
+        var reading = LocationDiagnosticsPowerReading(batteryMonitoringEnabled: true, batteryLevel: 0.80, batteryState: .unplugged, lowPowerModeEnabled: false)
+        var readingCount = 0
+        let recorder = LocationBackgroundForensicsRecorder(
+            userDefaults: defaults,
+            diagnosticsLog: diagnosticsLog,
+            powerReading: {
+                readingCount += 1
+                return reading
+            }
+        )
+        let startedAt = Date(timeIntervalSince1970: 50_000)
+        recorder.recordModeResolution(mode: .backgroundSignificantChange,
+                                      applicationState: .background,
+                                      reason: "background transition",
+                                      now: startedAt)
+        recorder.recordLocationCallback(applicationState: .background,
+                                        sourceRawValue: "primary",
+                                        isPrimarySource: true,
+                                        timestamp: startedAt.addingTimeInterval(60))
+        recorder.recordAcceptedLocation(applicationState: .background,
+                                        isPrimarySource: true,
+                                        timestamp: startedAt.addingTimeInterval(61))
+        recorder.recordUpload(applicationState: .background, timestamp: startedAt.addingTimeInterval(62))
+        #expect(diagnosticsLog.entries.filter { $0.event == "locationPowerSample" }.count == 1)
+        #expect(readingCount == 1)
+
+        reading = LocationDiagnosticsPowerReading(batteryMonitoringEnabled: true, batteryLevel: 0.79, batteryState: .unplugged, lowPowerModeEnabled: true)
+        recorder.recordLocationCallback(applicationState: .background,
+                                        sourceRawValue: "primary",
+                                        isPrimarySource: true,
+                                        timestamp: startedAt.addingTimeInterval(1_800))
+        let intervalSample = try #require(diagnosticsLog.entries.last { $0.event == "locationPowerSample" })
+        #expect(intervalSample.reason == "locationCallback")
+        #expect(intervalSample.context["batteryPercent"] == .integer(79))
+        #expect(intervalSample.context["batteryMonitoringEnabled"] == .bool(true))
+        #expect(intervalSample.context["batteryState"] == .string("unplugged"))
+        #expect(intervalSample.context["lowPowerModeEnabled"] == .bool(true))
+        #expect(intervalSample.context["secondsSincePreviousSample"] == .integer(1_800))
+        #expect(intervalSample.context["callbacksSincePreviousSample"] == .integer(2))
+        #expect(intervalSample.context["acceptedLocationsSincePreviousSample"] == .integer(1))
+        #expect(intervalSample.context["directUploadAcknowledgementsSincePreviousSample"] == .integer(1))
+        #expect(!intervalSample.context.keys.contains { $0.localizedCaseInsensitiveContains("latitude") || $0.localizedCaseInsensitiveContains("longitude") })
+
+        recorder.recordForegroundOpen(trigger: "foreground", now: startedAt.addingTimeInterval(1_810))
+        recorder.recordModeResolution(mode: .foregroundHighAccuracy,
+                                      applicationState: .active,
+                                      reason: "foreground transition",
+                                      now: startedAt.addingTimeInterval(1_811))
+        let powerSamples = diagnosticsLog.entries.filter { $0.event == "locationPowerSample" }
+        #expect(powerSamples.count == 4)
+        #expect(powerSamples[2].reason == "foregroundOpen")
+        #expect(powerSamples[3].context["expectedMode"] == .string("foregroundHighAccuracy"))
+
+        reading = LocationDiagnosticsPowerReading(batteryMonitoringEnabled: true, batteryLevel: 0.78, batteryState: .charging, lowPowerModeEnabled: false)
+        recorder.recordLocationCallback(applicationState: .active,
+                                        sourceRawValue: "primary",
+                                        isPrimarySource: true,
+                                        timestamp: startedAt.addingTimeInterval(3_611))
+        let chargingSample = try #require(diagnosticsLog.entries.last { $0.event == "locationPowerSample" })
+        #expect(chargingSample.context["batteryState"] == .string("charging"))
+        #expect(chargingSample.context["batteryPercent"] == .integer(78))
+
+        let reloadedLog = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL)
+        #expect(reloadedLog.entries.filter { $0.event == "locationPowerSample" }.count == 5)
+        let relaunchedRecorder = LocationBackgroundForensicsRecorder(
+            userDefaults: defaults,
+            diagnosticsLog: reloadedLog,
+            powerReading: {
+                LocationDiagnosticsPowerReading(batteryMonitoringEnabled: true, batteryLevel: 0.77, batteryState: .unplugged, lowPowerModeEnabled: false)
+            }
+        )
+        relaunchedRecorder.recordRestoreAfterLaunch(trigger: "background location launch",
+                                                   now: startedAt.addingTimeInterval(7_200))
+        let relaunchSample = try #require(reloadedLog.entries.last { $0.event == "locationPowerSample" })
+        #expect(relaunchSample.reason == "restoreAfterLaunch")
+        #expect(relaunchSample.context["batteryPercent"] == .integer(77))
+        #expect(relaunchSample.context["secondsSincePreviousSample"] == nil)
+        diagnosticsLog.setEnabled(false)
+        #expect(batteryMonitoringEnabled)
+        #expect(batteryMonitoringChanges == [true])
+        recorder.recordModeResolution(mode: .stopped,
+                                      applicationState: .active,
+                                      reason: "tracking stopped",
+                                      now: startedAt.addingTimeInterval(1_812))
+        #expect(readingCount == 5)
+        let export = diagnosticsLog.makeExport(appVersion: "3.6", build: "9")
+        #expect(export.loggingEnabledAtExport == false)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        var previousExport = try #require(JSONSerialization.jsonObject(with: encoder.encode(export)) as? [String: Any])
+        previousExport.removeValue(forKey: "loggingEnabledAtExport")
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decodedPreviousExport = try decoder.decode(
+            LocationDiagnosticsExport.self,
+            from: JSONSerialization.data(withJSONObject: previousExport)
+        )
+        #expect(decodedPreviousExport.loggingEnabledAtExport == nil)
+
+        batteryMonitoringEnabled = false
+        defaults.set(true, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        let relaunchedLogWithMonitoring = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            batteryMonitoringControl: batteryMonitoringControl
+        )
+        #expect(batteryMonitoringEnabled)
+        #expect(batteryMonitoringChanges == [true, true])
+        relaunchedLogWithMonitoring.setEnabled(false)
+        #expect(batteryMonitoringEnabled)
+        #expect(batteryMonitoringChanges == [true, true])
+    }
+
     @Test("Recorder logs foreground recovery burst after background gap")
     func recorderLogsForegroundRecoveryBurstAfterBackgroundGap() throws {
         let (recorder, diagnosticsLog, defaults, suiteName, fileURL) = try makeRecorderFixture()
