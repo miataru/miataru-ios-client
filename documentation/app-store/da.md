@@ -18,7 +18,11 @@ Brug widgets til udvalgte enheder, og bed Siri eller Genveje om en enheds senest
 
 ## What's New
 ```text
-Kortets hastighedsvisning og navigationen i fuld skærm viser nu den samme hastighed for din rute. På en rute til en enhed viser de din hastighed; på en rute fra en enhed til dig viser de enhedens hastighed. Hvis værdien mangler, er ugyldig eller forældet, skjules hele hastighedsvisningen inklusive måleenheden.
+Positionsdeling i baggrunden er mere pålidelig efter afbrydelser og genstart af enheden. Positionsopdateringer gemmes ved midlertidige forbindelsesproblemer og sendes senere.
+
+Valgfri diagnosticering omfatter nu batteriniveau og positionsaktivitet, så det er lettere at undersøge manglende opdateringer.
+
+Kortet og navigationen i fuld skærm viser nu den hastighed, der passer til rutens retning.
 ```
 
 ## Keywords

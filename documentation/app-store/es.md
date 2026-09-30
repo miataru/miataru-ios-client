@@ -18,7 +18,11 @@ Usa widgets para los dispositivos que elijas y pide a Siri o Atajos la última u
 
 ## What's New
 ```text
-El indicador de velocidad del mapa y la vista de navegación a pantalla completa muestran ahora el mismo valor para tu ruta. En una ruta hacia un dispositivo, muestran tu velocidad; en una ruta desde ese dispositivo hasta ti, la de ese dispositivo. Si el valor falta, no es válido o está desactualizado, se oculta toda la indicación de velocidad, incluida la unidad.
+Compartir la ubicación en segundo plano es más fiable tras las interrupciones y los reinicios del dispositivo. Las actualizaciones de ubicación se conservan durante los problemas temporales de conexión y se envían más tarde.
+
+El diagnóstico opcional ahora incluye el nivel de batería y la actividad de ubicación para ayudar a investigar las interrupciones.
+
+El mapa y la navegación a pantalla completa muestran ahora la velocidad correspondiente al sentido de tu ruta.
 ```
 
 ## Keywords

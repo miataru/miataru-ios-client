@@ -18,7 +18,11 @@ Utilise des widgets pour les appareils sélectionnés et demande à Siri ou Racc
 
 ## What's New
 ```text
-L’indicateur de vitesse sur la carte et l’affichage de navigation plein écran montrent désormais la même vitesse pour ton itinéraire. Pour un itinéraire vers un appareil, ils indiquent ta vitesse ; pour un itinéraire de cet appareil vers toi, celle de cet appareil. Si la valeur est absente, invalide ou obsolète, toute l’indication de vitesse, unité comprise, est masquée.
+Le partage de position en arrière-plan est plus fiable après une interruption ou le redémarrage de l’appareil. Les mises à jour de position sont conservées en cas de problème de connexion temporaire, puis envoyées plus tard.
+
+Le diagnostic facultatif inclut désormais le niveau de batterie et l’activité de localisation pour aider à comprendre les interruptions.
+
+La carte et la navigation plein écran affichent maintenant la vitesse correspondant au sens de ton itinéraire.
 ```
 
 ## Keywords

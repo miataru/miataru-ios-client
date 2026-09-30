@@ -18,6 +18,14 @@ upload, Apple processing, or App Review outcome.
 3. A physical iPhone check is outside the standard release gate. Perform and
    document it only when explicitly requested, including device, iOS version,
    tested states, observations, and result.
+4. For every build prepared for distribution, update the `What's New` field in
+   all ten shipped-language files under `documentation/app-store/`. Describe
+   verified changes in clear, idiomatic language that tells users what they
+   gain. Prefer concrete features and fixes over internal sequences or
+   implementation details. Do not imply guaranteed background delivery or
+   invent a new feature for a build that contains only maintenance. Review
+   each locale and the live App Store Connect fields separately; local copy
+   does not establish that Apple has received the text.
 
 ## Archive and handoff
 

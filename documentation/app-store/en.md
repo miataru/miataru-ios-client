@@ -18,7 +18,11 @@ Use widgets for selected devices and ask Siri or Shortcuts for a device's last k
 
 ## What's New
 ```text
-The map speed indicator and full-screen navigation view now show the same speed for your route. For a route to a device, they show your speed; for a route from a device to you, they show that device's speed. If a reading is missing, invalid, or outdated, the entire speed display, including its unit, is hidden.
+Background location sharing is more reliable after interruptions and device restarts. Location updates are kept during temporary connection problems and sent later.
+
+Optional diagnostics now include battery level and tracking activity to help investigate gaps.
+
+The map and full-screen navigation now show the speed that matches the direction of your route.
 ```
 
 ## Keywords

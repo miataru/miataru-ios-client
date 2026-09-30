@@ -18,7 +18,11 @@ Nutze Widgets für ausgewählte Geräte und frage Siri oder Kurzbefehle nach dem
 
 ## What's New
 ```text
-Die Geschwindigkeitsanzeige auf der Karte und die Vollbild-Navigation zeigen jetzt für deine Route denselben Wert. Bei einer Route zu einem Gerät wird deine Geschwindigkeit angezeigt, bei einer Route von einem Gerät zu dir dessen Geschwindigkeit. Fehlt ein gültiger Wert oder ist er veraltet, verschwindet die gesamte Geschwindigkeitsanzeige samt Einheit.
+Die Standortfreigabe im Hintergrund ist nach Unterbrechungen und einem Neustart des Geräts zuverlässiger. Bei vorübergehenden Verbindungsproblemen bleiben Standortmeldungen erhalten und werden später gesendet.
+
+Die optionale Diagnose erfasst jetzt Akkustand und Standortaktivität, damit sich Lücken besser untersuchen lassen.
+
+Karte und Vollbild-Navigation zeigen jetzt die zur Routenrichtung passende Geschwindigkeit.
 ```
 
 ## Keywords

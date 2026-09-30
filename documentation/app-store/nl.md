@@ -18,7 +18,11 @@ Gebruik widgets voor geselecteerde apparaten en vraag Siri of Opdrachten naar de
 
 ## What's New
 ```text
-De snelheidsaanduiding op de kaart en de navigatie op volledig scherm tonen nu dezelfde snelheid voor je route. Bij een route naar een apparaat tonen ze jouw snelheid; bij een route vanaf een apparaat naar jou de snelheid van dat apparaat. Ontbreekt de waarde, is die ongeldig of verouderd, dan wordt de volledige snelheidsaanduiding inclusief eenheid verborgen.
+Locaties delen op de achtergrond werkt nu betrouwbaarder na onderbrekingen en een herstart van je apparaat. Locatie-updates blijven bewaard bij tijdelijke verbindingsproblemen en worden later verzonden.
+
+De optionele diagnostiek bevat nu het batterijniveau en de locatieactiviteit, zodat onderbrekingen makkelijker te onderzoeken zijn.
+
+De kaart en de navigatie op volledig scherm tonen nu de snelheid die past bij de richting van je route.
 ```
 
 ## Keywords

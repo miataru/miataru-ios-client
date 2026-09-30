@@ -18,7 +18,11 @@ Käytä valittujen laitteiden widgetejä ja pyydä Siriltä tai Pikakomentoilta 
 
 ## What's New
 ```text
-Kartan nopeusnäyttö ja koko näytön navigointinäkymä näyttävät nyt reitillä saman nopeuden. Laitteelle johtavalla reitillä ne näyttävät oman nopeutesi; laitteesta luoksesi johtavalla reitillä kyseisen laitteen nopeuden. Jos arvo puuttuu, on virheellinen tai vanhentunut, koko nopeusnäyttö yksikköineen piilotetaan.
+Sijainnin jakaminen taustalla toimii aiempaa luotettavammin keskeytysten ja laitteen uudelleenkäynnistyksen jälkeen. Sijaintipäivitykset säilyvät tilapäisten yhteysongelmien aikana ja lähetetään myöhemmin.
+
+Valinnaiset diagnostiikkatiedot sisältävät nyt akun varaustason ja sijaintitoiminnan, mikä helpottaa päivityskatkosten selvittämistä.
+
+Kartta ja koko näytön navigointi näyttävät nyt reitin suunnan mukaisen nopeuden.
 ```
 
 ## Keywords

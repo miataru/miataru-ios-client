@@ -18,7 +18,11 @@ Usa i widget per i dispositivi selezionati e chiedi a Siri o Comandi l’ultima 
 
 ## What's New
 ```text
-L’indicatore di velocità sulla mappa e la navigazione a schermo intero mostrano ora lo stesso valore per il percorso. Per un percorso verso un dispositivo, mostrano la tua velocità; per un percorso dal dispositivo verso di te, quella del dispositivo. Se il valore manca, non è valido o è obsoleto, viene nascosta l’intera indicazione di velocità, unità compresa.
+La condivisione della posizione in background è più affidabile dopo le interruzioni e il riavvio del dispositivo. Gli aggiornamenti della posizione vengono conservati durante i problemi temporanei di connessione e inviati in seguito.
+
+La diagnostica facoltativa ora include il livello della batteria e l’attività di localizzazione per aiutarti a capire eventuali interruzioni.
+
+La mappa e la navigazione a schermo intero mostrano ora la velocità adatta alla direzione del percorso.
 ```
 
 ## Keywords
