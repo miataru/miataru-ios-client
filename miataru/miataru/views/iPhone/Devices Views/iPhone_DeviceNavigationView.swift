@@ -774,7 +774,7 @@ struct iPhone_DeviceNavigationView: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            if route != nil, let formattedSpeed = currentNavigationSpeedLabel {
+            if let formattedSpeed = currentNavigationSpeedLabel {
                 HStack(spacing: 4) {
                     Text(formattedSpeed)
                     Text(String(localized: "navigation_speed_kmh_unit", table: "MapNavigationHistory"))
@@ -1955,7 +1955,8 @@ struct iPhone_DeviceNavigationView: View {
             isDeviceToUser: isRouteFromDeviceToUser,
             trackedSample: latestSuccessfulTargetSpeed,
             ownLocations: [locationManager.latestRawLocation, locationManager.currentLocation],
-            now: now
+            retainedOwnSample: locationManager.latestOwnDeviceSpeedSample,
+            now: Date()
         )
     }
 

@@ -8,6 +8,11 @@ struct NavigationHUDServerSpeedSample: Equatable {
     let timestamp: Date
 }
 
+struct NavigationHUDOwnSpeedSample: Equatable {
+    let metersPerSecond: Double
+    let timestamp: Date
+}
+
 enum NavigationHUDSpeedPolicy {
     static let ownDeviceMaximumAge: TimeInterval = 15
     static let trackedDeviceMaximumAge: TimeInterval = 5 * 60
@@ -40,6 +45,49 @@ enum NavigationHUDSpeedPolicy {
         formattedSpeed(
             metersPerSecond: location?.speed,
             timestamp: location?.timestamp,
+            now: now,
+            maximumAge: ownDeviceMaximumAge
+        )
+    }
+
+    static func updatingOwnDeviceSpeedSample(
+        currentSample: NavigationHUDOwnSpeedSample?,
+        from location: CLLocation,
+        now: Date
+    ) -> NavigationHUDOwnSpeedSample? {
+        guard location.speed.isFinite,
+              location.speed >= 0,
+              location.timestamp <= now else { return currentSample }
+        let age = now.timeIntervalSince(location.timestamp)
+        guard age.isFinite, age >= 0, age <= ownDeviceMaximumAge else { return currentSample }
+        if let currentSample, location.timestamp <= currentSample.timestamp {
+            return currentSample
+        }
+        return NavigationHUDOwnSpeedSample(metersPerSecond: location.speed, timestamp: location.timestamp)
+    }
+
+    static func formattedOwnDeviceSpeed(
+        from locations: [CLLocation?],
+        retainedSample: NavigationHUDOwnSpeedSample?,
+        now: Date
+    ) -> String? {
+        let locationCandidates = locations.compactMap { location -> NavigationHUDOwnSpeedSample? in
+            guard let location,
+                  location.speed.isFinite,
+                  location.speed >= 0 else { return nil }
+            return NavigationHUDOwnSpeedSample(metersPerSecond: location.speed, timestamp: location.timestamp)
+        }
+        let newestCandidate = (locationCandidates + [retainedSample].compactMap { $0 })
+            .filter { formattedSpeed(
+                metersPerSecond: $0.metersPerSecond,
+                timestamp: $0.timestamp,
+                now: now,
+                maximumAge: ownDeviceMaximumAge
+            ) != nil }
+            .max { $0.timestamp < $1.timestamp }
+        return formattedSpeed(
+            metersPerSecond: newestCandidate?.metersPerSecond,
+            timestamp: newestCandidate?.timestamp,
             now: now,
             maximumAge: ownDeviceMaximumAge
         )
@@ -79,12 +127,13 @@ enum NavigationHUDSpeedPolicy {
         isDeviceToUser: Bool,
         trackedSample: NavigationHUDServerSpeedSample?,
         ownLocations: [CLLocation?],
+        retainedOwnSample: NavigationHUDOwnSpeedSample? = nil,
         now: Date
     ) -> String? {
         if isDeviceToUser {
             return formattedTrackedDeviceSpeed(for: trackedSample, now: now)
         }
-        return formattedOwnDeviceSpeed(from: ownLocations, now: now)
+        return formattedOwnDeviceSpeed(from: ownLocations, retainedSample: retainedOwnSample, now: now)
     }
 }
 

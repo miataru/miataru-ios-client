@@ -29,6 +29,8 @@ final class LocationManager: NSObject, ObservableObject {
     /// Most recent CLLocation update without sensitivity filtering.
     /// Use for UI that needs immediate local-device movement feedback.
     @Published private(set) var latestRawLocation: CLLocation?
+    /// Latest valid own-device speed observation, held in memory for navigation presentation only.
+    @Published private(set) var latestOwnDeviceSpeedSample: NavigationHUDOwnSpeedSample?
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
     @Published var lastUpdateTime: Date?
     @Published var isTracking: Bool = false
@@ -3704,6 +3706,11 @@ extension LocationManager: CLLocationManagerDelegate {
                 }
 
                 self.latestRawLocation = location
+                self.latestOwnDeviceSpeedSample = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+                    currentSample: self.latestOwnDeviceSpeedSample,
+                    from: location,
+                    now: sampleProcessingNow
+                )
                 self.persistSmartFrequentBackgroundSeed(with: location)
 
                 let updateCounterMode = Self.locationUpdateCounterMode(

@@ -104,8 +104,9 @@ The following 30 Cursor plans are historical proposals. Their headings describe 
 
 ## Current Project Facts
 
-- Current development checkout: `3.6` build `17` (app and widget). Build 16's earlier accepted upload is historical.
-- Tested input: commit `8d54f3e0` passed the release lane with 409 tests (397 Unit + 12 UI), 0 skipped and 0 failures. Result bundles: `miataru/artifacts/verification/unit-20260930T170900Z-79381.xcresult` and `miataru/artifacts/verification/ui-20260930T172010Z-79381.xcresult`.
+- Current development checkout: `3.6` build `18` (app and widget). The accepted Build 17 upload is historical; Build 18 has not been archived or uploaded.
+- Build 18 candidate verification: the release lane passed with 413 tests (401 Unit + 12 UI), 0 skipped and 0 failures. Result bundles: `miataru/artifacts/verification/unit-20260930T181425Z-89726.xcresult` and `miataru/artifacts/verification/ui-20260930T181713Z-89726.xcresult`. This was a development checkout verification; Build 18 has not been distributed.
+- Previous tested input: Build 17 commit `8d54f3e0` passed the release lane with 409 tests (397 Unit + 12 UI), 0 skipped and 0 failures. Result bundles: `miataru/artifacts/verification/unit-20260930T170900Z-79381.xcresult` and `miataru/artifacts/verification/ui-20260930T172010Z-79381.xcresult`.
 - Archive (2026-09-30 19:28 CEST): `miataru/artifacts/releases/miataru-3.6-17.xcarchive`, with log `miataru/artifacts/releases/archive-3.6-17.log`; app and widget metadata are 3.6/17 for arm64, and their dSYM UUIDs match. The IPA exported at 19:30 CEST is distribution-signed: `miataru/artifacts/releases/export-3.6-17/miataru.ipa`, with log `miataru/artifacts/releases/export-3.6-17.log`.
 - App Store Connect accepted Build 17 on 2026-09-30 at 19:34 CEST. `miataru/artifacts/releases/upload-3.6-17.log` and the archive distribution record show `uploadedBuildNumber=17`, `Upload succeeded`, and no errors or warnings. Apple Processing, TestFlight availability, App Review, and store availability are separate and unconfirmed. The local App Store copy is not evidence that its fields were transferred live.
 - iOS deployment target: `18.6`

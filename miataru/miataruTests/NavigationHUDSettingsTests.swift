@@ -82,6 +82,7 @@ struct NavigationHUDSettingsTests {
             isDeviceToUser: true,
             trackedSample: remote,
             ownLocations: [own],
+            retainedOwnSample: NavigationHUDOwnSpeedSample(metersPerSecond: 5, timestamp: now),
             now: now
         ) == "36")
         #expect(NavigationHUDSpeedPolicy.formattedSpeed(
@@ -94,6 +95,7 @@ struct NavigationHUDSettingsTests {
             isDeviceToUser: true,
             trackedSample: nil,
             ownLocations: [own],
+            retainedOwnSample: NavigationHUDOwnSpeedSample(metersPerSecond: 5, timestamp: now),
             now: now
         ) == nil)
         #expect(NavigationHUDSpeedPolicy.formattedSpeed(
@@ -169,6 +171,150 @@ struct NavigationHUDSettingsTests {
         #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [staleLocation, validCurrentLocation], now: now) == "18")
         #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [futureLocation, validCurrentLocation], now: now) == "18")
         #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [invalidSpeedLocation, staleLocation, futureLocation], now: now) == nil)
+    }
+
+    @Test("Own-device speed keeps the last fresh valid sample when later callbacks have invalid speed")
+    func ownDeviceSpeedRetainsFreshSampleAcrossInvalidCallbacks() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        func location(speed: CLLocationSpeed, age: TimeInterval) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+                altitude: 0,
+                horizontalAccuracy: 5,
+                verticalAccuracy: 5,
+                course: 0,
+                speed: speed,
+                timestamp: now.addingTimeInterval(-age)
+            )
+        }
+
+        let priorValid = location(speed: 5, age: 2)
+        let currentSample = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: nil,
+            from: priorValid,
+            now: now
+        )
+        let invalidAcceptedUpdate = location(speed: -1, age: 1)
+        let afterInvalidUpdate = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: currentSample,
+            from: invalidAcceptedUpdate,
+            now: now
+        )
+
+        #expect(afterInvalidUpdate == currentSample)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(
+            from: [invalidAcceptedUpdate],
+            retainedSample: afterInvalidUpdate,
+            now: now
+        ) == "18")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(
+            from: [invalidAcceptedUpdate],
+            retainedSample: afterInvalidUpdate,
+            now: now.addingTimeInterval(13)
+        ) == "18")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(
+            from: [invalidAcceptedUpdate],
+            retainedSample: afterInvalidUpdate,
+            now: now.addingTimeInterval(13.01)
+        ) == nil)
+    }
+
+    @Test("A newer valid own-speed sample replaces the cached value and zero remains valid")
+    func newerOwnSpeedSampleReplacesOldAndZeroIsValid() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        func location(speed: CLLocationSpeed, age: TimeInterval) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+                altitude: 0,
+                horizontalAccuracy: 5,
+                verticalAccuracy: 5,
+                course: 0,
+                speed: speed,
+                timestamp: now.addingTimeInterval(-age)
+            )
+        }
+
+        let oldSample = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: nil,
+            from: location(speed: 5, age: 3),
+            now: now
+        )
+        let newerMovingSample = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: oldSample,
+            from: location(speed: 10, age: 2),
+            now: now
+        )
+        let newerStoppedSample = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: newerMovingSample,
+            from: location(speed: 0, age: 1),
+            now: now
+        )
+
+        #expect(newerMovingSample?.metersPerSecond == 10)
+        #expect(newerStoppedSample?.metersPerSecond == 0)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(
+            from: [],
+            retainedSample: newerStoppedSample,
+            now: now
+        ) == "0")
+    }
+
+    @Test("Own-device speed cache ignores stale, future, and out-of-order observations")
+    func ownDeviceSpeedSampleRejectsStaleFutureAndOutOfOrderUpdates() {
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        func location(speed: CLLocationSpeed, age: TimeInterval) -> CLLocation {
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+                altitude: 0,
+                horizontalAccuracy: 5,
+                verticalAccuracy: 5,
+                course: 0,
+                speed: speed,
+                timestamp: now.addingTimeInterval(-age)
+            )
+        }
+        let current = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: nil,
+            from: location(speed: 10, age: 2),
+            now: now
+        )
+        let stale = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: current,
+            from: location(speed: 20, age: 15.01),
+            now: now
+        )
+        let future = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: current,
+            from: location(speed: 20, age: -0.01),
+            now: now
+        )
+        let outOfOrder = NavigationHUDSpeedPolicy.updatingOwnDeviceSpeedSample(
+            currentSample: current,
+            from: location(speed: 20, age: 3),
+            now: now
+        )
+
+        #expect(stale == current)
+        #expect(future == current)
+        #expect(outOfOrder == current)
+    }
+
+    @Test("Own-device speed uses sample time rather than a delayed one-second display tick")
+    func ownDeviceSpeedDoesNotRejectSampleNewerThanPreviousDisplayTick() {
+        let sampleTimestamp = Date(timeIntervalSince1970: 1_800_000_001)
+        let sample = NavigationHUDOwnSpeedSample(metersPerSecond: 10, timestamp: sampleTimestamp)
+        let previousDisplayTick = sampleTimestamp.addingTimeInterval(-0.25)
+
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(
+            from: [],
+            retainedSample: sample,
+            now: previousDisplayTick
+        ) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(
+            from: [],
+            retainedSample: sample,
+            now: sampleTimestamp.addingTimeInterval(0.25)
+        ) == "36")
     }
 
     @Test("HUD palette and mirror choice persist across settings store instances")

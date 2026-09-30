@@ -1,6 +1,6 @@
 # miataru App - Feature and Developer Guide
 
-This document describes the current user-facing and developer-facing feature set of the miataru iOS app in the **3.6 (build 17) development checkout**.
+This document describes the current user-facing and developer-facing feature set of the miataru iOS app in the **3.6 (build 18) development checkout**.
 
 ## App Navigation and Views
 
@@ -225,7 +225,7 @@ This document describes the current user-facing and developer-facing feature set
 
 ## Navigation HUD and Live Activity
 
-The full-screen navigation HUD, introduced in 3.5, provides high-contrast palettes, optional mirroring, route and device vectors, and accessible controls. In 3.6, navigation speed follows the selected route direction: own-device speed when navigating to a device, and the tracked device's latest successful speed when navigating from it to the user. The speed is hidden when no valid speed reading is available. A Navigation Live Activity can present target, route time/distance, and guidance in the background; iOS scheduling and permission determine actual delivery. The current behavior and limits are detailed in `documentation/navigation-routing-and-mutual-navigation.md`.
+The full-screen navigation HUD, introduced in 3.5, provides high-contrast palettes, optional mirroring, route and device vectors, and accessible controls. In 3.6, navigation speed follows the selected route direction: own-device speed when navigating to a device, and the tracked device's latest successful speed when navigating from it to the user. A fresh valid own-speed reading remains available during route recalculation and brief invalid speed updates for up to 15 seconds; the speed is hidden when no valid reading remains. A Navigation Live Activity can present target, route time/distance, and guidance in the background; iOS scheduling and permission determine actual delivery. The current behavior and limits are detailed in `documentation/navigation-routing-and-mutual-navigation.md`.
 
 ## Caching and Reverse Geocoding
 
