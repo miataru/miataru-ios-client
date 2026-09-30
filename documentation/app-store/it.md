@@ -18,7 +18,7 @@ Usa i widget per i dispositivi selezionati e chiedi a Siri o Comandi l’ultima 
 
 ## What's New
 ```text
-La condivisione della posizione in background riprende in modo più affidabile dopo le interruzioni. Dopo un riavvio, le impostazioni di tracciamento vengono ripristinate al primo sblocco del dispositivo. Durante gli spostamenti, il tracciamento Smart funziona in modo più efficiente senza ridurre il dettaglio o la frequenza degli aggiornamenti della posizione. Gli aggiornamenti della posizione vengono conservati durante i problemi temporanei di connessione e inviati in seguito. Se arrivano più posizioni insieme, vengono inviate nell’ordine corretto, così quella più recente resta aggiornata.
+La condivisione della posizione in background riprende in modo più affidabile dopo le interruzioni. Dopo un riavvio, le impostazioni di tracciamento vengono ripristinate al primo sblocco del dispositivo. Durante gli spostamenti, il tracciamento Smart funziona in modo più efficiente senza ridurre il dettaglio o la frequenza degli aggiornamenti della posizione. Gli aggiornamenti della posizione vengono conservati durante i problemi temporanei di connessione e inviati in seguito. Se arrivano più posizioni insieme, vengono inviate nell’ordine corretto, così quella più recente resta aggiornata. Durante la navigazione, la velocità del tuo dispositivo si basa ora sul dato di posizione valido più recente. Un dato più nuovo senza velocità valida non nasconde più per un momento una velocità ancora valida.
 
 La mappa e la navigazione a schermo intero mostrano ora la velocità adatta alla direzione del percorso.
 ```

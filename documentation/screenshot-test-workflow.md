@@ -133,7 +133,7 @@ All PNGs and metadata are written to:
 - `MARKETING_VERSION` (version)
 - `CURRENT_PROJECT_VERSION` (build)
 
-Example for the current development checkout: `v3-5-b3`
+Example for the current development checkout: `v3-6-b17`
 
 ## Skip Behavior (11 scenarios)
 

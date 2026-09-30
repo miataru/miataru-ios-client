@@ -18,7 +18,7 @@ Nutze Widgets für ausgewählte Geräte und frage Siri oder Kurzbefehle nach dem
 
 ## What's New
 ```text
-Die Standortfreigabe im Hintergrund setzt nach Unterbrechungen zuverlässiger wieder ein. Nach einem Geräteneustart werden deine Tracking-Einstellungen beim ersten Entsperren wiederhergestellt. Auf Wegen und Fahrten arbeitet Smart-Tracking jetzt effizienter, ohne die Genauigkeit oder Häufigkeit deiner Standortmeldungen zu verringern. Bei vorübergehenden Verbindungsproblemen bleiben Standortmeldungen erhalten und werden später gesendet. Treffen mehrere Standorte auf einmal ein, werden sie in der richtigen Reihenfolge gesendet, damit die neueste Position aktuell bleibt.
+Die Standortfreigabe im Hintergrund setzt nach Unterbrechungen zuverlässiger wieder ein. Nach einem Geräteneustart werden deine Tracking-Einstellungen beim ersten Entsperren wiederhergestellt. Auf Wegen und Fahrten arbeitet Smart-Tracking jetzt effizienter, ohne die Genauigkeit oder Häufigkeit deiner Standortmeldungen zu verringern. Bei vorübergehenden Verbindungsproblemen bleiben Standortmeldungen erhalten und werden später gesendet. Treffen mehrere Standorte auf einmal ein, werden sie in der richtigen Reihenfolge gesendet, damit die neueste Position aktuell bleibt. Während der Navigation nutzt die Anzeige deiner eigenen Geschwindigkeit jetzt den neuesten gültigen Standortmesswert. Ein neuerer Messwert ohne gültige Geschwindigkeit verdrängt keinen noch gültigen Geschwindigkeitswert mehr.
 
 Karte und Vollbild-Navigation zeigen jetzt die zur Routenrichtung passende Geschwindigkeit.
 ```

@@ -18,7 +18,7 @@ Gebruik widgets voor geselecteerde apparaten en vraag Siri of Opdrachten naar de
 
 ## What's New
 ```text
-Locaties delen op de achtergrond wordt na onderbrekingen betrouwbaarder hervat. Na een herstart worden je trackinginstellingen hersteld zodra je het apparaat voor het eerst ontgrendelt. Onderweg werkt Smart-tracking efficiënter, zonder minder details of minder vaak je locatie te melden. Locatie-updates blijven bewaard bij tijdelijke verbindingsproblemen en worden later verzonden. Als meerdere locaties tegelijk binnenkomen, worden ze op volgorde verstuurd, zodat de nieuwste locatie actueel blijft.
+Locaties delen op de achtergrond wordt na onderbrekingen betrouwbaarder hervat. Na een herstart worden je trackinginstellingen hersteld zodra je het apparaat voor het eerst ontgrendelt. Onderweg werkt Smart-tracking efficiënter, zonder minder details of minder vaak je locatie te melden. Locatie-updates blijven bewaard bij tijdelijke verbindingsproblemen en worden later verzonden. Als meerdere locaties tegelijk binnenkomen, worden ze op volgorde verstuurd, zodat de nieuwste locatie actueel blijft. Tijdens navigatie gebruikt de weergave van je eigen snelheid nu de nieuwste geldige locatie. Een nieuwere meting zonder geldige snelheid verbergt een nog geldige snelheidswaarde niet meer kortstondig.
 
 De kaart en de navigatie op volledig scherm tonen nu de snelheid die past bij de richting van je route.
 ```
