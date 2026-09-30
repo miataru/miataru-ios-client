@@ -1048,6 +1048,169 @@ struct SettingsConfigurationTests {
         #expect(secondExportObject["exportID"] as? String != exportID)
     }
 
+    @Test("Unreadable diagnostics history is preserved and merged after unlock")
+    @MainActor
+    func unreadableDiagnosticsHistoryIsPreservedUntilUnlock() throws {
+        let suiteName = "LocationDiagnosticsProtectedReadTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationDiagnosticsProtectedReadTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+
+        let previousLog = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            registersLifecycleFlushObservers: false
+        )
+        previousLog.setEnabled(true)
+        previousLog.append(
+            level: .warning,
+            event: "beforeUnlock",
+            summary: "Before",
+            result: "stored",
+            timestamp: Date(timeIntervalSince1970: 1_000),
+            persistence: .immediate
+        )
+        previousLog.appendCoalesced(
+            level: .info,
+            event: "locationCallback",
+            summary: "Callback",
+            result: "stored",
+            coalescingKey: "locationCallback|background",
+            timestamp: Date(timeIntervalSince1970: 1_001),
+            persistence: .immediate
+        )
+        let previousBytes = try Data(contentsOf: fileURL)
+
+        var canRead = false
+        var protectedDataAvailable = false
+        let notificationCenter = NotificationCenter()
+        let relaunchedLog = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            readFile: { url in
+                guard canRead else { throw CocoaError(.fileReadNoPermission) }
+                return try Data(contentsOf: url)
+            },
+            protectedDataAvailable: { protectedDataAvailable },
+            notificationCenter: notificationCenter,
+            automaticallyFlushesDeferredPersistence: false
+        )
+        #expect(relaunchedLog.entries.isEmpty)
+        relaunchedLog.append(
+            level: .warning,
+            event: "duringUnlock",
+            summary: "During",
+            result: "pending",
+            timestamp: Date(timeIntervalSince1970: 2_000),
+            persistence: .immediate
+        )
+        relaunchedLog.appendCoalesced(
+            level: .info,
+            event: "locationCallback",
+            summary: "Callback",
+            result: "pending",
+            coalescingKey: "locationCallback|background",
+            timestamp: Date(timeIntervalSince1970: 2_001),
+            persistence: .immediate
+        )
+        #expect(relaunchedLog.hasPendingPersistence)
+        #expect(relaunchedLog.persistenceWriteCount == 0)
+        #expect(try Data(contentsOf: fileURL) == previousBytes)
+        #expect(throws: CocoaError.self) { try relaunchedLog.exportData(appVersion: "3.6", build: "12") }
+
+        canRead = true
+        protectedDataAvailable = true
+        notificationCenter.post(name: UIApplication.protectedDataDidBecomeAvailableNotification, object: nil)
+        #expect(!relaunchedLog.hasPendingPersistence)
+        #expect(relaunchedLog.persistenceWriteCount == 1)
+        #expect(relaunchedLog.entries.contains { $0.event == "beforeUnlock" })
+        #expect(relaunchedLog.entries.contains { $0.event == "duringUnlock" })
+        #expect(relaunchedLog.coalescedCounts.first?.count == 2)
+
+        let reloadedLog = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, registersLifecycleFlushObservers: false)
+        #expect(reloadedLog.entries == relaunchedLog.entries)
+        #expect(reloadedLog.coalescedCounts == relaunchedLog.coalescedCounts)
+    }
+
+    @Test("Apparently missing diagnostics file is not created before first unlock")
+    @MainActor
+    func diagnosticsFileCreationWaitsForProtectedData() throws {
+        let suiteName = "LocationDiagnosticsFirstUnlockTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        defaults.set(true, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationDiagnosticsFirstUnlockTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+        var protectedDataAvailable = false
+        let notificationCenter = NotificationCenter()
+        let log = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            protectedDataAvailable: { protectedDataAvailable },
+            notificationCenter: notificationCenter,
+            automaticallyFlushesDeferredPersistence: false
+        )
+
+        log.append(level: .info, event: "earlyLaunch", summary: "Early", result: "pending", persistence: .immediate)
+        #expect(log.hasPendingPersistence)
+        #expect(!FileManager.default.fileExists(atPath: fileURL.path))
+
+        protectedDataAvailable = true
+        notificationCenter.post(name: UIApplication.protectedDataDidBecomeAvailableNotification, object: nil)
+        #expect(!log.hasPendingPersistence)
+        #expect(FileManager.default.fileExists(atPath: fileURL.path))
+        let reloadedLog = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, registersLifecycleFlushObservers: false)
+        #expect(reloadedLog.entries.map(\.event) == ["earlyLaunch"])
+    }
+
+    @Test("Previous diagnostics become visible after unlock without a new event")
+    @MainActor
+    func diagnosticsHistoryReloadsAfterUnlockWithoutPendingWrites() throws {
+        let suiteName = "LocationDiagnosticsUnlockReloadTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let directoryURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("LocationDiagnosticsUnlockReloadTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directoryURL) }
+        let fileURL = directoryURL.appendingPathComponent("diagnostics.json")
+        let previousLog = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, registersLifecycleFlushObservers: false)
+        previousLog.setEnabled(true)
+        previousLog.append(level: .info, event: "beforeReboot", summary: "Previous", result: "stored", persistence: .immediate)
+        let previousBytes = try Data(contentsOf: fileURL)
+
+        var canRead = false
+        var protectedDataAvailable = false
+        let notificationCenter = NotificationCenter()
+        let relaunchedLog = LocationDiagnosticsLogStore(
+            userDefaults: defaults,
+            fileURL: fileURL,
+            readFile: { url in
+                guard canRead else { throw CocoaError(.fileReadNoPermission) }
+                return try Data(contentsOf: url)
+            },
+            protectedDataAvailable: { protectedDataAvailable },
+            notificationCenter: notificationCenter,
+            registersLifecycleFlushObservers: true
+        )
+        #expect(relaunchedLog.entries.isEmpty)
+        #expect(!relaunchedLog.hasPendingPersistence)
+
+        canRead = true
+        protectedDataAvailable = true
+        notificationCenter.post(name: UIApplication.protectedDataDidBecomeAvailableNotification, object: nil)
+        #expect(relaunchedLog.entries.map(\.event) == ["beforeReboot"])
+        #expect(relaunchedLog.persistenceWriteCount == 0)
+        #expect(try Data(contentsOf: fileURL) == previousBytes)
+    }
+
     @Test("Location diagnostics keeps critical entries while coalescing noisy updates")
     @MainActor
     func locationDiagnosticsKeepsCriticalEntriesWhileCoalescingNoisyUpdates() throws {

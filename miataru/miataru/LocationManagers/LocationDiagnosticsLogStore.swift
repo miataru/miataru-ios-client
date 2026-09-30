@@ -223,6 +223,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private let userDefaults: UserDefaults
     private let fileURL: URL
     private let fileManager: FileManager
+    private let readFile: (URL) throws -> Data
+    private let protectedDataAvailable: () -> Bool
     private let notificationCenter: NotificationCenter
     private let diagnosticsSourceID: String
     private let persistenceEncoder = JSONEncoder()
@@ -233,12 +235,15 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private let batteryMonitoringControl: LocationDiagnosticsBatteryMonitoringControl?
     private var deferredPersistenceWorkItem: DispatchWorkItem?
     private var lifecycleObserverTokens: [NSObjectProtocol] = []
+    private var didLoadPersistedLog = false
 
     init(userDefaults: UserDefaults = .standard,
          fileURL: URL? = nil,
          maxEntries: Int = LocationDiagnosticsLogStore.defaultMaxEntries,
          coalescedCountLimit: Int = LocationDiagnosticsLogStore.defaultCoalescedCountLimit,
          fileManager: FileManager = .default,
+         readFile: @escaping (URL) throws -> Data = { try Data(contentsOf: $0) },
+         protectedDataAvailable: @escaping () -> Bool = { UIApplication.shared.isProtectedDataAvailable },
          notificationCenter: NotificationCenter = .default,
          deferredPersistenceInterval: TimeInterval = LocationDiagnosticsLogStore.defaultDeferredPersistenceInterval,
          automaticallyFlushesDeferredPersistence: Bool = true,
@@ -250,6 +255,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         self.maxEntries = max(1, maxEntries)
         self.coalescedCountLimit = max(1, coalescedCountLimit)
         self.fileURL = fileURL ?? Self.defaultLogFileURL(fileManager: fileManager)
+        self.readFile = readFile
+        self.protectedDataAvailable = protectedDataAvailable
         self.isEnabled = userDefaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
         self.diagnosticsSourceID = Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
         self.deferredPersistenceInterval = max(0.1, deferredPersistenceInterval)
@@ -259,10 +266,18 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         exportEncoder.dateEncodingStrategy = .iso8601
         exportEncoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         decoder.dateDecodingStrategy = .iso8601
-        let persistedLog = Self.loadPersistedLog(from: self.fileURL, decoder: decoder, fileManager: fileManager)
-        entries = persistedLog.entries
-        coalescedCounts = persistedLog.coalescedCounts
-        droppedEntryCount = persistedLog.droppedEntryCount
+        if case .loaded(let persistedLog) = Self.loadPersistedLog(
+            from: self.fileURL,
+            decoder: decoder,
+            fileManager: fileManager,
+            readFile: readFile,
+            protectedDataAvailable: protectedDataAvailable()
+        ) {
+            didLoadPersistedLog = true
+            entries = persistedLog.entries
+            coalescedCounts = persistedLog.coalescedCounts
+            droppedEntryCount = persistedLog.droppedEntryCount
+        }
         if registersLifecycleFlushObservers {
             registerLifecycleFlushObservers()
         }
@@ -302,11 +317,13 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     func clear() {
         cancelDeferredPersistence()
-        hasPendingPersistence = false
         entries = []
         coalescedCounts = []
         droppedEntryCount = 0
+        // Clearing is explicit: do not merge a previously unreadable log back in.
+        didLoadPersistedLog = true
         try? fileManager.removeItem(at: fileURL)
+        recordPersistenceChange(policy: .immediate)
         notificationCenter.post(name: .miataruLocalStorageUsageDidChange, object: nil)
     }
 
@@ -428,11 +445,16 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     func exportData(appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown",
                     build: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown") throws -> Data {
-        try exportEncoder.encode(makeExport(appVersion: appVersion, build: build))
+        let export = makeExport(appVersion: appVersion, build: build)
+        // An export containing only post-launch entries would hide older evidence while
+        // the protected log is temporarily unreadable.
+        guard didLoadPersistedLog else { throw CocoaError(.fileReadNoPermission) }
+        return try exportEncoder.encode(export)
     }
 
     func flushPendingPersistence() {
         cancelDeferredPersistence()
+        guard recoverPersistedLogIfNeeded() else { return }
         guard hasPendingPersistence else { return }
         _ = persist()
     }
@@ -495,7 +517,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private func registerLifecycleFlushObservers() {
         [
             UIApplication.didEnterBackgroundNotification,
-            UIApplication.willTerminateNotification
+            UIApplication.willTerminateNotification,
+            UIApplication.protectedDataDidBecomeAvailableNotification
         ].forEach { name in
             let token = notificationCenter.addObserver(forName: name, object: nil, queue: nil) { [weak self] _ in
                 self?.flushPendingPersistence()
@@ -506,6 +529,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     @discardableResult
     private func persist() -> Bool {
+        guard protectedDataAvailable() else { return false }
         do {
             try fileManager.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
             let data = try persistenceEncoder.encode(LocationDiagnosticsPersistedLog(
@@ -522,6 +546,55 @@ final class LocationDiagnosticsLogStore: ObservableObject {
             debugLog("[LocationDiagnosticsLogStore] Failed persisting diagnostics log: \(error)")
             return false
         }
+    }
+
+    private func recoverPersistedLogIfNeeded() -> Bool {
+        // Before first unlock, an existing protected file may appear absent. Never
+        // replace it with the incomplete in-memory log from this launch.
+        guard protectedDataAvailable() else { return false }
+        guard !didLoadPersistedLog else { return true }
+        guard case .loaded(let persistedLog) = Self.loadPersistedLog(
+            from: fileURL,
+            decoder: decoder,
+            fileManager: fileManager,
+            readFile: readFile,
+            protectedDataAvailable: true
+        ) else {
+            return false
+        }
+        mergeRecoveredLog(persistedLog)
+        didLoadPersistedLog = true
+        return true
+    }
+
+    private func mergeRecoveredLog(_ persistedLog: LocationDiagnosticsPersistedLog) {
+        entries = persistedLog.entries + entries
+        let (dropped, overflow) = persistedLog.droppedEntryCount.addingReportingOverflow(droppedEntryCount)
+        droppedEntryCount = overflow ? Int.max : dropped
+        trimToLimit()
+
+        var mergedCounts = persistedLog.coalescedCounts
+        for pending in coalescedCounts {
+            if let index = mergedCounts.firstIndex(where: { $0.key == pending.key }) {
+                let previous = mergedCounts[index]
+                let (count, overflow) = previous.count.addingReportingOverflow(pending.count)
+                mergedCounts[index] = LocationDiagnosticsCoalescedCount(
+                    key: pending.key,
+                    event: pending.event,
+                    summary: pending.summary,
+                    result: pending.result,
+                    reason: pending.reason,
+                    firstAt: min(previous.firstAt, pending.firstAt),
+                    lastAt: max(previous.lastAt, pending.lastAt),
+                    count: overflow ? Int.max : count,
+                    lastContext: pending.lastAt >= previous.lastAt ? pending.lastContext : previous.lastContext
+                )
+            } else {
+                mergedCounts.append(pending)
+            }
+        }
+        coalescedCounts = mergedCounts
+        trimCoalescedCountsToLimit()
     }
 
     private func trimToLimit() {
@@ -552,19 +625,34 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         droppedEntryCount += overflowCount
     }
 
+    private enum PersistedLogRead {
+        case loaded(LocationDiagnosticsPersistedLog)
+        case unavailable
+    }
+
     private static func loadPersistedLog(from fileURL: URL,
                                          decoder: JSONDecoder,
-                                         fileManager: FileManager) -> LocationDiagnosticsPersistedLog {
-        guard fileManager.fileExists(atPath: fileURL.path),
-              let data = try? Data(contentsOf: fileURL) else {
-            return .empty
+                                         fileManager: FileManager,
+                                         readFile: (URL) throws -> Data,
+                                         protectedDataAvailable: Bool) -> PersistedLogRead {
+        let data: Data
+        do {
+            data = try readFile(fileURL)
+        } catch {
+            let nsError = error as NSError
+            let missing = (nsError.domain == NSCocoaErrorDomain && nsError.code == NSFileReadNoSuchFileError) ||
+                (nsError.domain == NSPOSIXErrorDomain && nsError.code == Int(ENOENT))
+            if missing && protectedDataAvailable {
+                return .loaded(.empty)
+            }
+            return .unavailable
         }
         if let persistedLog = try? decoder.decode(LocationDiagnosticsPersistedLog.self, from: data),
            persistedLog.schemaVersion == schemaVersion {
-            return persistedLog
+            return .loaded(persistedLog)
         }
         try? fileManager.removeItem(at: fileURL)
-        return .empty
+        return .loaded(.empty)
     }
 
     private struct LocationDiagnosticsPersistedLog: Codable, Equatable {

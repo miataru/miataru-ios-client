@@ -1,4 +1,5 @@
 version 3.6
+- Preserved location diagnostics across temporarily unreadable protected storage after reboot: early events wait in memory, merge with prior history after unlock, and cannot overwrite that history or produce an incomplete export.
 - Enabling the triple-tap location diagnostics now activates logging and battery monitoring synchronously, then captures an immediate battery and tracking baseline.
 - Preserved the existing Device ID when storage is temporarily unreadable after a background launch or reboot; new identities are used only after successful persistence, and uploads wait for a valid saved ID.
 - Retried tracking and settings reconciliation after protected data becomes available, and prevented unavailable identity data from overwriting known-device or widget state.

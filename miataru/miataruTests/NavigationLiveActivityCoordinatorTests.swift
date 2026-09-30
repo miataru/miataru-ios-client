@@ -55,8 +55,10 @@ struct NavigationLiveActivityCoordinatorTests {
         await settle()
         harness.coordinator.sceneDidEnterBackground()
 
+        await waitUntil { harness.client.isObservingLifecycle(id: "activity-1") }
+        #expect(harness.client.isObservingLifecycle(id: "activity-1"))
         harness.client.sendLifecycle(.inactive, for: "activity-1")
-        await settle()
+        await waitUntil { harness.coordinator.activityID == nil }
         #expect(harness.coordinator.activityID == nil)
 
         harness.coordinator.sceneDidBecomeActive()
@@ -350,6 +352,13 @@ struct NavigationLiveActivityCoordinatorTests {
         await Task.yield()
         try? await Task.sleep(nanoseconds: 10_000_000)
     }
+
+    private func waitUntil(_ condition: @MainActor () -> Bool) async {
+        for _ in 0..<200 {
+            if condition() { return }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+    }
 }
 
 @MainActor
@@ -401,6 +410,10 @@ private final class FakeNavigationLiveActivityClient: NavigationLiveActivityClie
             lifecycleContinuations[id] = continuation
             continuation.yield(records.contains { $0.id == id } ? .active : .inactive)
         }
+    }
+
+    func isObservingLifecycle(id: String) -> Bool {
+        lifecycleContinuations[id] != nil
     }
 
     func sendLifecycle(_ state: NavigationLiveActivityLifecycleState, for id: String) {
