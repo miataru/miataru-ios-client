@@ -85,6 +85,46 @@ final class LocationUpdateUploadService {
         return .delivery(result)
     }
 
+    @MainActor
+    func submitBatch(locations: [CLLocation],
+                     serverURL: URL,
+                     deviceID: String,
+                     deviceKey: String?,
+                     enableHistory: Bool,
+                     retentionTime: Int,
+                     deliveryDelay: TimeInterval?,
+                     visitorCheckMinimumInterval: TimeInterval?,
+                     processKnownVisitorAlerts: Bool,
+                     applicationState: UIApplication.State,
+                     batteryLevel: Float) async -> [SubmissionResult] {
+        let payloads = locations.map {
+            Self.payload(from: $0, deviceID: deviceID, deviceKey: deviceKey, batteryLevel: batteryLevel)
+        }
+        let validPayloads = payloads.compactMap { $0 }
+        guard !validPayloads.isEmpty else {
+            return locations.map { _ in .invalidPayload }
+        }
+
+        let backgroundTask = beginBackgroundTaskIfNeeded(for: applicationState)
+        defer { backgroundTask?.end() }
+        let deliveryResults = await coordinator.submitBatch(
+            serverURL: serverURL,
+            payloads: validPayloads,
+            enableHistory: enableHistory,
+            retentionTime: retentionTime,
+            deliveryDelay: deliveryDelay,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts,
+            flushPendingDuringSubmission: applicationState != .active && (deliveryDelay ?? 0) <= 0
+        )
+        var resultIndex = 0
+        return payloads.map { payload in
+            guard payload != nil else { return .invalidPayload }
+            defer { resultIndex += 1 }
+            return .delivery(deliveryResults[resultIndex])
+        }
+    }
+
     static func payload(from location: CLLocation,
                         deviceID: String,
                         deviceKey: String?,

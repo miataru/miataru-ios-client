@@ -200,6 +200,26 @@ actor LocationUpdateOutboxStore {
         return commit(updatedItems)
     }
 
+    /// Persists one Core Location callback as a single ordered outbox change.
+    /// No network request can overtake a later sample in the same callback.
+    @discardableResult
+    func enqueueBatch(_ batch: [LocationUpdateOutboxItem]) -> Bool {
+        guard !batch.isEmpty else { return true }
+        pruneExpiredEntriesIfNeeded()
+        guard !storageUnavailable else { return false }
+
+        var updatedItems = items
+        var knownKeys = Set(updatedItems.map(\.dedupeKey))
+        for item in batch where knownKeys.insert(item.dedupeKey).inserted {
+            updatedItems.append(item)
+        }
+        guard updatedItems.count != items.count else { return true }
+        if updatedItems.count > maxItems {
+            updatedItems.removeFirst(updatedItems.count - maxItems)
+        }
+        return commit(updatedItems)
+    }
+
     @discardableResult
     func enqueueAtFront(
         serverURL: URL,

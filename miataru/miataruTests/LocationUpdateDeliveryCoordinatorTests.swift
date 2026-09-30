@@ -1562,6 +1562,192 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(await sender.callCount == 0)
     }
 
+    @Test("Callback batch is durable and chronological before its first network response")
+    func callbackBatchIsDurableBeforeFirstNetworkResponse() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+        let sendTask = Task {
+            await coordinator.submitBatch(
+                serverURL: URL(string: "https://example.org")!,
+                payloads: [payload(timestamp: "1"), payload(timestamp: "2"), payload(timestamp: "3")],
+                enableHistory: true,
+                retentionTime: 60,
+                flushPendingDuringSubmission: true
+            )
+        }
+        await sender.waitForFirstCall()
+
+        let relaunchedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        #expect(await relaunchedStore.itemsSnapshot().map(\.payload.Timestamp) == ["1", "2", "3"])
+        await sender.releaseFirstCall()
+        let results = await sendTask.value
+        #expect(results.count == 3)
+        for result in results {
+            if case .sent = result {
+            } else {
+                Issue.record("Every acknowledged callback sample should report sent")
+            }
+        }
+        #expect(await sender.sentTimestamps == ["1", "2", "3"])
+        #expect(await store.count() == 0)
+    }
+
+    @Test("Failed callback batch survives relaunch with its newest point last")
+    func failedCallbackBatchReplaysInOrderAfterRelaunch() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let failingSender = MockUpdateSender(outcomes: [
+            .failure(MiataruAPIClient.APIError.requestFailed(URLError(.timedOut)))
+        ])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await failingSender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+        let results = await coordinator.submitBatch(
+            serverURL: URL(string: "https://example.org")!,
+            payloads: [payload(timestamp: "1"), payload(timestamp: "2"), payload(timestamp: "3")],
+            enableHistory: true,
+            retentionTime: 60,
+            flushPendingDuringSubmission: true
+        )
+        #expect(results.count == 3)
+        for result in results {
+            if case .queued = result {
+            } else {
+                Issue.record("Every sample should remain queued after a retryable head failure")
+            }
+        }
+        #expect(await store.itemsSnapshot().map(\.payload.Timestamp) == ["1", "2", "3"])
+
+        let relaunchedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let recoverySender = MockUpdateSender(outcomes: [])
+        let relaunchedCoordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: relaunchedStore,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await recoverySender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+        await relaunchedCoordinator.start()
+        #expect(await recoverySender.sentTimestamps == ["1", "2", "3"])
+        #expect(await relaunchedStore.count() == 0)
+        await relaunchedCoordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Callback batch queues behind an in-flight upload without waiting for it")
+    func callbackBatchQueuesBehindInFlightUpload() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        let sender = BlockingFirstUpdateSender()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            deferredFlushDelay: 0.05,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+        let firstTask = Task {
+            await coordinator.submit(
+                serverURL: URL(string: "https://example.org")!,
+                payload: payload(timestamp: "1"),
+                enableHistory: true,
+                retentionTime: 60
+            )
+        }
+        await sender.waitForFirstCall()
+
+        let results = await coordinator.submitBatch(
+            serverURL: URL(string: "https://example.org")!,
+            payloads: [payload(timestamp: "2"), payload(timestamp: "3")],
+            enableHistory: true,
+            retentionTime: 60,
+            flushPendingDuringSubmission: true
+        )
+        #expect(results.count == 2)
+        for result in results {
+            if case .queued = result {
+            } else {
+                Issue.record("A blocked older upload should not block batch persistence")
+            }
+        }
+        let relaunchedStore = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        #expect(await relaunchedStore.itemsSnapshot().map(\.payload.Timestamp) == ["1", "2", "3"])
+
+        await sender.releaseFirstCall()
+        _ = await firstTask.value
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
+    @Test("Background callback batch drains an older outbox before returning")
+    @MainActor
+    func backgroundCallbackBatchDrainsOlderOutbox() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let serverURL = URL(string: "https://example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        await store.enqueue(serverURL: serverURL, payload: payload(timestamp: "old"), enableHistory: true, retentionTime: 60)
+        let sender = MockUpdateSender(outcomes: [])
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            deferredFlushDelay: 60,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor
+        )
+        let service = LocationUpdateUploadService(coordinator: coordinator)
+        let locations = [2_000.0, 2_001.0].map { timestamp in
+            CLLocation(
+                coordinate: CLLocationCoordinate2D(latitude: 50, longitude: 8),
+                altitude: 0,
+                horizontalAccuracy: 15,
+                verticalAccuracy: 15,
+                timestamp: Date(timeIntervalSince1970: timestamp)
+            )
+        }
+        let results = await service.submitBatch(
+            locations: locations,
+            serverURL: serverURL,
+            deviceID: "TEST_DEVICE",
+            deviceKey: "KEY",
+            enableHistory: true,
+            retentionTime: 60,
+            deliveryDelay: nil,
+            visitorCheckMinimumInterval: nil,
+            processKnownVisitorAlerts: false,
+            applicationState: .background,
+            batteryLevel: 0.8
+        )
+        #expect(results.count == 2)
+        for result in results {
+            if case .delivery(.sent) = result {
+            } else {
+                Issue.record("The background callback should deliver each acknowledged location")
+            }
+        }
+        #expect(await sender.sentTimestamps == ["old", "2000", "2001"])
+        #expect(await store.count() == 0)
+    }
+
     private func payload(
         timestamp: String,
         latitude: Double = 50.0,

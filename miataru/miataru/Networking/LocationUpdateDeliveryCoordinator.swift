@@ -47,16 +47,19 @@ actor LocationUpdateDeliveryCoordinator {
         let didReachBatchLimit: Bool
         let stoppedOnDeliveryFailure: Bool
         let hasPendingItems: Bool
-        let deliveredRequestedItem: Bool
+        let deliveredRequestedKeys: Set<String>
+        let failedRequestedItem: (key: String, result: SubmitResult)?
 
         init(didReachBatchLimit: Bool,
              stoppedOnDeliveryFailure: Bool,
              hasPendingItems: Bool,
-             deliveredRequestedItem: Bool = false) {
+             deliveredRequestedKeys: Set<String> = [],
+             failedRequestedItem: (key: String, result: SubmitResult)? = nil) {
             self.didReachBatchLimit = didReachBatchLimit
             self.stoppedOnDeliveryFailure = stoppedOnDeliveryFailure
             self.hasPendingItems = hasPendingItems
-            self.deliveredRequestedItem = deliveredRequestedItem
+            self.deliveredRequestedKeys = deliveredRequestedKeys
+            self.failedRequestedItem = failedRequestedItem
         }
     }
 
@@ -281,9 +284,9 @@ actor LocationUpdateDeliveryCoordinator {
             let submittedKey = LocationUpdateOutboxItem.makeDedupeKey(for: payload)
             let flushResult = await flushOutbox(
                 trigger: "backgroundSubmitWithPendingOutbox",
-                requestedDedupeKey: submittedKey
+                requestedDedupeKeys: [submittedKey]
             )
-            return flushResult.deliveredRequestedItem ? .sent : .queued
+            return flushResult.deliveredRequestedKeys.contains(submittedKey) ? .sent : .queued
         }
 
         // Persist the head before starting the network request. A background process may be
@@ -337,6 +340,75 @@ actor LocationUpdateDeliveryCoordinator {
         } catch {
             let result: SubmitResult = MiataruRetryClassifier.isRetryable(error) ? .queued : .failed(error)
             return await finishInFlightDirectSend(id: directSendID, result: result)
+        }
+    }
+
+    /// Persists a chronological Core Location callback before sending any sample.
+    func submitBatch(
+        serverURL: URL,
+        payloads: [UpdateLocationPayload],
+        enableHistory: Bool,
+        retentionTime: Int,
+        deliveryDelay: TimeInterval? = nil,
+        visitorCheckMinimumInterval: TimeInterval? = nil,
+        processKnownVisitorAlerts: Bool = false,
+        flushPendingDuringSubmission: Bool = false
+    ) async -> [SubmitResult] {
+        guard !payloads.isEmpty else { return [] }
+        guard await flushEligibilityProvider() else {
+            return Array(repeating: .dropped, count: payloads.count)
+        }
+        guard await outboxStore.isStorageAvailable() else {
+            return Array(repeating: .failed(LocationUpdateDeliveryError.outboxUnavailable), count: payloads.count)
+        }
+
+        let effectiveEnableHistory = await effectiveHistoryEnabled(fallback: enableHistory)
+        let now = Date()
+        let hasPendingOutbox = !(await outboxStore.isEmpty())
+        let availableAfter: Date?
+        if let deliveryDelay, deliveryDelay > 0 {
+            availableAfter = await outboxStore.activeDelayedBatchReleaseDate(now: now)
+                ?? now.addingTimeInterval(deliveryDelay)
+        } else {
+            availableAfter = nil
+        }
+        let batch = payloads.map { payload in
+            LocationUpdateOutboxItem(
+                serverURLString: serverURL.absoluteString,
+                enqueuedAt: now,
+                availableAfter: availableAfter,
+                payload: payload,
+                enableHistory: effectiveEnableHistory,
+                retentionTime: retentionTime,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
+            )
+        }
+        guard await outboxStore.enqueueBatch(batch) else {
+            return Array(repeating: .failed(LocationUpdateDeliveryError.outboxUnavailable), count: payloads.count)
+        }
+        await notifyOutboxDidChange()
+
+        if availableAfter != nil {
+            await scheduleNextFlushIfNeeded(now: now, trigger: "delayedBatchSubmit")
+            return Array(repeating: .queued, count: payloads.count)
+        }
+        if hasPendingOutbox && !flushPendingDuringSubmission {
+            scheduleFlushSoon(trigger: "batchSubmitWithPendingOutbox")
+            return Array(repeating: .queued, count: payloads.count)
+        }
+
+        let requestedKeys = Set(batch.map(\.dedupeKey))
+        let flushResult = await flushOutbox(trigger: "batchSubmit", requestedDedupeKeys: requestedKeys)
+        return batch.map { item in
+            if flushResult.deliveredRequestedKeys.contains(item.dedupeKey) {
+                return .sent
+            }
+            if let failure = flushResult.failedRequestedItem,
+               failure.key == item.dedupeKey {
+                return failure.result
+            }
+            return .queued
         }
     }
 
@@ -472,7 +544,7 @@ actor LocationUpdateDeliveryCoordinator {
     private func flushOutbox(trigger: String,
                              scheduleContinuation: Bool = true,
                              includeDelayedItems: Bool = false,
-                             requestedDedupeKey: String? = nil) async -> FlushResult {
+                             requestedDedupeKeys: Set<String> = []) async -> FlushResult {
         if isDirectSendBlockingQueue {
             let pendingCount = await outboxStore.count()
             if pendingCount > 0 {
@@ -523,7 +595,8 @@ actor LocationUpdateDeliveryCoordinator {
 
         var processedCount = 0
         var stoppedOnDeliveryFailure = false
-        var deliveredRequestedItem = false
+        var deliveredRequestedKeys = Set<String>()
+        var failedRequestedItem: (key: String, result: SubmitResult)?
         while processedCount < flushBatchSize {
             guard let head = await outboxStore.peekHead() else { break }
             if !includeDelayedItems,
@@ -552,19 +625,22 @@ actor LocationUpdateDeliveryCoordinator {
                     }
                     await notifyOutboxDidChange()
                     processedCount += 1
-                    if head.dedupeKey == requestedDedupeKey {
-                        deliveredRequestedItem = true
+                    let wasRequestedBySubmission = requestedDedupeKeys.contains(head.dedupeKey)
+                    if wasRequestedBySubmission {
+                        deliveredRequestedKeys.insert(head.dedupeKey)
                     }
                     await notifyOwnLocationUpdateDidSend()
                     var deliveredItem = head
                     deliveredItem.enableHistory = effectiveEnableHistory
-                    await flushObserver(deliveredItem, trigger, Date())
-                    Task {
-                        await visitorProcessor(
-                            serverURL,
-                            head.visitorCheckMinimumInterval,
-                            head.processKnownVisitorAlerts
-                        )
+                    if !wasRequestedBySubmission {
+                        await flushObserver(deliveredItem, trigger, Date())
+                        Task {
+                            await visitorProcessor(
+                                serverURL,
+                                head.visitorCheckMinimumInterval,
+                                head.processKnownVisitorAlerts
+                            )
+                        }
                     }
                     continue
                 }
@@ -574,6 +650,9 @@ actor LocationUpdateDeliveryCoordinator {
                     break
                 }
                 debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped because server did not ACK; retained outbox item")
+                if requestedDedupeKeys.contains(head.dedupeKey) {
+                    failedRequestedItem = (head.dedupeKey, .failed(LocationUpdateDeliveryError.serverDidNotAcknowledge))
+                }
                 stoppedOnDeliveryFailure = true
                 break
             } catch {
@@ -582,6 +661,10 @@ actor LocationUpdateDeliveryCoordinator {
                     break
                 }
                 debugLog("[LocationUpdateDeliveryCoordinator] Flush stopped and retained outbox item after delivery error (trigger=\(trigger)): \(error)")
+                if requestedDedupeKeys.contains(head.dedupeKey),
+                   !MiataruRetryClassifier.isRetryable(error) {
+                    failedRequestedItem = (head.dedupeKey, .failed(error))
+                }
                 stoppedOnDeliveryFailure = true
                 break
             }
@@ -597,7 +680,8 @@ actor LocationUpdateDeliveryCoordinator {
             didReachBatchLimit: processedCount >= flushBatchSize,
             stoppedOnDeliveryFailure: stoppedOnDeliveryFailure,
             hasPendingItems: shouldContinueAfterBatch,
-            deliveredRequestedItem: deliveredRequestedItem
+            deliveredRequestedKeys: deliveredRequestedKeys,
+            failedRequestedItem: failedRequestedItem
         )
     }
 

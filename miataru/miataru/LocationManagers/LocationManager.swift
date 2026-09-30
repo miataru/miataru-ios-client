@@ -3069,6 +3069,74 @@ final class LocationManager: NSObject, ObservableObject {
             batteryLevel: UIDevice.current.batteryLevel
         )
 
+        handleLocationSubmission(
+            submission,
+            location: location,
+            applicationState: applicationState,
+            serverURL: serverURL,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts
+        )
+    }
+
+    @MainActor
+    private func sendLocationBatchToServer(_ locations: [CLLocation]) async {
+        guard locations.count > 1 else {
+            if let location = locations.first {
+                await sendLocationToServer(location)
+            }
+            return
+        }
+        guard !settings.isTrackingPaused,
+              !settings.deviceKeyAuthBlocked,
+              !settings.miataruServerURL.isEmpty,
+              let serverURL = URL(string: settings.miataruServerURL),
+              let ownDeviceID = thisDeviceIDManager.shared.deviceIDIfAvailable else {
+            for location in locations {
+                await sendLocationToServer(location)
+            }
+            return
+        }
+
+        let applicationState = currentTrackingApplicationState
+        let deliveryDelay = frequentBackgroundLocationDeliveryDelay(for: applicationState)
+        let processKnownVisitorAlerts = frequentBackgroundVisitorChecksEnabled(for: applicationState)
+        let visitorCheckMinimumInterval = frequentBackgroundVisitorCheckMinimumInterval(for: applicationState)
+        serverUpdateStatus = .updating
+        let submissions = await locationUpdateUploadService.submitBatch(
+            locations: locations,
+            serverURL: serverURL,
+            deviceID: ownDeviceID,
+            deviceKey: settings.deviceKey,
+            enableHistory: settings.saveLocationHistoryOnServer,
+            retentionTime: settings.locationDataRetentionTime,
+            deliveryDelay: deliveryDelay,
+            visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+            processKnownVisitorAlerts: processKnownVisitorAlerts,
+            applicationState: applicationState,
+            batteryLevel: UIDevice.current.batteryLevel
+        )
+        for (location, submission) in zip(locations, submissions) {
+            handleLocationSubmission(
+                submission,
+                location: location,
+                applicationState: applicationState,
+                serverURL: serverURL,
+                visitorCheckMinimumInterval: visitorCheckMinimumInterval,
+                processKnownVisitorAlerts: processKnownVisitorAlerts
+            )
+        }
+    }
+
+    @MainActor
+    private func handleLocationSubmission(
+        _ submission: LocationUpdateUploadService.SubmissionResult,
+        location: CLLocation,
+        applicationState: UIApplication.State,
+        serverURL: URL,
+        visitorCheckMinimumInterval: TimeInterval?,
+        processKnownVisitorAlerts: Bool
+    ) {
         let result: LocationUpdateDeliveryCoordinator.SubmitResult
         switch submission {
         case .invalidPayload:
@@ -3659,14 +3727,7 @@ extension LocationManager: CLLocationManagerDelegate {
                 return
             }
 
-            let uploadTasks = locationsPendingUpload.map { location in
-                Task { @MainActor in
-                    await self.sendLocationToServer(location)
-                }
-            }
-            for uploadTask in uploadTasks {
-                await uploadTask.value
-            }
+            await self.sendLocationBatchToServer(locationsPendingUpload)
         }
     }
 
