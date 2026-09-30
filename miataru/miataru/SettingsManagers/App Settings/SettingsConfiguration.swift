@@ -396,14 +396,17 @@ enum SettingsMigration {
     ]
 
     static func applyExistingInstallDefaultsIfNeeded(defaults: UserDefaults = .standard,
-                                                     skipForFreshUITestReset: Bool = false) {
+                                                     skipForFreshUITestReset: Bool = false,
+                                                     persistedDomainName: String? = nil) {
         guard !defaults.bool(forKey: existingInstallDefaultsV315Marker) else { return }
         defer {
             defaults.set(true, forKey: existingInstallDefaultsV315Marker)
         }
 
-        guard !skipForFreshUITestReset,
-              shouldApplyExistingInstallDefaults(defaults: defaults) else {
+        let shouldApply = persistedDomainName.map {
+            shouldApplyExistingInstallDefaults(values: defaults.persistentDomain(forName: $0) ?? [:])
+        } ?? shouldApplyExistingInstallDefaults(defaults: defaults)
+        guard !skipForFreshUITestReset, shouldApply else {
             return
         }
 
@@ -437,5 +440,14 @@ enum SettingsMigration {
             || defaults.object(forKey: SettingsKeys.miataruServerURL) != nil
             || defaults.object(forKey: SettingsKeys.deviceKey) != nil
             || defaults.object(forKey: SettingsKeys.allowedDeviceListEnabled) != nil
+    }
+
+    private static func shouldApplyExistingInstallDefaults(values: [String: Any]) -> Bool {
+        values[onboardingCompletedKey] as? Bool == true
+            || values[postUpdateOnboardingKey] as? Bool == true
+            || values[SettingsKeys.trackAndReportLocation] != nil
+            || values[SettingsKeys.miataruServerURL] != nil
+            || values[SettingsKeys.deviceKey] != nil
+            || values[SettingsKeys.allowedDeviceListEnabled] != nil
     }
 }

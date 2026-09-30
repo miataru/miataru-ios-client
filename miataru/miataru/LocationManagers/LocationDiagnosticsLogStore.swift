@@ -226,7 +226,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
     private let readFile: (URL) throws -> Data
     private let protectedDataAvailable: () -> Bool
     private let notificationCenter: NotificationCenter
-    private let diagnosticsSourceID: String
+    private var diagnosticsSourceID: String
     private let persistenceEncoder = JSONEncoder()
     private let exportEncoder = JSONEncoder()
     private let decoder = JSONDecoder()
@@ -243,7 +243,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
          coalescedCountLimit: Int = LocationDiagnosticsLogStore.defaultCoalescedCountLimit,
          fileManager: FileManager = .default,
          readFile: @escaping (URL) throws -> Data = { try Data(contentsOf: $0) },
-         protectedDataAvailable: @escaping () -> Bool = { UIApplication.shared.isProtectedDataAvailable },
+         protectedDataAvailable: @escaping () -> Bool = { LocationTrackingStorageAvailability.isAvailable },
          notificationCenter: NotificationCenter = .default,
          deferredPersistenceInterval: TimeInterval = LocationDiagnosticsLogStore.defaultDeferredPersistenceInterval,
          automaticallyFlushesDeferredPersistence: Bool = true,
@@ -258,7 +258,9 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         self.readFile = readFile
         self.protectedDataAvailable = protectedDataAvailable
         self.isEnabled = userDefaults.bool(forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
-        self.diagnosticsSourceID = Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
+        self.diagnosticsSourceID = protectedDataAvailable()
+            ? Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
+            : UUID().uuidString
         self.deferredPersistenceInterval = max(0.1, deferredPersistenceInterval)
         self.automaticallyFlushesDeferredPersistence = automaticallyFlushesDeferredPersistence
         self.batteryMonitoringControl = batteryMonitoringControl
@@ -562,6 +564,7 @@ final class LocationDiagnosticsLogStore: ObservableObject {
         ) else {
             return false
         }
+        diagnosticsSourceID = Self.loadOrCreateDiagnosticsSourceID(userDefaults: userDefaults)
         mergeRecoveredLog(persistedLog)
         didLoadPersistedLog = true
         return true

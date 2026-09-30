@@ -15,6 +15,12 @@ upload, Apple processing, or App Review outcome.
    Validate affected shipped localizations. Screenshot captures run only on
    explicit request. A zero-test, hung, partial, or failing lane is not release
    evidence.
+   If Xcode repeatedly hangs while collecting optional simulator diagnostics after
+   the tests have finished, inspect the retained process, lane status, and log
+   before ending that exact `xcodebuild` process. Rerun the same lane with
+   `TEST_COLLECT_DIAGNOSTICS=never` to omit Xcode's optional sysdiagnose
+   collection; the complete test suite and `.xcresult` validation still apply.
+   Never stop or reset unrelated simulators as part of this recovery.
 3. A physical iPhone check is outside the standard release gate. Perform and
    document it only when explicitly requested, including device, iOS version,
    tested states, observations, and result.

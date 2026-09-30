@@ -297,6 +297,13 @@ run_tests() {
     args+=(-resultBundlePath "$RESULT_BUNDLE_PATH")
   fi
 
+  if [[ -n "${TEST_COLLECT_DIAGNOSTICS:-}" ]]; then
+    case "$TEST_COLLECT_DIAGNOSTICS" in
+      on-failure|never) args+=(-collect-test-diagnostics "$TEST_COLLECT_DIAGNOSTICS") ;;
+      *) echo "Unknown TEST_COLLECT_DIAGNOSTICS '$TEST_COLLECT_DIAGNOSTICS'." >&2; return 2 ;;
+    esac
+  fi
+
   echo "Running xcodebuild test"
   echo "  project: $PROJECT_PATH"
   echo "  scheme: $SCHEME"

@@ -1013,6 +1013,60 @@ struct LocationTrackingPolicyTests {
         ) == .stopDeviceKeyBlocked)
     }
 
+    @Test("Tracking reconciliation waits for protected preferences after reboot")
+    func trackingReconciliationWaitsForProtectedPreferencesAfterReboot() {
+        #expect(!LocationTrackingPolicy.trackingStorageAvailable(
+            protectedDataAvailable: false,
+            savedDeviceIDAvailable: false
+        ))
+        #expect(LocationTrackingPolicy.trackingStorageAvailable(
+            protectedDataAvailable: false,
+            savedDeviceIDAvailable: true
+        ))
+        #expect(LocationTrackingPolicy.trackingStorageAvailable(
+            protectedDataAvailable: true,
+            savedDeviceIDAvailable: false
+        ))
+        #expect(!LocationTrackingPolicy.shouldApplyTrackingPreferenceEvent(
+            receivedValue: false,
+            currentValue: false,
+            trackingStorageAvailable: false
+        ))
+        #expect(!LocationTrackingPolicy.shouldApplyTrackingPreferenceEvent(
+            receivedValue: false,
+            currentValue: true,
+            trackingStorageAvailable: true
+        ))
+        #expect(LocationTrackingPolicy.shouldApplyTrackingPreferenceEvent(
+            receivedValue: true,
+            currentValue: true,
+            trackingStorageAvailable: true
+        ))
+        for savedTrackingValue in [false, true] {
+            #expect(LocationTrackingPolicy.trackingReconcileAction(
+                trackAndReportLocation: savedTrackingValue,
+                deviceKeyAuthBlocked: false,
+                authorizationStatus: .authorizedAlways,
+                isTracking: false,
+                trackingStorageAvailable: false
+            ) == .deferProtectedDataUnavailable)
+        }
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: false,
+            trackingStorageAvailable: true
+        ) == .startTracking)
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: false,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .authorizedAlways,
+            isTracking: false,
+            trackingStorageAvailable: true
+        ) == .stopTrackingDisabled)
+    }
+
     @Test("Background relaunch defers location permission requests until the app becomes active")
     func backgroundRelaunchDefersLocationPermissionRequestsUntilActive() {
         let requestAction = LocationTrackingPolicy.authorizationRequestAction

@@ -1,4 +1,6 @@
 version 3.6
+- Deferred location-service changes and settings migrations during a pre-first-unlock launch, then restored saved tracking, DeviceKey blocks, manual Frequent expiry, Smart state, timers, and pending uploads after storage became available; normal tracking continues during later screen locks, and stale queued settings events cannot stop newer tracking intent.
+- Kept opt-in diagnostics writable during ordinary locked background operation after the first unlock and delayed creation of a new diagnostics source ID until protected storage is readable.
 - Persisted multi-location callback batches together in timestamp order before their first upload, so a blocked request, process interruption, or retry cannot reorder the newest reported location; single-location cadence and configured delivery delays remain unchanged.
 - Kept the Smart movement exit fence registered while recentering it with Core Location's same-identifier replacement, avoiding an explicit stop/start gap and one monitoring call per recenter without changing the radius or movement threshold.
 - Reduced Smart frequent seed persistence from eight per-location preference updates to one complete snapshot, while retaining previous-build reads, freshness gating, and the same location acceptance and upload behavior.

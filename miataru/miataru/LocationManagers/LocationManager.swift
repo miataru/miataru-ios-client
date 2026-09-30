@@ -59,6 +59,9 @@ final class LocationManager: NSObject, ObservableObject {
     private let smartFrequentBackgroundSeedStore = SmartFrequentBackgroundSeedStore()
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
+    private var trackingStateReady: Bool {
+        LocationTrackingStorageAvailability.isAvailable && !settings.needsProtectedSettingsReload
+    }
     private let diagnosticsLog = LocationDiagnosticsLogStore.shared
     private let backgroundForensicsRecorder = LocationBackgroundForensicsRecorder()
     private let smartFrequentBackgroundRuntimeMarkerStore = SmartFrequentBackgroundRuntimeMarkerStore()
@@ -159,13 +162,15 @@ final class LocationManager: NSObject, ObservableObject {
             await locationUpdateDeliveryCoordinator.start()
         }
         refreshPendingLocationUpdateCount()
-        applyLocationUpdateOutboxPolicy()
-        settings.ensureFrequentBackgroundLocationUpdatesExpiration()
-        handleTrackingPauseExpirationIfNeeded()
-        scheduleFrequentBackgroundLocationExpirationTimer()
-        scheduleTrackingPauseExpirationTimer()
-        refreshFrequentBackgroundTrackingReminder()
-        refreshLocationTrackingHealthReminder()
+        if trackingStateReady {
+            applyLocationUpdateOutboxPolicy()
+            settings.ensureFrequentBackgroundLocationUpdatesExpiration()
+            handleTrackingPauseExpirationIfNeeded()
+            scheduleFrequentBackgroundLocationExpirationTimer()
+            scheduleTrackingPauseExpirationTimer()
+            refreshFrequentBackgroundTrackingReminder()
+            refreshLocationTrackingHealthReminder()
+        }
         // Authorization prompts wait for an actual active foreground session. A location
         // relaunch may initialize this singleton before its background launch flag is set.
         applyLocationUpdateMetricsSnapshot(locationUpdateMetricsStore.load())
@@ -192,6 +197,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     @objc private func appDidBecomeActive() {
         debugLog("App did become active")
+        recoverDeferredStartupIfPossible(reason: "app became active after first unlock")
         Task { @MainActor in
             self.finishStalePrimaryRecoveryBackgroundTask()
         }
@@ -233,6 +239,11 @@ final class LocationManager: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] shouldTrack in
                 guard let self else { return }
+                guard LocationTrackingPolicy.shouldApplyTrackingPreferenceEvent(
+                    receivedValue: shouldTrack,
+                    currentValue: self.settings.trackAndReportLocation,
+                    trackingStorageAvailable: trackingStateReady
+                ) else { return }
                 if shouldTrack {
                     self.startTracking()
                     self.recordLocationTrackingHealthReminderActivity(reason: "tracking enabled")
@@ -248,7 +259,8 @@ final class LocationManager: NSObject, ObservableObject {
             .removeDuplicates()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.refreshLocationTrackingHealthReminder()
+                guard let self, self.trackingStateReady else { return }
+                self.refreshLocationTrackingHealthReminder()
             }
             .store(in: &cancellables)
 
@@ -257,6 +269,8 @@ final class LocationManager: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] expiresAt in
                 guard let self else { return }
+                guard trackingStateReady,
+                      expiresAt == self.settings.trackingPauseExpiresAt else { return }
                 self.scheduleTrackingPauseExpirationTimer()
                 self.refreshFrequentBackgroundTrackingReminder()
                 self.refreshLocationTrackingHealthReminder()
@@ -272,7 +286,8 @@ final class LocationManager: NSObject, ObservableObject {
         )
         .receive(on: DispatchQueue.main)
         .sink { [weak self] _, _ in
-            self?.applyLocationUpdateOutboxPolicy()
+            guard let self, self.trackingStateReady else { return }
+            self.applyLocationUpdateOutboxPolicy()
         }
         .store(in: &cancellables)
 
@@ -285,6 +300,7 @@ final class LocationManager: NSObject, ObservableObject {
         .receive(on: DispatchQueue.main)
         .sink { [weak self] _, _, _, _ in
             guard let self else { return }
+            guard trackingStateReady else { return }
             self.settings.ensureFrequentBackgroundLocationUpdatesExpiration()
             self.scheduleFrequentBackgroundLocationExpirationTimer()
             self.refreshFrequentBackgroundTrackingReminder()
@@ -304,7 +320,9 @@ final class LocationManager: NSObject, ObservableObject {
         .receive(on: DispatchQueue.main)
         .sink { [weak self] smartSettings, _ in
             guard let self else { return }
-            let smartEnabled = smartSettings.0
+            guard trackingStateReady,
+                  smartSettings.0 == self.settings.smartFrequentBackgroundLocationUpdatesEnabled else { return }
+            let smartEnabled = self.settings.smartFrequentBackgroundLocationUpdatesEnabled
             if !smartEnabled {
                 self.deactivateSmartFrequentBackgroundRuntime(reason: "smart frequent disabled")
             } else {
@@ -357,6 +375,8 @@ final class LocationManager: NSObject, ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] newValue in
                 guard let self = self else { return }
+                guard trackingStateReady,
+                      newValue == self.settings.locationActivityType else { return }
                 let activityType = Self.activityTypeFrom(newValue)
                 self.coreLocationServices.updateActivityType(activityType)
                 if self.isTracking {
@@ -550,6 +570,7 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Tracking Control
     func startTracking(applicationStateContext: TrackingApplicationStateContext = .current) {
         debugLog("startTracking called")
+        guard trackingStateReady else { return }
         if Self.shouldPreserveEnabledTrackingPreferenceForUITests {
             authorizationStatus = locationManager.authorizationStatus
             isTracking = settings.trackAndReportLocation
@@ -594,6 +615,7 @@ final class LocationManager: NSObject, ObservableObject {
         if applicationStateContext == .forceBackground {
             backgroundLocationLaunchPendingForeground = true
         }
+        guard trackingStateReady else { return }
         debugLog("[LocationManager] Restoring tracking after launch: \(reason)")
         authorizationStatus = locationManager.authorizationStatus
         if applicationStateContext == .forceBackground || UIApplication.shared.applicationState != .active {
@@ -645,6 +667,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     func rearmSignificantChangeMonitorAfterFreshLaunchIfNeeded(buildIdentifier: String, reason: String) {
+        guard trackingStateReady else { return }
         let status = locationManager.authorizationStatus
         handleTrackingPauseExpirationIfNeeded()
         let decision = backgroundForensicsRecorder.significantChangeRearmDecision(
@@ -693,6 +716,7 @@ final class LocationManager: NSObject, ObservableObject {
     
     func stopTracking() {
         debugLog("stopTracking called")
+        guard trackingStateReady else { return }
         isTracking = false
         applyTrackingMode(reason: "stop tracking")
     }
@@ -995,6 +1019,9 @@ final class LocationManager: NSObject, ObservableObject {
     private func reconcileTrackingState(reason: String,
                                         applicationStateContext: TrackingApplicationStateContext = .current,
                                         refreshExternalSettings: Bool = false) -> TrackingReconcileAction {
+        guard trackingStateReady else {
+            return .deferProtectedDataUnavailable
+        }
         let didRefreshExternalSettings: Bool
         if refreshExternalSettings {
             didRefreshExternalSettings = settings.refreshFromUserDefaultsForAppActivation(clearExpiredTrackingPause: false)
@@ -1028,7 +1055,8 @@ final class LocationManager: NSObject, ObservableObject {
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             authorizationStatus: status,
             isTracking: isTracking,
-            trackingPaused: settings.isTrackingPaused
+            trackingPaused: settings.isTrackingPaused,
+            trackingStorageAvailable: trackingStateReady
         )
         if Self.shouldPreserveEnabledTrackingPreferenceForUITests,
            settings.trackAndReportLocation {
@@ -1065,6 +1093,8 @@ final class LocationManager: NSObject, ObservableObject {
         )
 
         switch action {
+        case .deferProtectedDataUnavailable:
+            return action
         case .stopAuthorizationUnavailable:
             isTracking = false
             stopAllLocationServices(preserveSmartRuntimeMarker: shouldRetainSmartRuntimeMarkerWhileTrackingIntended)
@@ -1096,7 +1126,35 @@ final class LocationManager: NSObject, ObservableObject {
         reconcileTrackingState(reason: reason)
     }
 
+    func resumeDeferredStartupAfterProtectedDataBecomesAvailable() {
+        guard trackingStateReady else { return }
+        applyLocationUpdateOutboxPolicy()
+        settings.ensureFrequentBackgroundLocationUpdatesExpiration()
+        scheduleFrequentBackgroundLocationExpirationTimer()
+        scheduleTrackingPauseExpirationTimer()
+        refreshFrequentBackgroundTrackingReminder()
+        refreshLocationTrackingHealthReminder()
+        Task {
+            await flushPendingLocationUpdatesNow()
+        }
+    }
+
+    func recoverDeferredStartupIfPossible(reason: String) {
+        guard LocationTrackingStorageAvailability.isAvailable,
+              settings.needsProtectedSettingsReload else { return }
+        settings.refreshFromUserDefaultsForAppActivation(
+            clearExpiredTrackingPause: false,
+            restoreProtectedSettings: true
+        )
+        KnownDeviceStore.shared.reloadAfterProtectedDataBecomesAvailable()
+        resumeDeferredStartupAfterProtectedDataBecomesAvailable()
+        reconcileTrackingState(reason: reason)
+        WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
+        WidgetDataSyncCoordinator.syncAllDevices()
+    }
+
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
+        guard trackingStateReady else { return }
         let state = LocationTrackingPolicy.effectiveApplicationState(
             currentState: UIApplication.shared.applicationState,
             context: applicationStateContext,
@@ -1404,6 +1462,7 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func reconcileSmartFrequentExitFence(reason: String,
                                                 applicationState: UIApplication.State? = nil) {
+        guard trackingStateReady else { return }
         let effectiveApplicationState = applicationState ?? currentTrackingApplicationState
         let regionMonitoringAvailable = CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self)
         let shouldMaintainFence = Self.shouldMaintainSmartFrequentExitFence(
@@ -1535,6 +1594,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func handleSmartFrequentExitFenceExit(region: CLRegion) {
+        guard trackingStateReady else { return }
         guard region.identifier == Self.smartFrequentExitFenceIdentifier else {
             return
         }
@@ -3436,6 +3496,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func stopAllLocationServices(preserveSmartRuntimeMarker: Bool = false) {
+        guard trackingStateReady else { return }
         debugLog("[LocationManager] Stopping all location services")
         recordForensicServiceAssertion(mode: .stopped)
         coreLocationServices.stopManagedLocationUpdates()
@@ -3536,6 +3597,8 @@ extension LocationManager: CLLocationManagerDelegate {
                     callbackBackgroundTask?.end()
                 }
             }
+            self.recoverDeferredStartupIfPossible(reason: "location callback after first unlock")
+            guard trackingStateReady else { return }
             let orderedLocations = Self.processableLocationUpdates(from: locations)
             guard !orderedLocations.isEmpty else {
                 debugLog("[LocationManager] didUpdateLocations ignored empty/invalid batch count=\(locations.count)")
@@ -4148,6 +4211,7 @@ extension LocationManager: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         Task { @MainActor in
+            self.recoverDeferredStartupIfPossible(reason: "region exit after first unlock")
             self.handleSmartFrequentExitFenceExit(region: region)
         }
     }

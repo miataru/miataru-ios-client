@@ -847,6 +847,60 @@ struct SettingsConfigurationTests {
         #expect(!manager.refreshFromUserDefaultsForAppActivation(now: now))
     }
 
+    @Test("First-unlock refresh restores tracking without migrating inaccessible defaults")
+    func firstUnlockRefreshRestoresTrackingWithoutMigratingInaccessibleDefaults() throws {
+        let suiteName = "SettingsFirstUnlockTests.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        var protectedDataAvailable = false
+        let manager = SettingsManager(
+            defaults: defaults,
+            trackingStorageAvailable: { protectedDataAvailable }
+        )
+
+        #expect(manager.needsProtectedSettingsReload)
+        #expect(!manager.trackAndReportLocation)
+        #expect(!manager.refreshFromUserDefaultsForAppActivation())
+        #expect(defaults.object(forKey: SettingsMigration.existingInstallDefaultsV315Marker) == nil)
+        #expect(defaults.object(forKey: SettingsMigration.smartFrequentBackgroundV1Marker) == nil)
+        #expect(defaults.persistentDomain(forName: suiteName)?[SettingsKeys.trackAndReportLocation] == nil)
+
+        // Model preferences becoming readable after the first unlock.
+        defaults.set(true, forKey: SettingsKeys.trackAndReportLocation)
+        defaults.set(true, forKey: SettingsKeys.deviceKeyAuthBlocked)
+        defaults.set(true, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
+        defaults.set(false, forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled)
+        let savedFrequentExpiration = Date().addingTimeInterval(3_600)
+        defaults.set(savedFrequentExpiration, forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt)
+        protectedDataAvailable = true
+
+        SettingsMigration.applyExistingInstallDefaultsIfNeeded(
+            defaults: defaults,
+            persistedDomainName: suiteName
+        )
+
+        #expect(manager.refreshFromUserDefaultsForAppActivation(restoreProtectedSettings: true))
+        #expect(!manager.needsProtectedSettingsReload)
+        #expect(manager.trackAndReportLocation)
+        #expect(manager.deviceKeyAuthBlocked)
+        #expect(manager.frequentBackgroundLocationUpdatesEnabled)
+        #expect(manager.smartFrequentBackgroundLocationUpdatesEnabled)
+        #expect(manager.frequentBackgroundLocationUpdatesExpiresAt == savedFrequentExpiration)
+        #expect(defaults.bool(forKey: SettingsMigration.existingInstallDefaultsV315Marker))
+        #expect(defaults.bool(forKey: SettingsMigration.smartFrequentBackgroundV1Marker))
+        #expect(defaults.bool(forKey: SettingsKeys.trackAndReportLocation))
+
+        let freshSuiteName = "SettingsFreshUnlockTests.\(UUID().uuidString)"
+        let freshDefaults = try #require(UserDefaults(suiteName: freshSuiteName))
+        defer { freshDefaults.removePersistentDomain(forName: freshSuiteName) }
+        freshDefaults.register(defaults: SettingsDefaultValues.registrations)
+        SettingsMigration.applyExistingInstallDefaultsIfNeeded(
+            defaults: freshDefaults,
+            persistedDomainName: freshSuiteName
+        )
+        #expect(freshDefaults.persistentDomain(forName: freshSuiteName)?[SettingsKeys.showRouteProgress] == nil)
+    }
+
     @Test("Diagnostics settings switch updates the injected log synchronously")
     @MainActor
     func diagnosticsSettingTakesEffectBeforeReturning() throws {
@@ -1157,6 +1211,7 @@ struct SettingsConfigurationTests {
             notificationCenter: notificationCenter,
             automaticallyFlushesDeferredPersistence: false
         )
+        #expect(defaults.object(forKey: SettingsKeys.locationDiagnosticsSourceID) == nil)
 
         log.append(level: .info, event: "earlyLaunch", summary: "Early", result: "pending", persistence: .immediate)
         #expect(log.hasPendingPersistence)
@@ -1165,6 +1220,8 @@ struct SettingsConfigurationTests {
         protectedDataAvailable = true
         notificationCenter.post(name: UIApplication.protectedDataDidBecomeAvailableNotification, object: nil)
         #expect(!log.hasPendingPersistence)
+        let restoredSourceID = try #require(defaults.string(forKey: SettingsKeys.locationDiagnosticsSourceID))
+        #expect(log.makeExport().diagnosticsSourceID == restoredSourceID)
         #expect(FileManager.default.fileExists(atPath: fileURL.path))
         let reloadedLog = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: fileURL, registersLifecycleFlushObservers: false)
         #expect(reloadedLog.entries.map(\.event) == ["earlyLaunch"])

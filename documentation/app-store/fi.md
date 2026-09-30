@@ -18,7 +18,7 @@ Käytä valittujen laitteiden widgetejä ja pyydä Siriltä tai Pikakomentoilta 
 
 ## What's New
 ```text
-Sijainnin jakaminen taustalla toimii aiempaa luotettavammin keskeytysten ja laitteen uudelleenkäynnistyksen jälkeen. Matkan aikana Smart-seuranta toimii aiempaa tehokkaammin vähentämättä sijaintiraporttien tarkkuutta tai tiheyttä. Sijaintipäivitykset säilyvät tilapäisten yhteysongelmien aikana ja lähetetään myöhemmin. Kun useita sijainteja saapuu kerralla, ne lähetetään järjestyksessä, jotta uusin sijainti pysyy ajantasaisena.
+Sijainnin jakaminen taustalla jatkuu aiempaa luotettavammin keskeytysten jälkeen. Kun käynnistät laitteen uudelleen, seuranta-asetuksesi palautuvat ensimmäisen lukituksen avauksen yhteydessä. Matkan aikana Smart-seuranta toimii aiempaa tehokkaammin vähentämättä sijaintiraporttien tarkkuutta tai tiheyttä. Sijaintipäivitykset säilyvät tilapäisten yhteysongelmien aikana ja lähetetään myöhemmin. Kun useita sijainteja saapuu kerralla, ne lähetetään järjestyksessä, jotta uusin sijainti pysyy ajantasaisena.
 
 Kartta ja koko näytön navigointi näyttävät nyt reitin suunnan mukaisen nopeuden.
 ```

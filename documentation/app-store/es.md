@@ -18,7 +18,7 @@ Usa widgets para los dispositivos que elijas y pide a Siri o Atajos la última u
 
 ## What's New
 ```text
-Compartir la ubicación en segundo plano es más fiable tras las interrupciones y los reinicios del dispositivo. Durante los trayectos, el seguimiento inteligente funciona ahora con mayor eficiencia, sin reducir el detalle ni la frecuencia de los informes de ubicación. Las actualizaciones se conservan durante los problemas temporales de conexión y se envían más tarde. Si llegan varias ubicaciones a la vez, se envían en orden para que la posición más reciente siga siendo la actual.
+Compartir la ubicación en segundo plano se reanuda con mayor fiabilidad tras las interrupciones. Después de reiniciar el dispositivo, tus ajustes de seguimiento se recuperan al desbloquearlo por primera vez. Durante los trayectos, el seguimiento inteligente funciona ahora con mayor eficiencia, sin reducir el detalle ni la frecuencia de los informes de ubicación. Las actualizaciones se conservan durante los problemas temporales de conexión y se envían más tarde. Si llegan varias ubicaciones a la vez, se envían en orden para que la posición más reciente siga siendo la actual.
 
 El mapa y la navegación a pantalla completa muestran ahora la velocidad correspondiente al sentido de tu ruta.
 ```

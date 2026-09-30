@@ -13,7 +13,9 @@ import Combine
 class SettingsManager: ObservableObject {
     private let defaults: UserDefaults
     private let diagnosticsLog: LocationDiagnosticsLogStore
+    private let trackingStorageAvailable: () -> Bool
     private var isApplyingExternalDefaultsRefresh = false
+    private(set) var needsProtectedSettingsReload: Bool
     
     // MARK: - Properties
     @Published var disableDeviceAutolock: Bool {
@@ -141,7 +143,8 @@ class SettingsManager: ObservableObject {
             }
             defaults.set(frequentBackgroundLocationUpdatesEnabled, forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
             if frequentBackgroundLocationUpdatesEnabled {
-                if !oldValue || frequentBackgroundLocationUpdatesExpiresAt == nil {
+                if !isApplyingExternalDefaultsRefresh,
+                   (!oldValue || frequentBackgroundLocationUpdatesExpiresAt == nil) {
                     refreshFrequentBackgroundLocationUpdatesExpiration()
                 }
             } else if frequentBackgroundLocationUpdatesExpiresAt != nil {
@@ -413,12 +416,18 @@ class SettingsManager: ObservableObject {
     
     // MARK: - Initialwerte laden
     init(defaults: UserDefaults = .standard,
-         diagnosticsLog: LocationDiagnosticsLogStore = .shared) {
+         diagnosticsLog: LocationDiagnosticsLogStore = .shared,
+         trackingStorageAvailable: @escaping () -> Bool = { LocationTrackingStorageAvailability.isAvailable }) {
         self.defaults = defaults
         self.diagnosticsLog = diagnosticsLog
+        self.trackingStorageAvailable = trackingStorageAvailable
+        let storageAvailableAtInitialization = trackingStorageAvailable()
+        self.needsProtectedSettingsReload = !storageAvailableAtInitialization
         let d = defaults
-        SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: d)
-        SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: d)
+        if storageAvailableAtInitialization {
+            SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: d)
+            SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: d)
+        }
         d.register(defaults: SettingsDefaultValues.registrations)
         self.disableDeviceAutolock = d.bool(forKey: SettingsKeys.disableDeviceAutolock)
         self.preventScreenRotation = d.bool(forKey: SettingsKeys.preventScreenRotation)
@@ -480,8 +489,12 @@ class SettingsManager: ObservableObject {
     @discardableResult
     func refreshFromUserDefaultsForAppActivation(
         now: Date = Date(),
-        clearExpiredTrackingPause: Bool = true
+        clearExpiredTrackingPause: Bool = true,
+        restoreProtectedSettings: Bool = false
     ) -> Bool {
+        guard trackingStorageAvailable() else { return false }
+        SettingsMigration.applySmartFrequentBackgroundMigrationIfNeeded(defaults: defaults)
+        SettingsMigration.normalizeSmartFrequentBackgroundPrerequisiteIfNeeded(defaults: defaults)
         defaults.register(defaults: SettingsDefaultValues.registrations)
 
         var changed = false
@@ -493,6 +506,15 @@ class SettingsManager: ObservableObject {
 
         isApplyingExternalDefaultsRefresh = true
         defer { isApplyingExternalDefaultsRefresh = false }
+
+        if restoreProtectedSettings {
+            assignIfChanged(\.deviceKeyAuthBlockedKey, defaults.string(forKey: SettingsKeys.deviceKeyAuthBlockedKey))
+            assignIfChanged(\.deviceKeyAuthBlocked, defaults.bool(forKey: SettingsKeys.deviceKeyAuthBlocked))
+            assignIfChanged(\.deviceKey, defaults.string(forKey: SettingsKeys.deviceKey))
+            assignIfChanged(\.deviceKeyLastChanged, defaults.object(forKey: SettingsKeys.deviceKeyLastChanged) as? Date)
+            assignIfChanged(\.trackAndReportLocationDisabledByDeviceKeyAuth, defaults.bool(forKey: SettingsKeys.trackAndReportLocationDisabledByDeviceKeyAuth))
+            assignIfChanged(\.lastOpenedDeviceID, defaults.string(forKey: SettingsKeys.lastOpenedDeviceID))
+        }
 
         assignIfChanged(\.disableDeviceAutolock, defaults.bool(forKey: SettingsKeys.disableDeviceAutolock))
         assignIfChanged(\.preventScreenRotation, defaults.bool(forKey: SettingsKeys.preventScreenRotation))
@@ -528,12 +550,16 @@ class SettingsManager: ObservableObject {
 
         let externalFrequentEnabled = defaults.bool(forKey: SettingsKeys.frequentBackgroundLocationUpdatesEnabled)
         let externalSmartEnabled = defaults.bool(forKey: SettingsKeys.smartFrequentBackgroundLocationUpdatesEnabled) || externalFrequentEnabled
+        if restoreProtectedSettings {
+            assignIfChanged(\.frequentBackgroundLocationUpdatesExpiresAt,
+                            defaults.object(forKey: SettingsKeys.frequentBackgroundLocationUpdatesExpiresAt) as? Date)
+        }
         assignIfChanged(\.frequentBackgroundLocationUpdatesEnabled, externalFrequentEnabled)
         assignIfChanged(\.smartFrequentBackgroundLocationUpdatesEnabled, externalSmartEnabled)
 
         let shouldRefreshFrequentExpiration = externalFrequentEnabled && (
-            !frequentEnabledBeforeRefresh ||
-            frequentDurationBeforeRefresh != frequentBackgroundLocationUpdateDuration ||
+            (!restoreProtectedSettings && !frequentEnabledBeforeRefresh) ||
+            (!restoreProtectedSettings && frequentDurationBeforeRefresh != frequentBackgroundLocationUpdateDuration) ||
             frequentBackgroundLocationUpdatesExpiresAt == nil
         )
         if shouldRefreshFrequentExpiration {
@@ -573,6 +599,9 @@ class SettingsManager: ObservableObject {
             changed = true
         }
 
+        if restoreProtectedSettings {
+            needsProtectedSettingsReload = false
+        }
         return changed
     }
 

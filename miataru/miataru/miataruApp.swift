@@ -152,7 +152,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     private var shouldReconcileAfterProtectedDataBecomesAvailable = false
 
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-        shouldReconcileAfterProtectedDataBecomesAvailable = !application.isProtectedDataAvailable
+        shouldReconcileAfterProtectedDataBecomesAvailable = !LocationTrackingStorageAvailability.isAvailable
         restoreTrackingForLocationLaunchIfNeeded(launchOptions)
         return true
     }
@@ -167,11 +167,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     func applicationProtectedDataDidBecomeAvailable(_ application: UIApplication) {
         guard shouldReconcileAfterProtectedDataBecomesAvailable else { return }
         shouldReconcileAfterProtectedDataBecomesAvailable = false
-        SettingsManager.shared.refreshFromUserDefaultsForAppActivation(clearExpiredTrackingPause: false)
-        LocationManager.shared.reconcileTrackingStateForIntent(reason: "protected data became available")
-        KnownDeviceStore.shared.reloadAfterProtectedDataBecomesAvailable()
-        WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
-        WidgetDataSyncCoordinator.syncAllDevices()
+        SettingsMigration.applyExistingInstallDefaultsIfNeeded(
+            defaults: .standard,
+            skipForFreshUITestReset: ProcessInfo.processInfo.arguments.contains(UITestLaunchArgument.resetUserDefaults),
+            persistedDomainName: Bundle.main.bundleIdentifier
+        )
+        if !SettingsManager.shared.needsProtectedSettingsReload {
+            SettingsManager.shared.refreshFromUserDefaultsForAppActivation(clearExpiredTrackingPause: false)
+        }
+        LocationManager.shared.recoverDeferredStartupIfPossible(reason: "protected data became available")
     }
 
     func application(_ application: UIApplication, shouldSaveApplicationState coder: NSCoder) -> Bool { false }
@@ -311,10 +315,12 @@ struct miataruApp: App {
     init() {
         Self.applyUITestLaunchConfiguration()
         let shouldSkipExistingInstallMigration = ProcessInfo.processInfo.arguments.contains(UITestLaunchArgument.resetUserDefaults)
-        SettingsMigration.applyExistingInstallDefaultsIfNeeded(
-            defaults: UserDefaults.standard,
-            skipForFreshUITestReset: shouldSkipExistingInstallMigration
-        )
+        if LocationTrackingStorageAvailability.isAvailable {
+            SettingsMigration.applyExistingInstallDefaultsIfNeeded(
+                defaults: UserDefaults.standard,
+                skipForFreshUITestReset: shouldSkipExistingInstallMigration
+            )
+        }
         SettingsManager.shared.registerDefaultsFromSettingsBundle()
         if ProcessInfo.processInfo.arguments.contains(UITestLaunchArgument.uiTesting) {
             SettingsManager.shared.refreshFromUserDefaultsForAppActivation(clearExpiredTrackingPause: false)

@@ -475,7 +475,7 @@ Launch hardening:
 - A background Core Location callback starts its background task before asynchronous processing begins and holds it through the resulting upload submissions. Uploads also keep their own background-task protection.
 - `authorizedWhenInUse` is foreground-only; background recovery requires Always authorization.
 - The persisted own Device ID is never replaced merely because its file cannot be read during a cold launch. The app keeps location monitoring armed, defers uploads and own-device cache writes while the identity is unavailable, and retries the same identity on a later callback. A newly generated ID becomes active only after its file write succeeds.
-- A launch while protected data is unavailable reconciles saved settings and monitoring when protected data becomes available. Known-device and widget data are not rewritten from an unavailable identity, and startup cleanup does not prune stores during that protected launch.
+- A launch before the first unlock leaves already registered Core Location services and Smart recovery state untouched while saved preferences may be unreadable. It does not mark settings migrations complete from temporary defaults, stop the significant-change recovery anchor, or process a location callback against an unknown tracking choice. The first protected-data-available callback loads saved tracking and DeviceKey block state, restores the original manual Frequent expiry, applies deferred migrations, reconciles monitoring and timers according to the saved choice, and retries pending outbox delivery. Queued preference events are checked against the latest value before changing tracking state. Known-device and widget data are not rewritten from an unavailable identity, and startup cleanup does not prune stores during that protected launch.
 
 Session hardening:
 
@@ -492,7 +492,7 @@ iOS boundaries:
 - When In Use authorization is not reboot-capable background tracking.
 - Simulator reboot is not a reliable proof of significant-change relaunch.
 - iOS may defer or coalesce significant-change delivery based on movement, radio state, power, and scheduling.
-- Files with the default until-first-unlock protection cannot be read before the first unlock after reboot. Reconciliation after unlock improves recovery, but does not make iOS deliver a location event on a fixed schedule.
+- Files with the default until-first-unlock protection cannot be read before the first unlock after reboot. Location callbacks received before that unlock may not be durably reportable from protected storage. Reconciliation after unlock improves recovery, but does not make iOS deliver a location event on a fixed schedule.
 
 ## Diagnostics And Re-Arm
 
@@ -504,7 +504,7 @@ iOS boundaries:
 - UI shows newest 20 entries.
 - Export includes the full buffer, metadata, and whether logging is enabled at export time.
 - Disabling logging keeps old entries until the user clears them.
-- A cold launch before protected storage is available does not replace an unreadable prior log with an empty one. New events wait in memory and merge with the prior entries and coalesced counts after protected data becomes available. Export fails while that earlier history is still unreadable, instead of presenting an incomplete diagnostic record.
+- A cold launch before protected storage is available does not replace an unreadable prior log with an empty one or create a replacement diagnostics source ID. New events wait in memory and merge with the prior entries and coalesced counts after protected data becomes available. Export fails while that earlier history is still unreadable, instead of presenting an incomplete diagnostic record. After the first unlock, until-first-unlock files remain writable during later screen locks, so diagnostics can persist during normal locked background tracking.
 
 Entries include ID, timestamp, level, event, summary, result, reason, checks, and context. The log records location/tracking decisions only, not generic UI/map/device-cache logs.
 

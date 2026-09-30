@@ -9,6 +9,20 @@ import Foundation
 import CoreLocation
 import UIKit
 
+/// The app's tracking files use until-first-unlock protection. UIKit's general
+/// protected-data flag also turns false on later screen locks, when these files
+/// remain readable; a saved Device ID distinguishes those two states.
+enum LocationTrackingStorageAvailability {
+    static var isAvailable: Bool {
+        let protectedDataAvailable = UIApplication.shared.isProtectedDataAvailable
+        if protectedDataAvailable { return true }
+        return LocationTrackingPolicy.trackingStorageAvailable(
+            protectedDataAvailable: protectedDataAvailable,
+            savedDeviceIDAvailable: thisDeviceIDManager.shared.deviceIDIfAvailable != nil
+        )
+    }
+}
+
 enum LocationTrackingPolicy {
     struct BackgroundUpdateConfiguration: Equatable {
         let usesSignificantChangeMonitoring: Bool
@@ -44,6 +58,7 @@ enum LocationTrackingPolicy {
     }
 
     enum ReconcileAction: String, Equatable {
+        case deferProtectedDataUnavailable
         case stopTrackingDisabled
         case stopDeviceKeyBlocked
         case stopAuthorizationUnavailable
@@ -345,11 +360,30 @@ enum LocationTrackingPolicy {
         trackAndReportLocation && !deviceKeyAuthBlocked
     }
 
+    static func trackingStorageAvailable(protectedDataAvailable: Bool,
+                                         savedDeviceIDAvailable: Bool) -> Bool {
+        protectedDataAvailable || savedDeviceIDAvailable
+    }
+
+    static func shouldDeferTrackingForProtectedData(trackingStorageAvailable: Bool) -> Bool {
+        !trackingStorageAvailable
+    }
+
+    static func shouldApplyTrackingPreferenceEvent(receivedValue: Bool,
+                                                   currentValue: Bool,
+                                                   trackingStorageAvailable: Bool) -> Bool {
+        trackingStorageAvailable && receivedValue == currentValue
+    }
+
     static func trackingReconcileAction(trackAndReportLocation: Bool,
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
                                         isTracking: Bool,
-                                        trackingPaused: Bool = false) -> ReconcileAction {
+                                        trackingPaused: Bool = false,
+                                        trackingStorageAvailable: Bool = true) -> ReconcileAction {
+        if shouldDeferTrackingForProtectedData(trackingStorageAvailable: trackingStorageAvailable) {
+            return .deferProtectedDataUnavailable
+        }
         guard trackAndReportLocation else {
             return .stopTrackingDisabled
         }

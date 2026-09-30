@@ -538,13 +538,15 @@ extension LocationManager {
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
                                         isTracking: Bool,
-                                        trackingPaused: Bool = false) -> TrackingReconcileAction {
+                                        trackingPaused: Bool = false,
+                                        trackingStorageAvailable: Bool = true) -> TrackingReconcileAction {
         LocationTrackingPolicy.trackingReconcileAction(
             trackAndReportLocation: trackAndReportLocation,
             deviceKeyAuthBlocked: deviceKeyAuthBlocked,
             authorizationStatus: authorizationStatus,
             isTracking: isTracking,
-            trackingPaused: trackingPaused
+            trackingPaused: trackingPaused,
+            trackingStorageAvailable: trackingStorageAvailable
         )
     }
 
