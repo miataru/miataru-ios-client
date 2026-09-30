@@ -142,6 +142,100 @@ struct SmartFrequentBackgroundPolicyTests {
         ))
     }
 
+    @Test("Smart frequent seed snapshot keeps the newest fix and reads previous-build defaults")
+    func smartFrequentSeedSnapshotMigratesWithoutLosingTheNewestFix() throws {
+        let suiteName = "miataru.smartSeed.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let now = Date(timeIntervalSince1970: 20_000)
+        let legacyTimestamp = now.addingTimeInterval(-30)
+        defaults.set(52.5200, forKey: "miataru_smartFrequentBackgroundSeedLatitude")
+        defaults.set(13.4050, forKey: "miataru_smartFrequentBackgroundSeedLongitude")
+        defaults.set(34.0, forKey: "miataru_smartFrequentBackgroundSeedAltitude")
+        defaults.set(12.0, forKey: "miataru_smartFrequentBackgroundSeedHorizontalAccuracy")
+        defaults.set(5.0, forKey: "miataru_smartFrequentBackgroundSeedVerticalAccuracy")
+        defaults.set(90.0, forKey: "miataru_smartFrequentBackgroundSeedCourse")
+        defaults.set(8.0, forKey: "miataru_smartFrequentBackgroundSeedSpeed")
+        defaults.set(legacyTimestamp, forKey: "miataru_smartFrequentBackgroundSeedTimestamp")
+
+        let store = SmartFrequentBackgroundSeedStore(userDefaults: defaults)
+        let legacy = try #require(store.load(now: now, inactivityWindow: 600))
+        #expect(legacy.coordinate.latitude == 52.5200)
+        #expect(legacy.timestamp == legacyTimestamp)
+
+        let latest = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.5210, longitude: 13.4060),
+            altitude: 35,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 4,
+            course: 95,
+            speed: 11,
+            timestamp: now.addingTimeInterval(-1)
+        )
+        store.save(latest, maximumAccuracy: 100)
+        let snapshot = try #require(defaults.dictionary(forKey: SmartFrequentBackgroundSeedStore.snapshotKey))
+        #expect(snapshot.count == 9)
+        #expect(snapshot["timestamp"] as? Date == latest.timestamp)
+        #expect(defaults.object(forKey: "miataru_smartFrequentBackgroundSeedLatitude") as? Double == 52.5200)
+
+        let restored = try #require(store.load(now: now, inactivityWindow: 600))
+        #expect(restored.coordinate.latitude == latest.coordinate.latitude)
+        #expect(restored.coordinate.longitude == latest.coordinate.longitude)
+        #expect(restored.horizontalAccuracy == latest.horizontalAccuracy)
+        #expect(restored.timestamp == latest.timestamp)
+
+        let inaccurate = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 53.0, longitude: 14.0),
+            altitude: 0,
+            horizontalAccuracy: 101,
+            verticalAccuracy: 1,
+            course: 0,
+            speed: 0,
+            timestamp: now
+        )
+        store.save(inaccurate, maximumAccuracy: 100)
+        #expect(store.load(now: now, inactivityWindow: 600)?.timestamp == latest.timestamp)
+
+        store.clear()
+        #expect(defaults.object(forKey: SmartFrequentBackgroundSeedStore.snapshotKey) == nil)
+        #expect(defaults.object(forKey: "miataru_smartFrequentBackgroundSeedLatitude") == nil)
+        #expect(store.load(now: now, inactivityWindow: 600) == nil)
+    }
+
+    @Test("Smart frequent seed falls back after a malformed snapshot and clears stale seeds")
+    func smartFrequentSeedSnapshotRecoveryPreservesLegacyState() throws {
+        let suiteName = "miataru.smartSeed.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let now = Date(timeIntervalSince1970: 30_000)
+        let legacyTimestamp = now.addingTimeInterval(-20)
+        defaults.set(52.5200, forKey: "miataru_smartFrequentBackgroundSeedLatitude")
+        defaults.set(13.4050, forKey: "miataru_smartFrequentBackgroundSeedLongitude")
+        defaults.set(10.0, forKey: "miataru_smartFrequentBackgroundSeedHorizontalAccuracy")
+        defaults.set(legacyTimestamp, forKey: "miataru_smartFrequentBackgroundSeedTimestamp")
+        defaults.set(["version": 1, "latitude": "unreadable"],
+                     forKey: SmartFrequentBackgroundSeedStore.snapshotKey)
+
+        let store = SmartFrequentBackgroundSeedStore(userDefaults: defaults)
+        #expect(store.load(now: now, inactivityWindow: 600)?.timestamp == legacyTimestamp)
+        #expect(defaults.object(forKey: SmartFrequentBackgroundSeedStore.snapshotKey) != nil)
+
+        let latest = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52.5220, longitude: 13.4070),
+            altitude: 0,
+            horizontalAccuracy: 6,
+            verticalAccuracy: -1,
+            course: -1,
+            speed: -1,
+            timestamp: now
+        )
+        store.save(latest, maximumAccuracy: 100)
+        #expect(store.load(now: now, inactivityWindow: 600)?.timestamp == latest.timestamp)
+        #expect(store.load(now: now.addingTimeInterval(601), inactivityWindow: 600) == nil)
+        #expect(defaults.object(forKey: SmartFrequentBackgroundSeedStore.snapshotKey) == nil)
+        #expect(defaults.object(forKey: "miataru_smartFrequentBackgroundSeedTimestamp") == nil)
+    }
+
     @Test("Smart frequent activation evidence is quality aware and startup guarded")
     func smartFrequentActivationEvidenceIsQualityAwareAndStartupGuarded() throws {
         let firstStationary = CLLocation(

@@ -56,14 +56,7 @@ final class LocationManager: NSObject, ObservableObject {
     private var isFrequentBackgroundStandardUpdatesActive: Bool { coreLocationServices.isFrequentBackgroundStandardUpdatesActive }
     private let userDefaults = UserDefaults.standard
     private let lastServerUpdateKey = "miataru_lastServerUpdate"
-    private let smartFrequentBackgroundSeedLatitudeKey = "miataru_smartFrequentBackgroundSeedLatitude"
-    private let smartFrequentBackgroundSeedLongitudeKey = "miataru_smartFrequentBackgroundSeedLongitude"
-    private let smartFrequentBackgroundSeedAltitudeKey = "miataru_smartFrequentBackgroundSeedAltitude"
-    private let smartFrequentBackgroundSeedHorizontalAccuracyKey = "miataru_smartFrequentBackgroundSeedHorizontalAccuracy"
-    private let smartFrequentBackgroundSeedVerticalAccuracyKey = "miataru_smartFrequentBackgroundSeedVerticalAccuracy"
-    private let smartFrequentBackgroundSeedCourseKey = "miataru_smartFrequentBackgroundSeedCourse"
-    private let smartFrequentBackgroundSeedSpeedKey = "miataru_smartFrequentBackgroundSeedSpeed"
-    private let smartFrequentBackgroundSeedTimestampKey = "miataru_smartFrequentBackgroundSeedTimestamp"
+    private let smartFrequentBackgroundSeedStore = SmartFrequentBackgroundSeedStore()
     private var cancellables = Set<AnyCancellable>()
     private let settings = SettingsManager.shared
     private let diagnosticsLog = LocationDiagnosticsLogStore.shared
@@ -2964,64 +2957,19 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func persistedSmartFrequentBackgroundSeedLocation(now: Date = Date()) -> CLLocation? {
-        guard let latitude = userDefaults.object(forKey: smartFrequentBackgroundSeedLatitudeKey) as? Double,
-              let longitude = userDefaults.object(forKey: smartFrequentBackgroundSeedLongitudeKey) as? Double,
-              let horizontalAccuracy = userDefaults.object(forKey: smartFrequentBackgroundSeedHorizontalAccuracyKey) as? Double,
-              let timestamp = userDefaults.object(forKey: smartFrequentBackgroundSeedTimestampKey) as? Date else {
-            return nil
-        }
-
         let inactivityWindow = settings.smartFrequentBackgroundInactivityWindowSelection.timeInterval
-        let seedLocation = Self.smartFrequentBackgroundSeedLocation(
-            latitude: latitude,
-            longitude: longitude,
-            altitude: userDefaults.object(forKey: smartFrequentBackgroundSeedAltitudeKey) as? Double ?? 0,
-            horizontalAccuracy: horizontalAccuracy,
-            verticalAccuracy: userDefaults.object(forKey: smartFrequentBackgroundSeedVerticalAccuracyKey) as? Double ?? -1,
-            course: userDefaults.object(forKey: smartFrequentBackgroundSeedCourseKey) as? Double ?? -1,
-            speed: userDefaults.object(forKey: smartFrequentBackgroundSeedSpeedKey) as? Double ?? -1,
-            timestamp: timestamp,
-            now: now,
-            inactivityWindow: inactivityWindow
-        )
-        if seedLocation == nil {
-            clearPersistedSmartFrequentBackgroundSeed()
-        }
-        return seedLocation
+        return smartFrequentBackgroundSeedStore.load(now: now, inactivityWindow: inactivityWindow)
     }
 
     private func persistSmartFrequentBackgroundSeed(with location: CLLocation) {
-        guard location.coordinate.latitude.isFinite,
-              location.coordinate.longitude.isFinite,
-              CLLocationCoordinate2DIsValid(location.coordinate),
-              location.timestamp.timeIntervalSince1970.isFinite,
-              location.horizontalAccuracy.isFinite,
-              location.horizontalAccuracy >= 0,
-              location.horizontalAccuracy <= Self.maximumSmartFrequentBackgroundStateAccuracy else {
-            return
-        }
-
-        userDefaults.set(location.coordinate.latitude, forKey: smartFrequentBackgroundSeedLatitudeKey)
-        userDefaults.set(location.coordinate.longitude, forKey: smartFrequentBackgroundSeedLongitudeKey)
-        userDefaults.set(location.altitude.isFinite ? location.altitude : 0, forKey: smartFrequentBackgroundSeedAltitudeKey)
-        userDefaults.set(location.horizontalAccuracy, forKey: smartFrequentBackgroundSeedHorizontalAccuracyKey)
-        userDefaults.set(location.verticalAccuracy.isFinite ? location.verticalAccuracy : -1, forKey: smartFrequentBackgroundSeedVerticalAccuracyKey)
-        userDefaults.set(location.course.isFinite ? location.course : -1, forKey: smartFrequentBackgroundSeedCourseKey)
-        userDefaults.set(location.speed.isFinite ? location.speed : -1, forKey: smartFrequentBackgroundSeedSpeedKey)
-        userDefaults.set(location.timestamp, forKey: smartFrequentBackgroundSeedTimestampKey)
+        smartFrequentBackgroundSeedStore.save(
+            location,
+            maximumAccuracy: Self.maximumSmartFrequentBackgroundStateAccuracy
+        )
     }
 
     private func clearPersistedSmartFrequentBackgroundSeed() {
-        [
-            smartFrequentBackgroundSeedLatitudeKey,
-            smartFrequentBackgroundSeedLongitudeKey,
-            smartFrequentBackgroundSeedAltitudeKey,
-            smartFrequentBackgroundSeedHorizontalAccuracyKey,
-            smartFrequentBackgroundSeedVerticalAccuracyKey,
-            smartFrequentBackgroundSeedCourseKey,
-            smartFrequentBackgroundSeedSpeedKey,
-            smartFrequentBackgroundSeedTimestampKey
-        ].forEach { userDefaults.removeObject(forKey: $0) }
+        smartFrequentBackgroundSeedStore.clear()
     }
 
     private func updateSmartFrequentBackgroundSpeedReference(with location: CLLocation) {

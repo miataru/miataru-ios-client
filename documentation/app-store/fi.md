@@ -18,7 +18,7 @@ Käytä valittujen laitteiden widgetejä ja pyydä Siriltä tai Pikakomentoilta 
 
 ## What's New
 ```text
-Sijainnin jakaminen taustalla toimii aiempaa luotettavammin keskeytysten ja laitteen uudelleenkäynnistyksen jälkeen. Sijaintipäivitykset säilyvät tilapäisten yhteysongelmien aikana ja lähetetään myöhemmin.
+Sijainnin jakaminen taustalla toimii aiempaa luotettavammin keskeytysten ja laitteen uudelleenkäynnistyksen jälkeen. Matkan aikana Smart-seuranta käsittelee tiheitä päivityksiä aiempaa tehokkaammin vähentämättä sijaintiraporttien tarkkuutta tai tiheyttä. Sijaintipäivitykset säilyvät tilapäisten yhteysongelmien aikana ja lähetetään myöhemmin.
 
 Valinnaiset diagnostiikkatiedot sisältävät nyt akun varaustason ja sijaintitoiminnan, mikä helpottaa päivityskatkosten selvittämistä.
 

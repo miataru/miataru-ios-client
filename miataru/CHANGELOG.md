@@ -1,4 +1,5 @@
 version 3.6
+- Reduced Smart frequent seed persistence from eight per-location preference updates to one complete snapshot, while retaining previous-build reads, freshness gating, and the same location acceptance and upload behavior.
 - Preserved location diagnostics across temporarily unreadable protected storage after reboot: early events wait in memory, merge with prior history after unlock, and cannot overwrite that history or produce an incomplete export.
 - Enabling the triple-tap location diagnostics now activates logging and battery monitoring synchronously, then captures an immediate battery and tracking baseline.
 - Preserved the existing Device ID when storage is temporarily unreadable after a background launch or reboot; new identities are used only after successful persistence, and uploads wait for a valid saved ID.

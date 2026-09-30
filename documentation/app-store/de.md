@@ -18,7 +18,7 @@ Nutze Widgets für ausgewählte Geräte und frage Siri oder Kurzbefehle nach dem
 
 ## What's New
 ```text
-Die Standortfreigabe im Hintergrund ist nach Unterbrechungen und einem Neustart des Geräts zuverlässiger. Bei vorübergehenden Verbindungsproblemen bleiben Standortmeldungen erhalten und werden später gesendet.
+Die Standortfreigabe im Hintergrund ist nach Unterbrechungen und einem Neustart des Geräts zuverlässiger. Auf Wegen und Fahrten verarbeitet Smart-Tracking häufige Standortmeldungen jetzt effizienter, ohne ihre Genauigkeit oder Häufigkeit zu verringern. Bei vorübergehenden Verbindungsproblemen bleiben Standortmeldungen erhalten und werden später gesendet.
 
 Die optionale Diagnose erfasst jetzt Akkustand und Standortaktivität, damit sich Lücken besser untersuchen lassen.
 
