@@ -20,8 +20,6 @@ Gebruik widgets voor geselecteerde apparaten en vraag Siri of Opdrachten naar de
 ```text
 Locaties delen op de achtergrond werkt nu betrouwbaarder na onderbrekingen en een herstart van je apparaat. Onderweg verwerkt Smart-tracking frequente updates efficiënter, zonder minder details of minder vaak je locatie te melden. Locatie-updates blijven bewaard bij tijdelijke verbindingsproblemen en worden later verzonden.
 
-De optionele diagnostiek bevat nu het batterijniveau en de locatieactiviteit, zodat onderbrekingen makkelijker te onderzoeken zijn.
-
 De kaart en de navigatie op volledig scherm tonen nu de snelheid die past bij de richting van je route.
 ```
 

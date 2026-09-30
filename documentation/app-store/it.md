@@ -20,8 +20,6 @@ Usa i widget per i dispositivi selezionati e chiedi a Siri o Comandi l’ultima 
 ```text
 La condivisione della posizione in background è più affidabile dopo le interruzioni e il riavvio del dispositivo. Durante gli spostamenti, il tracciamento Smart gestisce gli aggiornamenti frequenti in modo più efficiente, senza ridurne il dettaglio o la frequenza. Gli aggiornamenti della posizione vengono conservati durante i problemi temporanei di connessione e inviati in seguito.
 
-La diagnostica facoltativa ora include il livello della batteria e l’attività di localizzazione per aiutarti a capire eventuali interruzioni.
-
 La mappa e la navigazione a schermo intero mostrano ora la velocità adatta alla direzione del percorso.
 ```
 

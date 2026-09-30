@@ -20,8 +20,6 @@ Utilise des widgets pour les appareils sélectionnés et demande à Siri ou Racc
 ```text
 Le partage de position en arrière-plan est plus fiable après une interruption ou le redémarrage de l’appareil. Pendant les déplacements, le suivi Smart traite les mises à jour fréquentes plus efficacement, sans réduire leur précision ni leur fréquence. Les mises à jour de position sont conservées en cas de problème de connexion temporaire, puis envoyées plus tard.
 
-Le diagnostic facultatif inclut désormais le niveau de batterie et l’activité de localisation pour aider à comprendre les interruptions.
-
 La carte et la navigation plein écran affichent maintenant la vitesse correspondant au sens de ton itinéraire.
 ```
 
