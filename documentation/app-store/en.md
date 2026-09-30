@@ -18,7 +18,7 @@ Use widgets for selected devices and ask Siri or Shortcuts for a device's last k
 
 ## What's New
 ```text
-Background location sharing is more reliable after interruptions and device restarts. During trips, Smart tracking now handles frequent updates more efficiently without changing the detail or frequency of your location reports. Location updates are kept during temporary connection problems and sent later.
+Background location sharing is more reliable after interruptions and device restarts. During trips, Smart tracking now works more efficiently while keeping the same detail and frequency of your location reports. Location updates are kept during temporary connection problems and sent later.
 
 The map and full-screen navigation now show the speed that matches the direction of your route.
 ```

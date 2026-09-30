@@ -171,6 +171,12 @@ final class CoreLocationServiceController {
         isSignificantChangeRecoveryAnchorActive = true
     }
 
+    func startOrReplaceSmartFrequentExitFence(_ region: CLCircularRegion) {
+        // Core Location replaces a monitored region with the same identifier.
+        // Keep the previous fence registered until the replacement is requested.
+        primaryManager.startMonitoring(for: region)
+    }
+
     func stopManagedLocationUpdates() {
         primaryManager.stopUpdatingLocation()
         primaryManager.stopMonitoringSignificantLocationChanges()

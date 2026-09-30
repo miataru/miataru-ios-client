@@ -222,6 +222,8 @@ Smart settings:
 
 The Smart exit-fence radius intentionally does not offer 25 m or 10 m. Those values are still available for the manual/frequent movement-distance filter, but they are too precise-looking for iOS region monitoring and could set the wrong expectation for Smart wake behavior.
 
+When a moving anchor drifts at least 25 m from the current Smart exit fence, the app asks Core Location to monitor the new region with the same identifier. Core Location replaces the previous region; the app no longer explicitly stops monitoring between those calls. Radius, recenter threshold, and location reporting rules are unchanged. An explicit stop still occurs when Smart tracking becomes ineligible or the fence fires.
+
 Hybrid speed detection uses valid `CLLocation.speed` first and derived speed when GPS speed is invalid. GPS-only ignores derived speed. Activation speeds above 200 km/h are rejected as implausible.
 
 Smart runtime state is primarily in memory. After relaunch, a fresh persisted confirmedActive marker resumes Smart frequent mode if normal tracking is still eligible; stale or ineligible markers fall back to waiting and may emit the restart-recovery deactivation notification. A fresh persisted Smart seed may become the speed reference only if it is newer than the configured inactivity window and passes plausibility checks. Each valid location callback now saves that seed as one complete preferences value instead of eight separate values; previous-build values remain readable, and a malformed new value falls back to a valid previous representation. This changes neither location acceptance nor upload frequency.

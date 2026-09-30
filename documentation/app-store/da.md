@@ -18,7 +18,7 @@ Brug widgets til udvalgte enheder, og bed Siri eller Genveje om en enheds senest
 
 ## What's New
 ```text
-Positionsdeling i baggrunden er mere pålidelig efter afbrydelser og genstart af enheden. På farten håndterer Smart-sporing nu hyppige opdateringer mere effektivt uden at mindske deres detaljeringsgrad eller hyppighed. Positionsopdateringer gemmes ved midlertidige forbindelsesproblemer og sendes senere.
+Positionsdeling i baggrunden er mere pålidelig efter afbrydelser og genstart af enheden. På farten arbejder Smart-sporing nu mere effektivt, uden at positionsmeldingerne bliver mindre detaljerede eller sjældnere. Positionsopdateringer gemmes ved midlertidige forbindelsesproblemer og sendes senere.
 
 Kortet og navigationen i fuld skærm viser nu den hastighed, der passer til rutens retning.
 ```

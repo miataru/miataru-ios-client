@@ -827,4 +827,46 @@ struct SmartFrequentBackgroundPolicyTests {
         ]))
         #expect(sameTimestampAnchor.coordinate.latitude == betterSameTimestamp.coordinate.latitude)
     }
+
+    @Test("Smart exit fence replacement does not stop region monitoring")
+    func smartExitFenceReplacementKeepsMonitoringRegistered() {
+        let primary = RecordingSmartExitFenceLocationManager()
+        let secondary = RecordingSmartExitFenceLocationManager()
+        let controller = CoreLocationServiceController(
+            primaryManager: primary,
+            frequentBackgroundManager: secondary
+        )
+        let identifier = SmartFrequentBackgroundPolicy.exitFenceIdentifier
+        let initial = CLCircularRegion(
+            center: CLLocationCoordinate2D(latitude: 52.5200, longitude: 13.4050),
+            radius: 75,
+            identifier: identifier
+        )
+        let recentered = CLCircularRegion(
+            center: CLLocationCoordinate2D(latitude: 52.5210, longitude: 13.4060),
+            radius: 75,
+            identifier: identifier
+        )
+
+        controller.startOrReplaceSmartFrequentExitFence(initial)
+        controller.startOrReplaceSmartFrequentExitFence(recentered)
+
+        #expect(primary.startedRegions.map(\.identifier) == [identifier, identifier])
+        #expect(primary.stoppedRegions.isEmpty)
+        #expect(primary.startedRegions.last === recentered)
+        #expect(secondary.startedRegions.isEmpty)
+    }
+}
+
+private final class RecordingSmartExitFenceLocationManager: CLLocationManager {
+    private(set) var startedRegions: [CLRegion] = []
+    private(set) var stoppedRegions: [CLRegion] = []
+
+    override func startMonitoring(for region: CLRegion) {
+        startedRegions.append(region)
+    }
+
+    override func stopMonitoring(for region: CLRegion) {
+        stoppedRegions.append(region)
+    }
 }

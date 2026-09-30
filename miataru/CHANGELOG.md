@@ -1,4 +1,5 @@
 version 3.6
+- Kept the Smart movement exit fence registered while recentering it with Core Location's same-identifier replacement, avoiding an explicit stop/start gap and one monitoring call per recenter without changing the radius or movement threshold.
 - Reduced Smart frequent seed persistence from eight per-location preference updates to one complete snapshot, while retaining previous-build reads, freshness gating, and the same location acceptance and upload behavior.
 - Preserved location diagnostics across temporarily unreadable protected storage after reboot: early events wait in memory, merge with prior history after unlock, and cannot overwrite that history or produce an incomplete export.
 - Enabling the triple-tap location diagnostics now activates logging and battery monitoring synchronously, then captures an immediate battery and tracking baseline.

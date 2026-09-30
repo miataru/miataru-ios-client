@@ -1448,7 +1448,7 @@ final class LocationManager: NSObject, ObservableObject {
             }
         }
 
-        stopSmartFrequentExitFence(reason: "recenter: \(reason)")
+        let isRecentering = existingRegion != nil
         let region = CLCircularRegion(
             center: anchorLocation.coordinate,
             radius: radius,
@@ -1456,27 +1456,32 @@ final class LocationManager: NSObject, ObservableObject {
         )
         region.notifyOnEntry = false
         region.notifyOnExit = true
-        locationManager.startMonitoring(for: region)
+        coreLocationServices.startOrReplaceSmartFrequentExitFence(region)
         isSmartFrequentExitFenceActive = true
         let context = diagnosticsLocationContext(anchorLocation, extra: [
-            ("radiusMeters", .double(radius))
+            ("radiusMeters", .double(radius)),
+            ("replacedExistingRegion", .bool(isRecentering))
         ])
+        let summary = isRecentering
+            ? "Recentered Smart frequent exit-fence monitoring."
+            : "Started Smart frequent exit-fence monitoring."
+        let result = isRecentering ? "recentered" : "active"
         if reason == "location update" {
             diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "smartFrequentExitFence",
-                summary: "Started Smart frequent exit-fence monitoring.",
-                result: "active",
+                summary: summary,
+                result: result,
                 reason: reason,
-                coalescingKey: "smartFrequentExitFence|active|locationUpdate",
+                coalescingKey: "smartFrequentExitFence|\(result)|locationUpdate",
                 context: context
             )
         } else {
             diagnosticsLog.append(
                 level: .info,
                 event: "smartFrequentExitFence",
-                summary: "Started Smart frequent exit-fence monitoring.",
-                result: "active",
+                summary: summary,
+                result: result,
                 reason: reason,
                 context: context
             )
@@ -1495,24 +1500,13 @@ final class LocationManager: NSObject, ObservableObject {
             locationManager.stopMonitoring(for: region)
         }
         isSmartFrequentExitFenceActive = false
-        if reason.hasPrefix("recenter:") {
-            diagnosticsLog.appendCoalesced(
-                level: .info,
-                event: "smartFrequentExitFence",
-                summary: "Stopped Smart frequent exit-fence monitoring.",
-                result: "stopped",
-                reason: reason,
-                coalescingKey: "smartFrequentExitFence|stopped|recenter"
-            )
-        } else {
-            diagnosticsLog.append(
-                level: .info,
-                event: "smartFrequentExitFence",
-                summary: "Stopped Smart frequent exit-fence monitoring.",
-                result: "stopped",
-                reason: reason
-            )
-        }
+        diagnosticsLog.append(
+            level: .info,
+            event: "smartFrequentExitFence",
+            summary: "Stopped Smart frequent exit-fence monitoring.",
+            result: "stopped",
+            reason: reason
+        )
     }
 
     private func smartFrequentExitFenceRegion() -> CLCircularRegion? {
