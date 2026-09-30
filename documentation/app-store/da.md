@@ -21,6 +21,8 @@ Brug widgets til udvalgte enheder, og bed Siri eller Genveje om en enheds senest
 Positionsdeling i baggrunden genoptages nu mere pålideligt efter afbrydelser. Efter en genstart gendannes dine sporingsindstillinger, når du låser enheden op første gang. På farten arbejder Smart-sporing nu mere effektivt, uden at positionsmeldingerne bliver mindre detaljerede eller sjældnere. Positionsopdateringer gemmes ved midlertidige forbindelsesproblemer og sendes senere. Når flere positioner kommer ind på én gang, sendes de i den rigtige rækkefølge, så den nyeste position forbliver aktuel. Under navigation bruger visningen af din egen hastighed nu den nyeste gyldige positionsmåling, så en nyere måling uden brugbar hastighed ikke kortvarigt skjuler værdien.
 
 Kortet og navigationen i fuld skærm viser nu den hastighed, der passer til rutens retning.
+
+Når du navigerer fra din egen iPhone til en anden enhed, forbliver hastigheden synlig under ruteberegningen, hvis der er en gyldig måling. Korte perioder uden en gyldig måling dækkes af den seneste gyldige måling, så længe den stadig er aktuel. Derefter skjules hastigheden.
 ```
 
 ## Keywords

@@ -21,6 +21,8 @@ Utilise des widgets pour les appareils sélectionnés et demande à Siri ou Racc
 Le partage de position en arrière-plan reprend plus fiablement après une interruption. Après un redémarrage, tes réglages de suivi sont rétablis lorsque tu déverrouilles l’appareil pour la première fois. Pendant les déplacements, le suivi Smart fonctionne plus efficacement, sans réduire la précision ni la fréquence des mises à jour de position. Elles sont conservées en cas de problème de connexion temporaire, puis envoyées plus tard. Lorsque plusieurs positions arrivent en même temps, elles sont envoyées dans l’ordre pour que la plus récente reste à jour. Pendant la navigation, l’affichage de ta vitesse utilise désormais la position valide la plus récente. Une mesure plus récente sans vitesse valide ne masque plus brièvement une vitesse encore valable.
 
 La carte et la navigation plein écran affichent maintenant la vitesse correspondant au sens de ton itinéraire.
+
+Lorsque tu navigues de ton iPhone vers un autre appareil, ta vitesse reste affichée pendant le recalcul de l’itinéraire si une mesure valide est disponible. Les brèves mesures invalides sont compensées par la dernière mesure valide tant qu’elle reste à jour. Ensuite, la vitesse est masquée.
 ```
 
 ## Keywords
