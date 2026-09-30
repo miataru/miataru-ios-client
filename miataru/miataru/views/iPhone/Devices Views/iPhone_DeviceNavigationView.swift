@@ -1954,7 +1954,7 @@ struct iPhone_DeviceNavigationView: View {
         NavigationHUDSpeedPolicy.formattedSpeed(
             isDeviceToUser: isRouteFromDeviceToUser,
             trackedSample: latestSuccessfulTargetSpeed,
-            ownLocation: effectiveUserLocation,
+            ownLocations: [locationManager.latestRawLocation, locationManager.currentLocation],
             now: now
         )
     }

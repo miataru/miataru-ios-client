@@ -81,31 +81,31 @@ struct NavigationHUDSettingsTests {
         #expect(NavigationHUDSpeedPolicy.formattedSpeed(
             isDeviceToUser: true,
             trackedSample: remote,
-            ownLocation: own,
+            ownLocations: [own],
             now: now
         ) == "36")
         #expect(NavigationHUDSpeedPolicy.formattedSpeed(
             isDeviceToUser: false,
             trackedSample: remote,
-            ownLocation: own,
+            ownLocations: [own],
             now: now
         ) == "18")
         #expect(NavigationHUDSpeedPolicy.formattedSpeed(
             isDeviceToUser: true,
             trackedSample: nil,
-            ownLocation: own,
+            ownLocations: [own],
             now: now
         ) == nil)
         #expect(NavigationHUDSpeedPolicy.formattedSpeed(
             isDeviceToUser: false,
             trackedSample: remote,
-            ownLocation: nil,
+            ownLocations: [nil],
             now: now
         ) == nil)
     }
 
-    @Test("Own device speed remains zero-valid and expires after fifteen seconds")
-    func ownDeviceSpeedValidityRemainsShortLived() {
+    @Test("Own device speed selects the newest valid candidate within fifteen seconds")
+    func ownDeviceSpeedChoosesNewestFreshValidCandidate() {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
         let freshStoppedLocation = CLLocation(
             coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
@@ -125,9 +125,50 @@ struct NavigationHUDSettingsTests {
             speed: 0,
             timestamp: now.addingTimeInterval(-15.01)
         )
+        let invalidSpeedLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: -1,
+            timestamp: now.addingTimeInterval(-1)
+        )
+        let validCurrentLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: 5,
+            timestamp: now.addingTimeInterval(-2)
+        )
+        let newerValidRawLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: 10,
+            timestamp: now.addingTimeInterval(-1)
+        )
+        let futureLocation = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 52, longitude: 13),
+            altitude: 0,
+            horizontalAccuracy: 5,
+            verticalAccuracy: 5,
+            course: 0,
+            speed: 20,
+            timestamp: now.addingTimeInterval(1)
+        )
 
         #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: freshStoppedLocation, now: now) == "0")
         #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(for: staleLocation, now: now) == nil)
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [invalidSpeedLocation, validCurrentLocation], now: now) == "18")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [validCurrentLocation, newerValidRawLocation], now: now) == "36")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [staleLocation, validCurrentLocation], now: now) == "18")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [futureLocation, validCurrentLocation], now: now) == "18")
+        #expect(NavigationHUDSpeedPolicy.formattedOwnDeviceSpeed(from: [invalidSpeedLocation, staleLocation, futureLocation], now: now) == nil)
     }
 
     @Test("HUD palette and mirror choice persist across settings store instances")

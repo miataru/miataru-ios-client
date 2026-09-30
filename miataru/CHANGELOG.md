@@ -1,4 +1,5 @@
 version 3.6
+- Kept the own-device speed visible during navigation when a newer raw location has no valid speed: the display now uses the newest fresh, valid speed from raw or accepted locations, while retaining the 15-second freshness limit.
 - Deferred location-service changes and settings migrations during a pre-first-unlock launch, then restored saved tracking, DeviceKey blocks, manual Frequent expiry, Smart state, timers, and pending uploads after storage became available; normal tracking continues during later screen locks, and stale queued settings events cannot stop newer tracking intent.
 - Kept opt-in diagnostics writable during ordinary locked background operation after the first unlock and delayed creation of a new diagnostics source ID until protected storage is readable.
 - Persisted multi-location callback batches together in timestamp order before their first upload, so a blocked request, process interruption, or retry cannot reorder the newest reported location; single-location cadence and configured delivery delays remain unchanged.

@@ -45,6 +45,16 @@ enum NavigationHUDSpeedPolicy {
         )
     }
 
+    static func formattedOwnDeviceSpeed(from locations: [CLLocation?], now: Date) -> String? {
+        let latestValidLocation = locations
+            .compactMap { location -> CLLocation? in
+                guard formattedOwnDeviceSpeed(for: location, now: now) != nil else { return nil }
+                return location
+            }
+            .max { $0.timestamp < $1.timestamp }
+        return formattedOwnDeviceSpeed(for: latestValidLocation, now: now)
+    }
+
     static func formattedTrackedDeviceSpeed(for sample: NavigationHUDServerSpeedSample?, now: Date) -> String? {
         formattedSpeed(
             metersPerSecond: sample?.metersPerSecond,
@@ -68,13 +78,13 @@ enum NavigationHUDSpeedPolicy {
     static func formattedSpeed(
         isDeviceToUser: Bool,
         trackedSample: NavigationHUDServerSpeedSample?,
-        ownLocation: CLLocation?,
+        ownLocations: [CLLocation?],
         now: Date
     ) -> String? {
         if isDeviceToUser {
             return formattedTrackedDeviceSpeed(for: trackedSample, now: now)
         }
-        return formattedOwnDeviceSpeed(for: ownLocation, now: now)
+        return formattedOwnDeviceSpeed(from: ownLocations, now: now)
     }
 }
 
