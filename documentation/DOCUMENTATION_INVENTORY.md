@@ -2,7 +2,7 @@
 
 The [complete TSV inventory](DOCUMENTATION_INVENTORY.tsv) has one row per versioned or newly added document with path, purpose, status, authority, and required action. Regenerate with `miataru/scripts/documentation-inventory.py --write` and verify with `--check`. The inventory includes all 30 historical `.cursor/plans`, retained `.specstory` records, local package documentation, dependency licenses, dated audits, current project and topic documents, and historical design PDFs/OmniGraffle/RTF and web references. Vendored texts and examples are marked with a vendor authority and are updated only with their dependency.
 
-`Current` means the document describes the development checkout and must be checked against source and Xcode settings. `P0 target` and `Later` are proposals. `historisch` is retained evidence, not a Current instruction. The app and widget share development metadata 3.6 build 17 in this checkout. Build 16's accepted App Store Connect upload is historical; Build 17's archive and upload are pending. Neither the source version nor an archived changelog entry proves the current App Store state.
+`Current` means the document describes the development checkout and must be checked against source and Xcode settings. `P0 target` and `Later` are proposals. `historisch` is retained evidence, not a Current instruction. The app and widget share development metadata 3.6 build 17 in this checkout. App Store Connect accepted Build 17's upload on 2026-09-30; Apple Processing, TestFlight, App Review, and store availability are unconfirmed. The local App Store copy is not confirmed as live.
 
 ## Review decisions
 

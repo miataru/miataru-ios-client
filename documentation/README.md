@@ -104,7 +104,10 @@ The following 30 Cursor plans are historical proposals. Their headings describe 
 
 ## Current Project Facts
 
-- Current development checkout: `3.6` build `17` (app and widget). Build 17 passed the release test lane with 409 tests; archive and upload are pending. Build 16 is historical: its archive/export passed metadata and signing checks, and App Store Connect accepted its upload on 2026-09-30. Apple processing, TestFlight availability, App Review, and store availability remain separate states and unverified here.
+- Current development checkout: `3.6` build `17` (app and widget). Build 16's earlier accepted upload is historical.
+- Tested input: commit `8d54f3e0` passed the release lane with 409 tests (397 Unit + 12 UI), 0 skipped and 0 failures. Result bundles: `miataru/artifacts/verification/unit-20260930T170900Z-79381.xcresult` and `miataru/artifacts/verification/ui-20260930T172010Z-79381.xcresult`.
+- Archive (2026-09-30 19:28 CEST): `miataru/artifacts/releases/miataru-3.6-17.xcarchive`, with log `miataru/artifacts/releases/archive-3.6-17.log`; app and widget metadata are 3.6/17 for arm64, and their dSYM UUIDs match. The IPA exported at 19:30 CEST is distribution-signed: `miataru/artifacts/releases/export-3.6-17/miataru.ipa`, with log `miataru/artifacts/releases/export-3.6-17.log`.
+- App Store Connect accepted Build 17 on 2026-09-30 at 19:34 CEST. `miataru/artifacts/releases/upload-3.6-17.log` and the archive distribution record show `uploadedBuildNumber=17`, `Upload succeeded`, and no errors or warnings. Apple Processing, TestFlight availability, App Review, and store availability are separate and unconfirmed. The local App Store copy is not evidence that its fields were transferred live.
 - iOS deployment target: `18.6`
 - Platforms: iPhone and iPad app target plus WidgetKit extension
 - Locales: `da`, `de`, `en`, `es`, `fi`, `fr`, `it`, `ja`, `nl`, `zh-Hans`
