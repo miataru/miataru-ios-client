@@ -41,6 +41,8 @@ final class LocationBackgroundForensicsRecorder {
     private var acceptedLocationsSincePowerSample = 0
     private var directUploadAcknowledgementsSincePowerSample = 0
 
+    private(set) var pendingFenceConsistencyCheck: LocationBackgroundForensics.PendingFenceConsistencyCheck?
+
     private(set) var state: LocationBackgroundForensics.State
     private(set) var lastSignificantChangeRearmStatus: LocationSignificantChangeRearmStatus?
 
@@ -52,6 +54,59 @@ final class LocationBackgroundForensicsRecorder {
         self.powerReading = powerReading
         self.lastSignificantChangeRearmStatus = Self.loadLastSignificantChangeRearmStatus(from: userDefaults)
         self.state = Self.loadBackgroundTrackingForensicState(from: userDefaults)
+    }
+
+    func beginFenceConsistencyCheck(region: CLCircularRegion,
+                                   reason: LocationBackgroundForensics.FenceConsistencyReason,
+                                   accepted: Bool,
+                                   now: Date) {
+        guard accepted, diagnosticsLog.isEnabled else { return }
+        pendingFenceConsistencyCheck = .init(center: region.center, radius: region.radius,
+                                            triggeredAt: now, reason: reason)
+    }
+
+    func clearFenceConsistencyCheck() {
+        pendingFenceConsistencyCheck = nil
+    }
+
+    func reconcileFenceConsistencyCheck(eligible: Bool, now: Date) {
+        guard let check = pendingFenceConsistencyCheck else { return }
+        if !eligible || !diagnosticsLog.isEnabled ||
+            LocationBackgroundForensics.fenceExitConsistencyDecision(check: check, location: nil, now: now) == .expired {
+            clearFenceConsistencyCheck()
+        }
+    }
+
+    func recordFenceConsistencyLocation(_ location: CLLocation, source: String, now: Date) {
+        reconcileFenceConsistencyCheck(eligible: true, now: now)
+        guard let check = pendingFenceConsistencyCheck else { return }
+        let decision = LocationBackgroundForensics.fenceExitConsistencyDecision(check: check, location: location, now: now)
+        guard decision != .waiting else { return }
+        clearFenceConsistencyCheck()
+        guard decision == .inconsistent else { return }
+        let center = CLLocation(latitude: check.center.latitude, longitude: check.center.longitude)
+        let formatter = ISO8601DateFormatter()
+        diagnosticsLog.append(
+            level: .warning,
+            event: "smartFrequentExitFenceConsistency",
+            summary: NSLocalizedString("location_diagnostics_fence_consistency_summary", tableName: "LocationTracking",
+                                       comment: "Warning summary for a fresh fix well inside an exited Smart fence"),
+            result: "inconsistent",
+            reason: NSLocalizedString("location_diagnostics_fence_consistency_reason", tableName: "LocationTracking",
+                                      comment: "Fence and fix disagree; this does not prove a GPS failure"),
+            context: [
+                "triggerReason": .string(check.reason.rawValue),
+                "triggeredAt": .string(formatter.string(from: check.triggeredAt)),
+                "fixAt": .string(formatter.string(from: location.timestamp)),
+                "evaluationDelaySeconds": .double(now.timeIntervalSince(check.triggeredAt)),
+                "radiusMeters": .double(check.radius),
+                "distanceToCenterMeters": .double(location.distance(from: center)),
+                "horizontalAccuracyMeters": .double(location.horizontalAccuracy),
+                "source": .string(source)
+            ],
+            timestamp: now,
+            persistence: .immediate
+        )
     }
 
     func significantChangeRearmDecision(buildIdentifier: String,

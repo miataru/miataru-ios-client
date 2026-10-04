@@ -1,4 +1,5 @@
 version 3.6
+- Added an opt-in diagnostic warning when the first fresh, accurate fix after an accepted Smart activation or recovery fence exit lies well inside the exited region; tracking and uploads remain unchanged.
 - Kept own-device navigation speed visible while a direction switch rebuilds the route and through short runs of location updates without valid speed; the most recent valid reading remains eligible for up to 15 seconds, then disappears.
 - Kept the own-device speed visible during navigation when a newer raw location has no valid speed: the display now uses the newest fresh, valid speed from raw or accepted locations, while retaining the 15-second freshness limit.
 - Deferred location-service changes and settings migrations during a pre-first-unlock launch, then restored saved tracking, DeviceKey blocks, manual Frequent expiry, Smart state, timers, and pending uploads after storage became available; normal tracking continues during later screen locks, and stale queued settings events cannot stop newer tracking intent.

@@ -237,6 +237,12 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Settings Observer
     private func observeSettings() {
+        diagnosticsLog.$isEnabled
+            .sink { [weak self] enabled in
+                if !enabled { self?.backgroundForensicsRecorder.clearFenceConsistencyCheck() }
+            }
+            .store(in: &cancellables)
+
         settings.$trackAndReportLocation
             .receive(on: DispatchQueue.main)
             .sink { [weak self] shouldTrack in
@@ -719,6 +725,7 @@ final class LocationManager: NSObject, ObservableObject {
     func stopTracking() {
         debugLog("stopTracking called")
         guard trackingStateReady else { return }
+        backgroundForensicsRecorder.clearFenceConsistencyCheck()
         isTracking = false
         applyTrackingMode(reason: "stop tracking")
     }
@@ -1185,6 +1192,7 @@ final class LocationManager: NSObject, ObservableObject {
         if isTracking, state != .active {
             disableFrequentBackgroundLocationUpdatesIfBatteryIsLow()
         }
+        reconcileFenceConsistencyCheck()
         syncFrequentBackgroundAccuracyRecoveryEligibility(applicationState: state)
 
         if Self.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: status) {
@@ -1595,6 +1603,15 @@ final class LocationManager: NSObject, ObservableObject {
         location.horizontalAccuracy <= 300
     }
 
+    private func reconcileFenceConsistencyCheck(now: Date = Date()) {
+        let eligible = trackingStateReady && isTracking && settings.trackAndReportLocation &&
+            currentTrackingApplicationState != .active &&
+            locationManager.authorizationStatus == .authorizedAlways &&
+            !settings.deviceKeyAuthBlocked && settings.smartFrequentBackgroundLocationUpdatesEnabled &&
+            !settings.frequentBackgroundLocationUpdatesEnabled && !isBatteryAtOrBelowFrequentBackgroundThreshold()
+        backgroundForensicsRecorder.reconcileFenceConsistencyCheck(eligible: eligible, now: now)
+    }
+
     private func handleSmartFrequentExitFenceExit(region: CLRegion) {
         guard trackingStateReady else { return }
         guard region.identifier == Self.smartFrequentExitFenceIdentifier else {
@@ -1613,6 +1630,7 @@ final class LocationManager: NSObject, ObservableObject {
             )
             return
         }
+        reconcileFenceConsistencyCheck(now: now)
         let radius = circularRegion.radius
         let batteryAboveThreshold = !isBatteryAtOrBelowFrequentBackgroundThreshold()
         let baseEligibility = applicationState != .active &&
@@ -1647,6 +1665,8 @@ final class LocationManager: NSObject, ObservableObject {
                 return
             }
 
+            backgroundForensicsRecorder.beginFenceConsistencyCheck(region: circularRegion, reason: .recovery,
+                                                                   accepted: baseEligibility, now: now)
             stopSmartFrequentExitFence(reason: "Smart frequent recovery-fence triggered")
             smartFrequentExitFenceRecoveryAwaitingLocationUpdate = true
             var recoveryContext = smartFrequentRecoveryDiagnosticsContext(
@@ -1704,6 +1724,8 @@ final class LocationManager: NSObject, ObservableObject {
             timestamp: now
         )
 
+        backgroundForensicsRecorder.beginFenceConsistencyCheck(region: circularRegion, reason: .activation,
+                                                               accepted: shouldActivate, now: now)
         stopSmartFrequentExitFence(reason: "Smart frequent exit-fence triggered")
         beginSmartFrequentBackgroundProbe(
             location: activationLocation,
@@ -3498,6 +3520,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func stopAllLocationServices(preserveSmartRuntimeMarker: Bool = false) {
+        backgroundForensicsRecorder.clearFenceConsistencyCheck()
         guard trackingStateReady else { return }
         debugLog("[LocationManager] Stopping all location services")
         recordForensicServiceAssertion(mode: .stopped)
@@ -3601,6 +3624,7 @@ extension LocationManager: CLLocationManagerDelegate {
             }
             self.recoverDeferredStartupIfPossible(reason: "location callback after first unlock")
             guard trackingStateReady else { return }
+            self.reconcileFenceConsistencyCheck()
             let orderedLocations = Self.processableLocationUpdates(from: locations)
             guard !orderedLocations.isEmpty else {
                 debugLog("[LocationManager] didUpdateLocations ignored empty/invalid batch count=\(locations.count)")
@@ -3675,6 +3699,8 @@ extension LocationManager: CLLocationManagerDelegate {
                 if updateSource == .primary {
                     processedFreshPrimarySample = true
                 }
+                self.reconcileFenceConsistencyCheck(now: sampleProcessingNow)
+                self.backgroundForensicsRecorder.recordFenceConsistencyLocation(location, source: updateSource.rawValue, now: sampleProcessingNow)
                 self.recordSmartFrequentBackgroundFrequentCallbackIfNeeded(
                     updateSource: updateSource,
                     now: sampleProcessingNow

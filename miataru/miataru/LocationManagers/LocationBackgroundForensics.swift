@@ -9,6 +9,51 @@ import Foundation
 import CoreLocation
 
 enum LocationBackgroundForensics {
+    enum FenceConsistencyReason: String {
+        case activation
+        case recovery
+    }
+
+    // Transient evidence tied to the exited region, never to a later recenter.
+    struct PendingFenceConsistencyCheck {
+        let center: CLLocationCoordinate2D
+        let radius: CLLocationDistance
+        let triggeredAt: Date
+        let reason: FenceConsistencyReason
+    }
+
+    enum FenceConsistencyDecision: Equatable {
+        case waiting
+        case inconsistent
+        case noContradiction
+        case expired
+    }
+
+    static let fenceConsistencyWindow: TimeInterval = 120
+
+    static func fenceExitConsistencyDecision(check: PendingFenceConsistencyCheck,
+                                            location: CLLocation?,
+                                            now: Date) -> FenceConsistencyDecision {
+        guard now.timeIntervalSince(check.triggeredAt) <= fenceConsistencyWindow else {
+            return .expired
+        }
+        guard let location,
+              CLLocationCoordinate2DIsValid(check.center),
+              check.radius.isFinite, check.radius > 0,
+              CLLocationCoordinate2DIsValid(location.coordinate),
+              location.coordinate.latitude.isFinite, location.coordinate.longitude.isFinite,
+              location.horizontalAccuracy.isFinite,
+              (0...25).contains(location.horizontalAccuracy),
+              location.timestamp >= check.triggeredAt,
+              location.timestamp <= now else {
+            return .waiting
+        }
+        let center = CLLocation(latitude: check.center.latitude, longitude: check.center.longitude)
+        let distance = location.distance(from: center)
+        return distance <= 30 && distance + location.horizontalAccuracy < check.radius
+            ? .inconsistent : .noContradiction
+    }
+
     struct State: Codable, Equatable {
         var backgroundTrackingExpectedSince: Date?
         var currentExpectedMode: String?

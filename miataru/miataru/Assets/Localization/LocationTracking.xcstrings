@@ -1,6 +1,136 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "location_diagnostics_fence_consistency_summary" : {
+      "comment" : "Warning summary for a fresh fix well inside an exited Smart fence",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart-zonen blev meldt forladt, men en præcis position ligger tydeligt indenfor."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart-Bereich als verlassen gemeldet, obwohl ein genauer Standort deutlich innerhalb liegt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart fence reported an exit, but an accurate fix is well inside the region."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se notificó la salida de la zona Smart, pero una ubicación precisa está claramente dentro."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smart-alueelta ilmoitettiin poistuminen, mutta tarkka sijainti on selvästi alueen sisällä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une sortie de la zone Smart a été signalée, mais une position précise se trouve nettement à l’intérieur."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "È stata segnalata un’uscita dall’area Smart, ma una posizione precisa è chiaramente al suo interno."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smartエリアからの退出が報告されましたが、精度の高い位置情報はエリアの十分内側を示しています。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er is een vertrek uit het Smart-gebied gemeld, maar een nauwkeurige locatie ligt ruim binnen het gebied."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系统报告已离开 Smart 区域，但准确的位置仍明显位于区域内。"
+          }
+        }
+      }
+    },
+    "location_diagnostics_fence_consistency_reason" : {
+      "comment" : "Fence and fix disagree; this does not prove a GPS failure",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zonemeldingen og positionen stemmer ikke overens. En tilbagevenden til zonen er også mulig; dette beviser ikke en GPS-fejl."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereichsmeldung und Standort widersprechen sich. Auch eine Rückkehr in den Bereich ist möglich; dies beweist keinen GPS-Ausfall."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The region report and location disagree. Returning to the region is also possible; this does not prove a GPS failure."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El aviso de la zona y la ubicación no coinciden. También es posible haber regresado a la zona; esto no demuestra un fallo del GPS."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alueilmoitus ja sijainti ovat ristiriidassa. Myös paluu alueelle on mahdollinen; tämä ei todista GPS-häiriötä."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le signalement de la zone et la position se contredisent. Un retour dans la zone est aussi possible ; cela ne prouve pas une panne GPS."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La segnalazione dell’area e la posizione non coincidono. È anche possibile un ritorno nell’area; questo non dimostra un guasto del GPS."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "エリアの報告と位置情報が一致していません。エリア内に戻った可能性もあり、GPSの障害を証明するものではありません。"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De gebiedsmelding en de locatie spreken elkaar tegen. Terugkeer naar het gebied is ook mogelijk; dit bewijst geen GPS-storing."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "区域报告与位置不一致。也可能是已返回该区域；这并不能证明 GPS 出现故障。"
+          }
+        }
+      }
+    },
     "A number of your last location updates is stored on the server (default: last 1000)." : {
       "localizations" : {
         "da" : {

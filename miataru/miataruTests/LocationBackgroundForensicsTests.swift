@@ -18,6 +18,142 @@ struct LocationBackgroundForensicsTests {
         return (recorder, diagnosticsLog, defaults, suiteName, fileURL)
     }
 
+    private func fenceFix(distance: Double = 5, accuracy: Double = 5, at: Date) -> CLLocation {
+        // Meridional offset near the equator; boundary distances use a margin for geodesy.
+        CLLocation(coordinate: .init(latitude: distance / 110_574, longitude: 0), altitude: 0,
+                   horizontalAccuracy: accuracy, verticalAccuracy: -1, timestamp: at)
+    }
+
+    @Test("Fence consistency validates freshness, accuracy, distance and timeout boundaries")
+    func fenceConsistencyDecisionBoundaries() {
+        let time = Date(timeIntervalSince1970: 20_000)
+        let check = LocationBackgroundForensics.PendingFenceConsistencyCheck(
+            center: .init(latitude: 0, longitude: 0), radius: 150, triggeredAt: time, reason: .activation)
+        func decide(_ distance: Double = 5, _ accuracy: Double = 5, offset: Double = 0,
+                    elapsed: Double = 10) -> LocationBackgroundForensics.FenceConsistencyDecision {
+            LocationBackgroundForensics.fenceExitConsistencyDecision(
+                check: check, location: fenceFix(distance: distance, accuracy: accuracy, at: time.addingTimeInterval(offset)),
+                now: time.addingTimeInterval(elapsed))
+        }
+        #expect(decide() == .inconsistent)
+        #expect(decide(0, 0) == .inconsistent)
+        #expect(decide(29.99, 25) == .inconsistent)
+        #expect(decide(30.01) == .noContradiction)
+        #expect(decide(100) == .noContradiction)
+        for accuracy in [-1.0, 25.01, 80, .infinity, .nan] {
+            #expect(decide(5, accuracy) == .waiting)
+        }
+        #expect(decide(offset: -0.01) == .waiting)
+        #expect(decide(offset: 10.01) == .waiting)
+        #expect(decide(elapsed: 120) == .inconsistent)
+        #expect(decide(elapsed: 120.01) == .expired)
+        for radius in [5.0, 25, 50, 75, 150, 300] {
+            let small = LocationBackgroundForensics.PendingFenceConsistencyCheck(
+                center: check.center, radius: radius, triggeredAt: time, reason: .recovery)
+            // At the center, accuracy reaching the boundary must not warn.
+            let result = LocationBackgroundForensics.fenceExitConsistencyDecision(
+                check: small, location: fenceFix(distance: 0, accuracy: min(radius, 25), at: time), now: time)
+            #expect(result == (radius <= 25 ? .noContradiction : .inconsistent))
+        }
+    }
+
+    @Test("Fence checks use the first accurate fix once and persist a coordinate-free warning")
+    func fenceConsistencyFirstAccurateFixAndPersistence() throws {
+        let (recorder, log, defaults, suite, url) = try makeRecorderFixture()
+        defer { defaults.removePersistentDomain(forName: suite); try? FileManager.default.removeItem(at: url) }
+        let time = Date() // Inside the log's critical-retention interval.
+        let region = CLCircularRegion(center: .init(latitude: 0, longitude: 0), radius: 150, identifier: "test")
+        recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: false, now: time)
+        #expect(recorder.pendingFenceConsistencyCheck == nil)
+        recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: true, now: time)
+        let locations = LocationSamplePolicy.processableLocationUpdates(from: [
+            fenceFix(at: time.addingTimeInterval(10)),
+            fenceFix(accuracy: 80, at: time.addingTimeInterval(2)),
+            fenceFix(at: time.addingTimeInterval(-1))
+        ])
+        for location in locations {
+            recorder.recordFenceConsistencyLocation(location, source: "primary", now: time.addingTimeInterval(12))
+        }
+        recorder.recordFenceConsistencyLocation(fenceFix(at: time.addingTimeInterval(13)), source: "secondary", now: time.addingTimeInterval(13))
+        #expect(recorder.pendingFenceConsistencyCheck == nil)
+        let warnings = log.entries.filter { $0.event == "smartFrequentExitFenceConsistency" }
+        #expect(warnings.count == 1)
+        let warning = try #require(warnings.first)
+        #expect(warning.level == .warning)
+        #expect(warning.result == "inconsistent")
+        #expect(Set(warning.context.keys) == Set(["triggerReason", "triggeredAt", "fixAt", "evaluationDelaySeconds",
+                                                "radiusMeters", "distanceToCenterMeters", "horizontalAccuracyMeters", "source"]))
+        #expect(warning.context["triggerReason"] == .string("activation"))
+        let reloaded = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: url)
+        #expect(reloaded.entries.filter { $0.event == "smartFrequentExitFenceConsistency" }.count == 1)
+        let restoredRecorder = LocationBackgroundForensicsRecorder(userDefaults: defaults, diagnosticsLog: reloaded)
+        #expect(restoredRecorder.pendingFenceConsistencyCheck == nil)
+    }
+
+    @Test("Fence check replacement, recovery, cancellation and timeout remain diagnostic only")
+    func fenceConsistencyLifecycle() throws {
+        let (recorder, log, defaults, suite, url) = try makeRecorderFixture()
+        defer { defaults.removePersistentDomain(forName: suite); try? FileManager.default.removeItem(at: url) }
+        let time = Date()
+        let originalState = recorder.state
+        let old = CLCircularRegion(center: .init(latitude: 1, longitude: 1), radius: 75, identifier: "test")
+        let region = CLCircularRegion(center: .init(latitude: 0, longitude: 0), radius: 50, identifier: "test")
+        recorder.beginFenceConsistencyCheck(region: old, reason: .activation, accepted: true, now: time)
+        recorder.beginFenceConsistencyCheck(region: region, reason: .recovery, accepted: true, now: time.addingTimeInterval(1))
+        // A later region registration has no relationship to the captured check.
+        #expect(recorder.pendingFenceConsistencyCheck?.center.latitude == 0)
+        #expect(recorder.pendingFenceConsistencyCheck?.radius == 50)
+        recorder.recordFenceConsistencyLocation(fenceFix(at: time.addingTimeInterval(2)), source: "secondary", now: time.addingTimeInterval(2))
+        #expect(log.entries.last?.context["triggerReason"] == .string("recovery"))
+        for cancellation in 0..<3 {
+            recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: true, now: time)
+            switch cancellation {
+            case 0: recorder.clearFenceConsistencyCheck() // Explicit tracking stop.
+            case 1: recorder.reconcileFenceConsistencyCheck(eligible: false, now: time)
+            default: recorder.reconcileFenceConsistencyCheck(eligible: true, now: time.addingTimeInterval(121))
+            }
+            #expect(recorder.pendingFenceConsistencyCheck == nil)
+        }
+        recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: true, now: time)
+        log.setEnabled(false)
+        recorder.recordFenceConsistencyLocation(fenceFix(at: time), source: "primary", now: time)
+        #expect(recorder.pendingFenceConsistencyCheck == nil)
+        recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: true, now: time)
+        #expect(recorder.pendingFenceConsistencyCheck == nil)
+        log.setEnabled(true)
+        recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: true, now: time)
+        recorder.recordFenceConsistencyLocation(fenceFix(distance: 100, at: time), source: "primary", now: time)
+        #expect(recorder.pendingFenceConsistencyCheck == nil)
+        #expect(log.entries.filter { $0.event == "smartFrequentExitFenceConsistency" }.count == 1)
+        #expect(recorder.state == originalState) // No change to the persisted tracking forensics.
+    }
+
+    @Test("Fence warning preserves unreadable prior logs until protected storage returns")
+    func fenceConsistencyProtectedStorage() throws {
+        let (_, original, defaults, suite, url) = try makeRecorderFixture()
+        defer { defaults.removePersistentDomain(forName: suite); try? FileManager.default.removeItem(at: url) }
+        original.append(level: .info, event: "priorEvidence", summary: "Existing evidence", result: "recorded", persistence: .immediate)
+        let priorData = try Data(contentsOf: url)
+        var available = false
+        let log = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: url,
+            readFile: { file in
+                guard available else { throw CocoaError(.fileReadNoPermission) }
+                return try Data(contentsOf: file)
+            }, protectedDataAvailable: { available }, registersLifecycleFlushObservers: false)
+        let recorder = LocationBackgroundForensicsRecorder(userDefaults: defaults, diagnosticsLog: log)
+        let now = Date()
+        let region = CLCircularRegion(center: .init(latitude: 0, longitude: 0), radius: 150, identifier: "test")
+        recorder.beginFenceConsistencyCheck(region: region, reason: .activation, accepted: true, now: now)
+        recorder.recordFenceConsistencyLocation(fenceFix(at: now), source: "primary", now: now)
+        #expect(try Data(contentsOf: url) == priorData)
+        #expect(log.entries.contains { $0.event == "smartFrequentExitFenceConsistency" })
+        available = true
+        log.flushPendingPersistence()
+        let reloaded = LocationDiagnosticsLogStore(userDefaults: defaults, fileURL: url)
+        #expect(reloaded.entries.contains { $0.event == "priorEvidence" })
+        #expect(reloaded.entries.filter { $0.event == "smartFrequentExitFenceConsistency" }.count == 1)
+    }
+
     @Test("Background forensic gap assessment distinguishes frequent gaps from significant-change idle")
     func backgroundForensicGapAssessmentDistinguishesFrequentGapsFromSignificantChangeIdle() {
         let expectedSince = Date(timeIntervalSince1970: 10_000)
