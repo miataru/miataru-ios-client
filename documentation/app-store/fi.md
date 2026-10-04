@@ -23,6 +23,8 @@ Sijainnin jakaminen taustalla jatkuu aiempaa luotettavammin keskeytysten jälkee
 Kartta ja koko näytön navigointi näyttävät nyt reitin suunnan mukaisen nopeuden.
 
 Kun navigoit omasta iPhonestasi toiseen laitteeseen, nopeutesi pysyy näkyvissä reitin uudelleenlaskennan aikana, jos käytettävissä on kelvollinen lukema. Lyhyiden virheellisten lukemien ajan näytetään viimeisin kelvollinen lukema, niin kauan kuin se on yhä ajantasainen. Sen jälkeen nopeus piilotetaan.
+
+Valinnainen diagnostiikkaloki auttaa selvittämään Smart-seurannan ristiriitaisia sijainti-ilmoituksia.
 ```
 
 ## Keywords

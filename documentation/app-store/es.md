@@ -23,6 +23,8 @@ Compartir la ubicación en segundo plano se reanuda con mayor fiabilidad tras la
 El mapa y la navegación a pantalla completa muestran ahora la velocidad correspondiente al sentido de tu ruta.
 
 Al navegar desde tu iPhone hacia otro dispositivo, tu velocidad permanece visible durante el recálculo de la ruta si hay una lectura válida. La pantalla mantiene el último valor válido durante breves lecturas no válidas, mientras siga vigente. Después, la velocidad se oculta.
+
+El registro de diagnóstico opcional facilita investigar avisos de ubicación contradictorios durante el seguimiento Smart.
 ```
 
 ## Keywords

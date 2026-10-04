@@ -104,7 +104,8 @@ The following 30 Cursor plans are historical proposals. Their headings describe 
 
 ## Current Project Facts
 
-- Current development checkout: `3.6` build `18` (app and widget). Tested source commit: `fd8a2c07b13c8526ff12c10dd3a5264d3ec0f572`.
+- Current development checkout: `3.6` build `19` (app and widget). Previous distributed Build 18 source commit: `fd8a2c07b13c8526ff12c10dd3a5264d3ec0f572`.
+- Build 19: fence consistency diagnostics are committed as `d746e963`; distribution-specific post-commit verification, archive and upload are pending.
 - Build 18 verification: the full release lane passed with 413 tests (401 Unit + 12 UI), 0 skipped and 0 failures. Status fingerprint: `b84bf83c606b03d0`. Result bundles: `miataru/artifacts/verification/unit-20260930T184434Z-25004.xcresult` and `miataru/artifacts/verification/ui-20260930T184548Z-25004.xcresult`.
 - Previous tested input: Build 17 commit `8d54f3e0` passed the release lane with 409 tests (397 Unit + 12 UI), 0 skipped and 0 failures. Result bundles: `miataru/artifacts/verification/unit-20260930T170900Z-79381.xcresult` and `miataru/artifacts/verification/ui-20260930T172010Z-79381.xcresult`.
 - Historical Build 17 archive (2026-09-30 19:28 CEST): `miataru/artifacts/releases/miataru-3.6-17.xcarchive`, with log `miataru/artifacts/releases/archive-3.6-17.log`; app and widget metadata are 3.6/17 for arm64, and their dSYM UUIDs match. Its IPA was exported at 19:30 CEST and distribution-signed: `miataru/artifacts/releases/export-3.6-17/miataru.ipa`, with log `miataru/artifacts/releases/export-3.6-17.log`.

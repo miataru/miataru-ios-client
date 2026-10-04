@@ -23,6 +23,8 @@ La condivisione della posizione in background riprende in modo più affidabile d
 La mappa e la navigazione a schermo intero mostrano ora la velocità adatta alla direzione del percorso.
 
 Quando navighi dal tuo iPhone verso un altro dispositivo, la tua velocità resta visibile durante il ricalcolo del percorso se è disponibile un dato valido. Le brevi rilevazioni non valide sono compensate dall’ultimo dato valido finché è ancora aggiornato. Poi la velocità viene nascosta.
+
+Il registro diagnostico facoltativo aiuta a esaminare le segnalazioni di posizione contrastanti durante il tracciamento Smart.
 ```
 
 ## Keywords

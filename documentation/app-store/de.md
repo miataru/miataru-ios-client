@@ -23,6 +23,8 @@ Die Standortfreigabe im Hintergrund setzt nach Unterbrechungen zuverlässiger wi
 Karte und Vollbild-Navigation zeigen jetzt die zur Routenrichtung passende Geschwindigkeit.
 
 Wenn du von deinem iPhone zu einem anderen Gerät navigierst, bleibt deine Geschwindigkeit während der Routenberechnung sichtbar, sofern ein gültiger Wert vorliegt. Kurze ungültige Messungen werden überbrückt, solange der letzte gültige Wert noch aktuell ist. Danach wird die Geschwindigkeit ausgeblendet.
+
+Das optionale Diagnoseprotokoll hilft, widersprüchliche Standortmeldungen beim Smart-Tracking besser nachzuvollziehen.
 ```
 
 ## Keywords

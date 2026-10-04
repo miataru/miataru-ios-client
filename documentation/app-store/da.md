@@ -23,6 +23,8 @@ Positionsdeling i baggrunden genoptages nu mere pålideligt efter afbrydelser. E
 Kortet og navigationen i fuld skærm viser nu den hastighed, der passer til rutens retning.
 
 Når du navigerer fra din egen iPhone til en anden enhed, forbliver hastigheden synlig under ruteberegningen, hvis der er en gyldig måling. Korte perioder uden en gyldig måling dækkes af den seneste gyldige måling, så længe den stadig er aktuel. Derefter skjules hastigheden.
+
+Den valgfrie diagnoselog gør det lettere at undersøge modstridende positionsmeldinger fra Smart-sporing.
 ```
 
 ## Keywords

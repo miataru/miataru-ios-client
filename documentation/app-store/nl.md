@@ -23,6 +23,8 @@ Locaties delen op de achtergrond wordt na onderbrekingen betrouwbaarder hervat. 
 De kaart en de navigatie op volledig scherm tonen nu de snelheid die past bij de richting van je route.
 
 Wanneer je vanaf je eigen iPhone naar een ander apparaat navigeert, blijft je snelheid tijdens het opnieuw berekenen van de route zichtbaar als er een geldige meting is. Korte ongeldige metingen worden opgevangen met de laatste geldige meting zolang die nog actueel is. Daarna wordt de snelheid verborgen.
+
+Met het optionele diagnoselogboek zijn tegenstrijdige locatiemeldingen tijdens Smart-tracking makkelijker te onderzoeken.
 ```
 
 ## Keywords

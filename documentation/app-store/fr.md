@@ -23,6 +23,8 @@ Le partage de position en arrière-plan reprend plus fiablement après une inter
 La carte et la navigation plein écran affichent maintenant la vitesse correspondant au sens de ton itinéraire.
 
 Lorsque tu navigues de ton iPhone vers un autre appareil, ta vitesse reste affichée pendant le recalcul de l’itinéraire si une mesure valide est disponible. Les brèves mesures invalides sont compensées par la dernière mesure valide tant qu’elle reste à jour. Ensuite, la vitesse est masquée.
+
+Le journal de diagnostic facultatif facilite l’analyse des signalements de position contradictoires lors du suivi Smart.
 ```
 
 ## Keywords

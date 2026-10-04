@@ -23,6 +23,8 @@ Background location sharing resumes more reliably after interruptions. After res
 The map and full-screen navigation now show the speed that matches the direction of your route.
 
 When you navigate from your iPhone to another device, your speed stays visible during route recalculation if a valid reading is available. Brief gaps in valid readings are covered while the last valid reading is still current. After that, your speed is hidden.
+
+The optional diagnostic log makes conflicting location reports during Smart tracking easier to investigate.
 ```
 
 ## Keywords
