@@ -16,7 +16,7 @@
 3. Select a development team if signing needs to be changed locally.
 4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-The current checkout has main app and widget metadata **3.6 (build 19)**. Previous Build 18 source commit `fd8a2c07b13c8526ff12c10dd3a5264d3ec0f572` passed the full release lane with 413 tests (401 Unit + 12 UI; 0 skipped or failed), was archived, and App Store Connect accepted its upload on 2026-09-30 at 20:59:29 CEST. Build 17's earlier accepted upload at 19:34 CEST is historical. Apple processing, TestFlight availability, App Review, and store availability for Build 18 remain unconfirmed; the local App Store copy is not confirmed as live. This source setting identifies the development build. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+The current checkout has main app and widget metadata **3.6 (build 19)**. Tested source commit `670dd30625fbf2b5b16a3fc0da28927c11b39d26` passed the full release lane with 417 tests (405 Unit + 12 UI; 0 skipped or failed), was archived, and App Store Connect accepted its upload on 2026-10-04 13:55:45 CEST. Xcode reported that the uploaded package was processing; processing completion, TestFlight availability, App Review, and store availability remain unconfirmed. The local App Store copy is not confirmed as live. This source setting identifies the development build. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
 
 ## Project Structure
 
