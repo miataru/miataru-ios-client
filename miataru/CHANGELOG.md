@@ -1,3 +1,8 @@
+version 3.6.2
+- Prepared version 3.6.2 build 1 with matching app and widget metadata.
+- Serialized direct location submissions with active FIFO outbox drains, including the interval after the last queued acknowledgement, to prevent overlapping sends and duplicate history points.
+- Counted successful delayed and replayed location uploads in background forensics through the same acknowledgement path as direct sends, avoiding stale last-background-upload evidence and duplicate counts.
+
 version 3.6
 - Added an opt-in diagnostic warning when the first fresh, accurate fix after an accepted Smart activation or recovery fence exit lies well inside the exited region; tracking and uploads remain unchanged.
 - Kept own-device navigation speed visible while a direction switch rebuilds the route and through short runs of location updates without valid speed; the most recent valid reading remains eligible for up to 15 seconds, then disappears.

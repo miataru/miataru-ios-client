@@ -229,6 +229,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     @objc private func ownLocationUpdateDidSend() {
+        recordForensicUpload(applicationState: currentTrackingApplicationState)
         Task { @MainActor in
             self.markServerUpdateSucceeded()
             self.recordLocationTrackingHealthReminderActivity(reason: "own location update sent")
@@ -3243,7 +3244,6 @@ final class LocationManager: NSObject, ObservableObject {
 
         switch result {
         case .sent:
-            recordForensicUpload(applicationState: applicationState)
             diagnosticsLog.appendCoalesced(
                 level: .info,
                 event: "locationUpload",

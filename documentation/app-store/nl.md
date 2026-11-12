@@ -18,13 +18,7 @@ Gebruik widgets voor geselecteerde apparaten en vraag Siri of Opdrachten naar de
 
 ## What's New
 ```text
-Locaties delen op de achtergrond wordt na onderbrekingen betrouwbaarder hervat. Na een herstart worden je trackinginstellingen hersteld zodra je het apparaat voor het eerst ontgrendelt. Onderweg werkt Smart-tracking efficiënter, zonder minder details of minder vaak je locatie te melden. Locatie-updates blijven bewaard bij tijdelijke verbindingsproblemen en worden later verzonden. Als meerdere locaties tegelijk binnenkomen, worden ze op volgorde verstuurd, zodat de nieuwste locatie actueel blijft. Tijdens navigatie gebruikt de weergave van je eigen snelheid nu de nieuwste geldige locatie. Een nieuwere meting zonder geldige snelheid verbergt een nog geldige snelheidswaarde niet meer kortstondig.
-
-De kaart en de navigatie op volledig scherm tonen nu de snelheid die past bij de richting van je route.
-
-Wanneer je vanaf je eigen iPhone naar een ander apparaat navigeert, blijft je snelheid tijdens het opnieuw berekenen van de route zichtbaar als er een geldige meting is. Korte ongeldige metingen worden opgevangen met de laatste geldige meting zolang die nog actueel is. Daarna wordt de snelheid verborgen.
-
-Met het optionele diagnoselogboek zijn tegenstrijdige locatiemeldingen tijdens Smart-tracking makkelijker te onderzoeken.
+Locatie-updates worden betrouwbaarder verwerkt terwijl openstaande updates op de achtergrond worden verzonden. De optionele diagnostiek registreert nu ook correct locatie-updates die later met succes zijn verzonden.
 ```
 
 ## Keywords

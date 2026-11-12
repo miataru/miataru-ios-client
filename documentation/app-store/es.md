@@ -18,13 +18,7 @@ Usa widgets para los dispositivos que elijas y pide a Siri o Atajos la última u
 
 ## What's New
 ```text
-Compartir la ubicación en segundo plano se reanuda con mayor fiabilidad tras las interrupciones. Después de reiniciar el dispositivo, tus ajustes de seguimiento se recuperan al desbloquearlo por primera vez. Durante los trayectos, el seguimiento inteligente funciona ahora con mayor eficiencia, sin reducir el detalle ni la frecuencia de los informes de ubicación. Las actualizaciones se conservan durante los problemas temporales de conexión y se envían más tarde. Si llegan varias ubicaciones a la vez, se envían en orden para que la posición más reciente siga siendo la actual. Durante la navegación, la velocidad de tu dispositivo se basa ahora en el dato de ubicación válido más reciente. Así, una lectura más nueva sin velocidad válida no oculta brevemente una velocidad que sigue vigente.
-
-El mapa y la navegación a pantalla completa muestran ahora la velocidad correspondiente al sentido de tu ruta.
-
-Al navegar desde tu iPhone hacia otro dispositivo, tu velocidad permanece visible durante el recálculo de la ruta si hay una lectura válida. La pantalla mantiene el último valor válido durante breves lecturas no válidas, mientras siga vigente. Después, la velocidad se oculta.
-
-El registro de diagnóstico opcional facilita investigar avisos de ubicación contradictorios durante el seguimiento Smart.
+Las actualizaciones de ubicación se gestionan con mayor fiabilidad mientras se envían en segundo plano las que estaban pendientes. Los diagnósticos opcionales también registran correctamente las actualizaciones de ubicación que se envían con éxito más tarde.
 ```
 
 ## Keywords

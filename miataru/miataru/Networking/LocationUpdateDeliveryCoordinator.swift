@@ -235,7 +235,7 @@ actor LocationUpdateDeliveryCoordinator {
             return .queued
         }
 
-        if isDirectSendBlockingQueue {
+        if isDirectSendBlockingQueue || isFlushing {
             guard await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,
@@ -250,7 +250,7 @@ actor LocationUpdateDeliveryCoordinator {
         }
 
         let hasPendingOutbox = !(await outboxStore.isEmpty())
-        if isDirectSendBlockingQueue {
+        if isDirectSendBlockingQueue || isFlushing {
             guard await outboxStore.enqueue(
                 serverURL: serverURL,
                 payload: payload,

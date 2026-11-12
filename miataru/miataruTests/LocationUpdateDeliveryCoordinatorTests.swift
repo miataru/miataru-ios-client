@@ -819,6 +819,60 @@ struct LocationUpdateDeliveryCoordinatorTests {
         await coordinator.stopPeriodicFlushTaskForTesting()
     }
 
+    @Test("Submission queues while an acknowledged flush is still finishing")
+    func submissionQueuesWhileAcknowledgedFlushIsStillFinishing() async throws {
+        let tempURL = temporaryOutboxURL()
+        defer { try? FileManager.default.removeItem(at: tempURL.deletingLastPathComponent()) }
+
+        let serverURL = URL(string: "https://example.org")!
+        let store = LocationUpdateOutboxStore(fileURL: tempURL, maxItems: 20, ttl: 3600)
+        #expect(await store.enqueue(
+            serverURL: serverURL,
+            payload: payload(timestamp: "already-queued"),
+            enableHistory: true,
+            retentionTime: 60
+        ))
+
+        let sender = MockUpdateSender(outcomes: [.success(true), .success(true)])
+        let flushObserver = BlockingFirstFlushObserver()
+        let coordinator = LocationUpdateDeliveryCoordinator(
+            outboxStore: store,
+            flushInterval: 60,
+            deferredFlushDelay: 1,
+            updateSender: { url, payload, enableHistory, retentionTime in
+                try await sender.send(url: url, payload: payload, enableHistory: enableHistory, retentionTime: retentionTime)
+            },
+            visitorProcessor: Self.noOpVisitorProcessor,
+            flushObserver: { item, trigger, flushedAt in
+                await flushObserver.observe(item: item, trigger: trigger, flushedAt: flushedAt)
+            }
+        )
+
+        let flushTask = Task { await coordinator.flushOutboxNow() }
+        await flushObserver.waitForFirstCall()
+        #expect(await store.count() == 0)
+
+        let concurrentResult = await coordinator.submit(
+            serverURL: serverURL,
+            payload: payload(timestamp: "submitted-during-flush"),
+            enableHistory: true,
+            retentionTime: 60
+        )
+        if case .queued = concurrentResult {
+        } else {
+            Issue.record("Expected a submission during an active flush to queue")
+        }
+        #expect(await sender.sentTimestamps == ["already-queued"])
+        #expect(await store.itemsSnapshot().map(\.payload.Timestamp) == ["submitted-during-flush"])
+
+        await flushObserver.releaseFirstCall()
+        await flushTask.value
+
+        #expect(await sender.sentTimestamps == ["already-queued", "submitted-during-flush"])
+        #expect(await store.count() == 0)
+        await coordinator.stopPeriodicFlushTaskForTesting()
+    }
+
     @Test("Retryable in-flight direct failure queues original before later submissions")
     func retryableInFlightDirectFailureQueuesOriginalBeforeLaterSubmissions() async throws {
         let tempURL = temporaryOutboxURL()
@@ -1886,6 +1940,40 @@ private actor FlushEligibilityGate {
 
     func setAllowed(_ allowed: Bool) {
         self.allowed = allowed
+    }
+}
+
+private actor BlockingFirstFlushObserver {
+    private var didStart = false
+    private var isReleased = false
+    private var firstCallContinuation: CheckedContinuation<Void, Never>?
+    private var firstCallWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func observe(item: LocationUpdateOutboxItem, trigger: String, flushedAt: Date) async {
+        _ = item
+        _ = trigger
+        _ = flushedAt
+        guard !didStart else { return }
+        didStart = true
+        firstCallWaiters.forEach { $0.resume() }
+        firstCallWaiters.removeAll()
+        guard !isReleased else { return }
+        await withCheckedContinuation { continuation in
+            firstCallContinuation = continuation
+        }
+    }
+
+    func waitForFirstCall() async {
+        guard !didStart else { return }
+        await withCheckedContinuation { continuation in
+            firstCallWaiters.append(continuation)
+        }
+    }
+
+    func releaseFirstCall() {
+        isReleased = true
+        firstCallContinuation?.resume()
+        firstCallContinuation = nil
     }
 }
 

@@ -18,13 +18,7 @@ Usa i widget per i dispositivi selezionati e chiedi a Siri o Comandi l’ultima 
 
 ## What's New
 ```text
-La condivisione della posizione in background riprende in modo più affidabile dopo le interruzioni. Dopo un riavvio, le impostazioni di tracciamento vengono ripristinate al primo sblocco del dispositivo. Durante gli spostamenti, il tracciamento Smart funziona in modo più efficiente senza ridurre il dettaglio o la frequenza degli aggiornamenti della posizione. Gli aggiornamenti della posizione vengono conservati durante i problemi temporanei di connessione e inviati in seguito. Se arrivano più posizioni insieme, vengono inviate nell’ordine corretto, così quella più recente resta aggiornata. Durante la navigazione, la velocità del tuo dispositivo si basa ora sul dato di posizione valido più recente. Un dato più nuovo senza velocità valida non nasconde più per un momento una velocità ancora valida.
-
-La mappa e la navigazione a schermo intero mostrano ora la velocità adatta alla direzione del percorso.
-
-Quando navighi dal tuo iPhone verso un altro dispositivo, la tua velocità resta visibile durante il ricalcolo del percorso se è disponibile un dato valido. Le brevi rilevazioni non valide sono compensate dall’ultimo dato valido finché è ancora aggiornato. Poi la velocità viene nascosta.
-
-Il registro diagnostico facoltativo aiuta a esaminare le segnalazioni di posizione contrastanti durante il tracciamento Smart.
+L’invio delle posizioni è gestito in modo più affidabile mentre vengono trasmessi in background gli aggiornamenti in attesa. La diagnostica facoltativa registra correttamente anche gli aggiornamenti inviati con successo in un secondo momento.
 ```
 
 ## Keywords
