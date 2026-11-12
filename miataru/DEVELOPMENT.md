@@ -16,7 +16,7 @@
 3. Select a development team if signing needs to be changed locally.
 4. Build and run the `miataru` scheme on an iPhone or iPad simulator/device.
 
-The current checkout has main app and widget metadata **3.6.2 (build 1)**. Historical 3.6 build 19 source commit `670dd30625fbf2b5b16a3fc0da28927c11b39d26` passed the full release lane with 417 tests (405 Unit + 12 UI; 0 skipped or failed), was archived, and App Store Connect accepted its upload on 2026-10-04 13:55:45 CEST. Xcode reported that the uploaded package was processing; processing completion, TestFlight availability, App Review, and store availability remain unconfirmed. The local App Store copy is not confirmed as live. This source setting identifies the development build. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
+The current checkout has main app and widget metadata **3.6.2 (build 1)**. Tested source commit `b3d844427c4482b1e37082007b165166139c844c` passed the full release lane with 418 tests (406 Unit + 12 UI; 0 skipped or failed). The archive and App Store distribution export passed app/widget metadata, arm64, signing, entitlement, and matching dSYM checks. App Store Connect accepted the upload on 2026-11-12 21:31:15 CET. Xcode reported that the uploaded package was processing; processing completion and TestFlight availability remain unconfirmed. No App Review submission was requested. The local App Store copy is not confirmed as live. Retained local evidence: `miataru/artifacts/releases/release-3.6.2-1-state.json`. This source setting identifies the development build. The project targets iPhone and iPad; Mac files are preview/scaffolding only.
 
 ## Project Structure
 

@@ -2,7 +2,7 @@
 
 **miataru** is an open-source iPhone and iPad app for privacy-focused location sharing, device management, and navigation through Miataru servers chosen by the user.
 
-Current checkout: **development version 3.6.2 (build 1)**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**. Historical 3.6 build 19 source commit `670dd30625fbf2b5b16a3fc0da28927c11b39d26` passed the full release lane with 417 tests (405 Unit + 12 UI; 0 skipped or failed), was archived, and App Store Connect accepted its upload on 2026-10-04 13:55:45 CEST. Xcode reported that the uploaded package was processing; processing completion, TestFlight availability, App Review, and store availability remain unconfirmed. The local App Store copy is not confirmed as live.
+Current checkout: **development version 3.6.2 (build 1)**, iOS deployment target **18.6**, SwiftUI app target plus WidgetKit extension, localized for **da, de, en, es, fi, fr, it, ja, nl, and zh-Hans**. Tested source commit `b3d844427c4482b1e37082007b165166139c844c` passed the full release lane with 418 tests (406 Unit + 12 UI; 0 skipped or failed). The archive and App Store distribution export passed app/widget metadata, arm64, signing, entitlement, and matching dSYM checks. App Store Connect accepted the upload on 2026-11-12 21:31:15 CET. Xcode reported that the uploaded package was processing; processing completion and TestFlight availability remain unconfirmed. No App Review submission was requested. The local App Store copy is not confirmed as live. Retained local evidence: `miataru/artifacts/releases/release-3.6.2-1-state.json`.
 
 Historical: App Store Connect accepted the upload of 3.6 build 10 on 2026-09-29.
 
