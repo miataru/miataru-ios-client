@@ -18,7 +18,7 @@ Usa i widget per i dispositivi selezionati e chiedi a Siri o Comandi l’ultima 
 
 ## What's New
 ```text
-L’invio delle posizioni è gestito in modo più affidabile mentre vengono trasmessi in background gli aggiornamenti in attesa. La diagnostica facoltativa registra correttamente anche gli aggiornamenti inviati con successo in un secondo momento.
+Migliorato il filtro dei salti improvvisi della posizione GPS, mantenendo le misurazioni valide anche ad alta velocità. Gli invii della posizione restano affidabili in presenza di aggiornamenti in attesa. La diagnostica facoltativa rende più semplice confrontare gli orari delle misurazioni e i ritardi di invio.
 ```
 
 ## Keywords

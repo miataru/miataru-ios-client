@@ -202,9 +202,14 @@ enum LocationSamplePolicy {
            elapsed <= speedSpikeMaximumElapsed,
            let derivedSpeedKmh = metrics.derivedSpeedKmh,
            derivedSpeedKmh > maximumImplausibleSpeedKmh,
-           !hasTrustedGPSSpeed(location,
-                               maximumTrustedSpeedKmh: maximumTrustedGPSSpeedKmh,
-                               maximumTrustedSpeedAccuracy: maximumTrustedSpeedAccuracy) {
+           !hasTrustedGPSSpeedConsistentWithDisplacement(
+            location,
+            previousAcceptedLocation: previousAcceptedLocation,
+            distanceMeters: distance,
+            elapsedSeconds: elapsed,
+            maximumTrustedSpeedKmh: maximumTrustedGPSSpeedKmh,
+            maximumTrustedSpeedAccuracy: maximumTrustedSpeedAccuracy
+           ) {
             return .reject(reason: .implausibleSpeed, metrics: metrics)
         }
 
@@ -320,5 +325,37 @@ enum LocationSamplePolicy {
             return false
         }
         return true
+    }
+
+    private static func hasTrustedGPSSpeedConsistentWithDisplacement(
+        _ location: CLLocation,
+        previousAcceptedLocation: CLLocation?,
+        distanceMeters: CLLocationDistance,
+        elapsedSeconds: TimeInterval,
+        maximumTrustedSpeedKmh: Double,
+        maximumTrustedSpeedAccuracy: CLLocationSpeedAccuracy
+    ) -> Bool {
+        guard hasTrustedGPSSpeed(
+            location,
+            maximumTrustedSpeedKmh: maximumTrustedSpeedKmh,
+            maximumTrustedSpeedAccuracy: maximumTrustedSpeedAccuracy
+        ),
+        let previousAcceptedLocation,
+        distanceMeters.isFinite,
+        distanceMeters >= 0,
+        elapsedSeconds.isFinite,
+        elapsedSeconds > 0,
+        location.horizontalAccuracy.isFinite,
+        location.horizontalAccuracy >= 0,
+        previousAcceptedLocation.horizontalAccuracy.isFinite,
+        previousAcceptedLocation.horizontalAccuracy >= 0 else {
+            return false
+        }
+
+        let maximumSupportedDisplacement = location.speed * elapsedSeconds +
+            location.horizontalAccuracy +
+            previousAcceptedLocation.horizontalAccuracy +
+            location.speedAccuracy * elapsedSeconds
+        return maximumSupportedDisplacement.isFinite && distanceMeters <= maximumSupportedDisplacement
     }
 }

@@ -153,6 +153,28 @@ actor LocationUpdateDeliveryCoordinator {
         flushedAt: Date,
         diagnosticsLog: LocationDiagnosticsLogStore = .shared
     ) {
+        let measurementTimestamp = Double(item.payload.Timestamp)
+        var context: [String: LocationDiagnosticsValue] = [
+            "trigger": .string(trigger),
+            "locationTimestamp": .string(item.payload.Timestamp),
+            "enqueuedAt": .string(ISO8601DateFormatter().string(from: item.enqueuedAt)),
+            "flushedAt": .string(ISO8601DateFormatter().string(from: flushedAt)),
+            "attemptCount": .integer(item.attemptCount),
+            "serverURL": .string(item.serverURLString),
+            "enableHistory": .bool(item.enableHistory),
+            "retentionTime": .integer(item.retentionTime)
+        ]
+        let enqueueToAckAge = flushedAt.timeIntervalSince(item.enqueuedAt)
+        if enqueueToAckAge.isFinite {
+            context["enqueueToAckAgeSeconds"] = .double(enqueueToAckAge)
+        }
+        if let measurementTimestamp, measurementTimestamp.isFinite {
+            context["measurementTimestampEpochSeconds"] = .double(measurementTimestamp)
+            let measurementToAckAge = flushedAt.timeIntervalSince1970 - measurementTimestamp
+            if measurementToAckAge.isFinite {
+                context["measurementToAckAgeSeconds"] = .double(measurementToAckAge)
+            }
+        }
         diagnosticsLog.appendCoalesced(
             level: .info,
             event: "locationUpload",
@@ -160,16 +182,7 @@ actor LocationUpdateDeliveryCoordinator {
             result: "flushed",
             reason: "outbox flush",
             coalescingKey: "locationUpload|flushed",
-            context: [
-                "trigger": .string(trigger),
-                "locationTimestamp": .string(item.payload.Timestamp),
-                "enqueuedAt": .string(ISO8601DateFormatter().string(from: item.enqueuedAt)),
-                "flushedAt": .string(ISO8601DateFormatter().string(from: flushedAt)),
-                "attemptCount": .integer(item.attemptCount),
-                "serverURL": .string(item.serverURLString),
-                "enableHistory": .bool(item.enableHistory),
-                "retentionTime": .integer(item.retentionTime)
-            ],
+            context: context,
             timestamp: flushedAt,
             sampleEvery: 100
         )

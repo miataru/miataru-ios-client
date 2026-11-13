@@ -104,7 +104,8 @@ The following 30 Cursor plans are historical proposals. Their headings describe 
 
 ## Current Project Facts
 
-- Current development checkout: `3.6` build `19` (app and widget). Tested distribution source commit: `670dd30625fbf2b5b16a3fc0da28927c11b39d26`; implementation commit: `d746e963`.
+- Current development checkout: `3.6.2` build `2` (app and widget). Verification and distribution for Build 2 are pending.
+- Historical 3.6 Build 19 tested distribution source commit: `670dd30625fbf2b5b16a3fc0da28927c11b39d26`; implementation commit: `d746e963`.
 - Build 19 verification: full post-commit release lane passed with 417 tests (405 Unit + 12 UI), 0 skipped and 0 failures. Status fingerprint: `982ec9e9adb809ff`. Result bundles: `miataru/artifacts/verification/unit-20261004T114529Z-39448.xcresult` and `miataru/artifacts/verification/ui-20261004T114652Z-39448.xcresult`.
 - Build 19 archive: `miataru/artifacts/releases/miataru-3.6-19.xcarchive`; app and widget are 3.6/19 for arm64 with valid signatures and matching dSYMs. App dSYM UUID: `10DC580D-DBB8-36E1-9A37-338FFA79D37D`; widget dSYM UUID: `3262A5B1-157B-35D1-BCAB-921C84C94B27`. The exported IPA, `miataru/artifacts/releases/export-3.6-19/miataru.ipa`, is Apple Distribution-signed with `get-task-allow=false` for app and widget. Logs: `miataru/artifacts/releases/archive-3.6-19.log`, `export-3.6-19.log`, and `upload-3.6-19.log`.
 - App Store Connect accepted Build 19 on 2026-10-04 13:55:45 CEST; upload log reports `Upload succeeded` / `Uploaded miataru`, and the archive distribution record has `uploadedBuildNumber=19`. Xcode reported that processing had started; completion, TestFlight availability, App Review, and store availability remain unconfirmed. Local What's New copy is updated in all ten locales; live transfer is unconfirmed. Retained release evidence: `miataru/artifacts/releases/release-3.6-19-state.json`.

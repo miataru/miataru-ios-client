@@ -18,7 +18,7 @@ Nutze Widgets für ausgewählte Geräte und frage Siri oder Kurzbefehle nach dem
 
 ## What's New
 ```text
-Standortmeldungen werden zuverlässiger verarbeitet, während noch ausstehende Meldungen im Hintergrund gesendet werden. Die optionale Diagnose erfasst jetzt auch erfolgreich später gesendete Standortmeldungen korrekt.
+Die Filterung plötzlicher GPS-Positionssprünge wurde verbessert, gültige Messungen bei hoher Geschwindigkeit bleiben erhalten. Standortmeldungen werden auch bei ausstehenden Übertragungen zuverlässig verarbeitet. Die optionale Diagnose macht Messzeitpunkte und Übertragungsverzögerungen besser nachvollziehbar.
 ```
 
 ## Keywords

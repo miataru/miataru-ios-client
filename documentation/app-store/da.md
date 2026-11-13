@@ -18,7 +18,7 @@ Brug widgets til udvalgte enheder, og bed Siri eller Genveje om en enheds senest
 
 ## What's New
 ```text
-Positionsopdateringer håndteres mere pålideligt, mens ventende opdateringer sendes i baggrunden. Den valgfrie diagnoselog registrerer nu også korrekt de positionsopdateringer, der sendes med succes senere.
+Forbedret filtrering af pludselige spring i GPS-positionen, mens gyldige målinger ved høj hastighed bevares. Lokationsopdateringer håndteres pålideligt, mens ventende opdateringer sendes. Valgfri diagnostik gør måletidspunkter og forsinkelser i overførslen lettere at sammenligne.
 ```
 
 ## Keywords

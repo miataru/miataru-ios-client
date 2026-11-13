@@ -18,7 +18,7 @@ Käytä valittujen laitteiden widgetejä ja pyydä Siriltä tai Pikakomentoilta 
 
 ## What's New
 ```text
-Sijaintipäivitykset toimivat luotettavammin, kun odottavia päivityksiä lähetetään taustalla. Valinnainen diagnostiikka kirjaa nyt oikein myös myöhemmin onnistuneesti lähetetyt sijaintipäivitykset.
+Äkillisten GPS-sijaintihyppyjen suodatusta on parannettu. Kelvolliset mittaukset säilyvät myös suurilla nopeuksilla. Sijaintipäivitykset käsitellään luotettavasti myös silloin, kun aiempia päivityksiä odottaa lähetystä. Valinnainen diagnostiikka helpottaa mittausaikojen ja lähetysviiveiden vertailua.
 ```
 
 ## Keywords

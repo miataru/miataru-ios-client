@@ -383,7 +383,18 @@ Shared upload/cache plausibility rejects:
 
 - invalid, negative, or non-finite horizontal accuracy
 - horizontal accuracy above 300 m
-- short speed spikes with at least 50 m movement inside 5 seconds and derived speed above 180 km/h, unless GPS speed is trusted (`speed <= 220 km/h` and `speedAccuracy <= 2 m/s`)
+- short speed spikes with at least 50 m movement inside 5 seconds and derived speed above 180 km/h, unless trusted GPS speed (`speed <= 220 km/h`, `speedAccuracy <= 2 m/s`) can also support the coordinate displacement
+
+For a short spike to use the trusted-GPS exception, measured distance must be no greater than:
+
+```text
+reported speed * elapsed time
++ previous horizontal accuracy
++ current horizontal accuracy
++ speed accuracy * elapsed time
+```
+
+Both horizontal accuracy values and speed accuracy must be finite and non-negative. If GPS speed is accurate but the coordinate jump exceeds this combined movement-and-measurement allowance, the spike is rejected. This consistency bound applies only to the existing short-spike window; trusted-GPS handling for long callback-gap jumps is unchanged.
 
 Large jumps after long callback gaps are deferred instead of immediately accepted:
 
@@ -444,6 +455,7 @@ The app-level retry/outbox architecture is:
 - When one Core Location callback contains several accepted points, the complete chronological batch is persisted in one outbox write before its first network request. A blocked or failed head leaves the newer points durably queued behind it, and a relaunch retries them in order. A single-point callback retains the direct-send path; user-selected delivery delay and current history preference still apply to the batch.
 - When an immediate-delivery background location joins an existing outbox and no direct send is already in flight, its protected submission attempts a FIFO flush before returning. The submitted point reports sent only if its own queued item was acknowledged; a failed or delayed head remains in the outbox. Foreground submissions retain the deferred drain, and user-selected delivery delays remain in force.
 - If the outbox is temporarily unreadable, the existing file is preserved and submissions report a storage failure instead of claiming that a location was durably queued. Later access reloads the original FIFO. If its bytes can be read but cannot be decoded, the file is retained under a separate name in App Support and a fresh active outbox allows new updates to continue.
+- Location diagnostic contexts include the measurement timestamp as finite epoch seconds beside the existing rounded ISO timestamp. Outbox acknowledgement records include enqueue-to-acknowledgement age and measurement-to-acknowledgement age when the payload timestamp parses as finite epoch seconds; the payload timestamp itself is whole-second precision.
 - Clear auth/DeviceKey failures remain non-retryable and keep existing auth blocking behavior.
 
 Outbox cases include transient network failures, retryable HTTP status responses, decoding errors, and invalid responses without a clear 401/403 auth context.

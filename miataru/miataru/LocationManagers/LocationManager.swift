@@ -841,6 +841,10 @@ final class LocationManager: NSObject, ObservableObject {
     private func diagnosticsLocationContext(_ location: CLLocation,
                                             extra: [(String, LocationDiagnosticsValue)] = []) -> [String: LocationDiagnosticsValue] {
         var context = LocationDiagnosticsLogStore.roundedLocationContext(location)
+        let measurementTimestamp = location.timestamp.timeIntervalSince1970
+        if measurementTimestamp.isFinite {
+            context["measurementTimestampEpochSeconds"] = .double(measurementTimestamp)
+        }
         for (key, value) in extra {
             context[key] = value
         }

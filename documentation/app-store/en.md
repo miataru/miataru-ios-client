@@ -18,7 +18,7 @@ Use widgets for selected devices and ask Siri or Shortcuts for a device's last k
 
 ## What's New
 ```text
-Location updates are handled more reliably while pending updates are sent in the background. Optional diagnostics now also correctly record successful location updates sent later.
+Improved filtering of sudden GPS position jumps while preserving valid high-speed travel. Location uploads remain reliable while pending updates are sent, and optional diagnostics make measurement times and delivery delays easier to compare.
 ```
 
 ## Keywords

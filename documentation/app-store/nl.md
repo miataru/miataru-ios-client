@@ -18,7 +18,7 @@ Gebruik widgets voor geselecteerde apparaten en vraag Siri of Opdrachten naar de
 
 ## What's New
 ```text
-Locatie-updates worden betrouwbaarder verwerkt terwijl openstaande updates op de achtergrond worden verzonden. De optionele diagnostiek registreert nu ook correct locatie-updates die later met succes zijn verzonden.
+Plotselinge sprongen in de GPS-positie worden beter gefilterd, terwijl geldige metingen bij hoge snelheid behouden blijven. Locatie-updates worden betrouwbaar verwerkt wanneer er nog updates wachten op verzending. Met de optionele diagnostiek zijn meettijdstippen en verzendvertragingen beter te vergelijken.
 ```
 
 ## Keywords

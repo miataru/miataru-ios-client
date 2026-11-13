@@ -18,7 +18,7 @@ Utilise des widgets pour les appareils sélectionnés et demande à Siri ou Racc
 
 ## What's New
 ```text
-L’envoi des mises à jour de position est mieux coordonné lorsque celles en attente sont transmises en arrière-plan. Les diagnostics facultatifs consignent désormais aussi correctement les mises à jour envoyées avec succès plus tard.
+Le filtrage des sauts brusques de position GPS a été amélioré, tout en conservant les mesures valides à grande vitesse. Les envois de position restent fiables lorsque des mises à jour sont en attente. Les diagnostics facultatifs facilitent la comparaison des heures de mesure et des délais d’envoi.
 ```
 
 ## Keywords

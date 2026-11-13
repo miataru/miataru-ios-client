@@ -18,7 +18,7 @@ Usa widgets para los dispositivos que elijas y pide a Siri o Atajos la última u
 
 ## What's New
 ```text
-Las actualizaciones de ubicación se gestionan con mayor fiabilidad mientras se envían en segundo plano las que estaban pendientes. Los diagnósticos opcionales también registran correctamente las actualizaciones de ubicación que se envían con éxito más tarde.
+Hemos mejorado el filtrado de saltos bruscos de posición GPS sin descartar mediciones válidas a alta velocidad. Los envíos de ubicación siguen siendo fiables cuando hay actualizaciones pendientes. Los diagnósticos opcionales permiten comparar mejor las horas de medición y los retrasos de envío.
 ```
 
 ## Keywords

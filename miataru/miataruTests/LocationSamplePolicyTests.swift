@@ -226,6 +226,106 @@ struct LocationSamplePolicyTests {
         #expect(metrics.derivedSpeedKmh ?? 0 > LocationSamplePolicy.maximumImplausibleDerivedSpeedKmh)
     }
 
+    @Test("Trusted GPS speed cannot excuse a coordinate jump it cannot support")
+    func trustedGpsSpeedCannotExcuseInconsistentCoordinateJump() {
+        let previous = sampleLocation(
+            latitude: 0,
+            longitude: 0,
+            horizontalAccuracy: 10,
+            timestamp: Date(timeIntervalSince1970: 2_000)
+        )
+        let badFix = sampleLocation(
+            latitude: 0.00162,
+            longitude: 0,
+            horizontalAccuracy: 10,
+            speed: 40 / 3.6,
+            speedAccuracy: 2,
+            timestamp: Date(timeIntervalSince1970: 2_001)
+        )
+
+        guard case .reject(let reason, let metrics) = LocationSamplePolicy.acceptanceDecision(
+            for: badFix,
+            previousAcceptedLocation: previous
+        ) else {
+            Issue.record("Expected the inconsistent coordinate jump to be rejected.")
+            return
+        }
+        #expect(reason == .implausibleSpeed)
+        #expect(metrics.derivedSpeedKmh ?? 0 > LocationSamplePolicy.maximumImplausibleDerivedSpeedKmh)
+        #expect(abs((metrics.gpsSpeedKmh ?? 0) - 40) < 0.001)
+
+        let goodReturn = sampleLocation(
+            latitude: 0.00005,
+            longitude: 0,
+            horizontalAccuracy: 5,
+            timestamp: Date(timeIntervalSince1970: 2_002)
+        )
+        guard case .accept = LocationSamplePolicy.acceptanceDecision(
+            for: goodReturn,
+            previousAcceptedLocation: previous
+        ) else {
+            Issue.record("Expected the next good fix to remain comparable with the previous accepted location.")
+            return
+        }
+    }
+
+    @Test("Trusted GPS speed supports a matching high-speed coordinate displacement")
+    func trustedGpsSpeedSupportsMatchingHighSpeedDisplacement() {
+        let previous = sampleLocation(
+            latitude: 0,
+            longitude: 0,
+            horizontalAccuracy: 10,
+            timestamp: Date(timeIntervalSince1970: 2_500)
+        )
+        let current = sampleLocation(
+            latitude: 0.0005,
+            longitude: 0,
+            horizontalAccuracy: 10,
+            speed: 200 / 3.6,
+            speedAccuracy: 2,
+            timestamp: Date(timeIntervalSince1970: 2_501)
+        )
+
+        guard case .accept(let metrics) = LocationSamplePolicy.acceptanceDecision(
+            for: current,
+            previousAcceptedLocation: previous
+        ) else {
+            Issue.record("Expected trusted GPS speed consistent with displacement to be accepted.")
+            return
+        }
+        #expect(metrics.derivedSpeedKmh ?? 0 > LocationSamplePolicy.maximumImplausibleDerivedSpeedKmh)
+        #expect(abs((metrics.gpsSpeedKmh ?? 0) - 200) < 0.001)
+    }
+
+    @Test("Trusted GPS speed allows movement within coarse to accurate fix uncertainty")
+    func trustedGpsSpeedAllowsUncertaintyBoundedAccuracyCorrection() {
+        let previous = sampleLocation(
+            latitude: 0,
+            longitude: 0,
+            horizontalAccuracy: 45,
+            timestamp: Date(timeIntervalSince1970: 2_750)
+        )
+        let current = sampleLocation(
+            latitude: 0.00054,
+            longitude: 0,
+            horizontalAccuracy: 10,
+            speed: 40 / 3.6,
+            speedAccuracy: 2,
+            timestamp: Date(timeIntervalSince1970: 2_751)
+        )
+
+        guard case .accept(let metrics) = LocationSamplePolicy.acceptanceDecision(
+            for: current,
+            previousAcceptedLocation: previous
+        ) else {
+            Issue.record("Expected the coarse-to-accurate fix correction to fit within trusted movement and measurement uncertainty.")
+            return
+        }
+        #expect(metrics.distanceMeters ?? 0 > LocationSamplePolicy.speedSpikeMinimumDistance)
+        #expect(metrics.derivedSpeedKmh ?? 0 > LocationSamplePolicy.maximumImplausibleDerivedSpeedKmh)
+        #expect(abs((metrics.gpsSpeedKmh ?? 0) - 40) < 0.001)
+    }
+
     @Test("Poor horizontal accuracy is rejected before upload cache filtering")
     func poorHorizontalAccuracyIsRejectedBeforeUploadCacheFiltering() {
         let previous = sampleLocation(
@@ -316,6 +416,8 @@ struct LocationSamplePolicyTests {
     private func sampleLocation(latitude: Double,
                                 longitude: Double,
                                 horizontalAccuracy: CLLocationAccuracy = 5,
+                                speed: CLLocationSpeed = -1,
+                                speedAccuracy: CLLocationSpeedAccuracy = -1,
                                 timestamp: Date) -> CLLocation {
         CLLocation(
             coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude),
@@ -323,7 +425,9 @@ struct LocationSamplePolicyTests {
             horizontalAccuracy: horizontalAccuracy,
             verticalAccuracy: 5,
             course: -1,
-            speed: -1,
+            courseAccuracy: -1,
+            speed: speed,
+            speedAccuracy: speedAccuracy,
             timestamp: timestamp
         )
     }

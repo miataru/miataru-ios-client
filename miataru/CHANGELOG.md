@@ -1,4 +1,7 @@
 version 3.6.2
+- Prepared build 2 with matching app and widget metadata.
+- Reject short coordinate speed spikes when a trusted GPS speed contradicts the measured displacement, while preserving compatible high-speed travel and position uncertainty.
+- Added precise measurement timestamps and delivery ages to optional location diagnostics for clearer comparisons with server exports.
 - Prepared version 3.6.2 build 1 with matching app and widget metadata.
 - Serialized direct location submissions with active FIFO outbox drains, including the interval after the last queued acknowledgement, to prevent overlapping sends and duplicate history points.
 - Counted successful delayed and replayed location uploads in background forensics through the same acknowledgement path as direct sends, avoiding stale last-background-upload evidence and duplicate counts.

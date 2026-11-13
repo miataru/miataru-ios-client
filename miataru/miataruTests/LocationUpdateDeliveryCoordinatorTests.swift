@@ -1263,7 +1263,10 @@ struct LocationUpdateDeliveryCoordinatorTests {
                 serverURLString: "https://example.org",
                 enqueuedAt: enqueuedAt.addingTimeInterval(TimeInterval(index)),
                 attemptCount: index,
-                payload: payload(timestamp: "timestamp-\(index)", latitude: 50 + Double(index) / 1_000),
+                payload: payload(
+                    timestamp: index == 101 ? "1500" : "timestamp-\(index)",
+                    latitude: 50 + Double(index) / 1_000
+                ),
                 enableHistory: index.isMultiple(of: 2),
                 retentionTime: 90 + index
             )
@@ -1281,9 +1284,17 @@ struct LocationUpdateDeliveryCoordinatorTests {
         #expect(diagnosticsLog.persistenceWriteCount == 0)
         #expect(diagnosticsLog.hasPendingPersistence)
 
+        let firstFlushedContext = try #require(diagnosticsLog.entries.first?.context)
+        #expect(firstFlushedContext["measurementTimestampEpochSeconds"] == nil)
+        #expect(firstFlushedContext["measurementToAckAgeSeconds"] == nil)
+        #expect(firstFlushedContext["enqueueToAckAgeSeconds"] == .double(1_000))
+
         let lastContext = try #require(diagnosticsLog.coalescedCounts.first?.lastContext)
         #expect(lastContext["trigger"] == .string("manual"))
-        #expect(lastContext["locationTimestamp"] == .string("timestamp-101"))
+        #expect(lastContext["locationTimestamp"] == .string("1500"))
+        #expect(lastContext["measurementTimestampEpochSeconds"] == .double(1_500))
+        #expect(lastContext["enqueueToAckAgeSeconds"] == .double(1_000))
+        #expect(lastContext["measurementToAckAgeSeconds"] == .double(601))
         #expect(lastContext["attemptCount"] == .integer(101))
         #expect(lastContext["retentionTime"] == .integer(191))
         #expect(lastContext["serverURL"] == .string("https://example.org"))
