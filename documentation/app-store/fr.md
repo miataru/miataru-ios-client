@@ -18,7 +18,7 @@ Utilise des widgets pour les appareils sélectionnés et demande à Siri ou Racc
 
 ## What's New
 ```text
-Le filtrage des sauts brusques de position GPS a été amélioré, tout en conservant les mesures valides à grande vitesse. Les envois de position restent fiables lorsque des mises à jour sont en attente. Les diagnostics facultatifs facilitent la comparaison des heures de mesure et des délais d’envoi.
+Démarrage plus fiable après un redémarrage de l’iPhone. Les diagnostics de localisation facultatifs fournissent des informations plus claires sur les services de localisation après une modification du suivi, afin d’examiner un indicateur qui reste visible.
 ```
 
 ## Keywords

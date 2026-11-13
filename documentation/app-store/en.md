@@ -18,7 +18,7 @@ Use widgets for selected devices and ask Siri or Shortcuts for a device's last k
 
 ## What's New
 ```text
-Improved filtering of sudden GPS position jumps while preserving valid high-speed travel. Location uploads remain reliable while pending updates are sent, and optional diagnostics make measurement times and delivery delays easier to compare.
+Improved startup reliability after restarting the iPhone. Optional location diagnostics now provide clearer information about location services after tracking changes, helping investigate a location indicator that remains visible.
 ```
 
 ## Keywords

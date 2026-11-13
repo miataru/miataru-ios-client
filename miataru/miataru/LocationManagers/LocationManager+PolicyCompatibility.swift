@@ -537,6 +537,7 @@ extension LocationManager {
     static func trackingReconcileAction(trackAndReportLocation: Bool,
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
+                                        authorizationStatusResolved: Bool = true,
                                         isTracking: Bool,
                                         trackingPaused: Bool = false,
                                         trackingStorageAvailable: Bool = true) -> TrackingReconcileAction {
@@ -544,6 +545,7 @@ extension LocationManager {
             trackAndReportLocation: trackAndReportLocation,
             deviceKeyAuthBlocked: deviceKeyAuthBlocked,
             authorizationStatus: authorizationStatus,
+            authorizationStatusResolved: authorizationStatusResolved,
             isTracking: isTracking,
             trackingPaused: trackingPaused,
             trackingStorageAvailable: trackingStorageAvailable

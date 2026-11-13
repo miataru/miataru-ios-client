@@ -18,7 +18,7 @@ Nutze Widgets für ausgewählte Geräte und frage Siri oder Kurzbefehle nach dem
 
 ## What's New
 ```text
-Die Filterung plötzlicher GPS-Positionssprünge wurde verbessert, gültige Messungen bei hoher Geschwindigkeit bleiben erhalten. Standortmeldungen werden auch bei ausstehenden Übertragungen zuverlässig verarbeitet. Die optionale Diagnose macht Messzeitpunkte und Übertragungsverzögerungen besser nachvollziehbar.
+Verbesserte Startzuverlässigkeit nach einem Neustart des iPhones. Die optionale Standortdiagnose zeigt den Zustand der Ortungsdienste nach Änderungen am Tracking genauer an und hilft, einen weiterhin sichtbaren Standortindikator zu untersuchen.
 ```
 
 ## Keywords

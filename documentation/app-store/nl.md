@@ -18,7 +18,7 @@ Gebruik widgets voor geselecteerde apparaten en vraag Siri of Opdrachten naar de
 
 ## What's New
 ```text
-Plotselinge sprongen in de GPS-positie worden beter gefilterd, terwijl geldige metingen bij hoge snelheid behouden blijven. Locatie-updates worden betrouwbaar verwerkt wanneer er nog updates wachten op verzending. Met de optionele diagnostiek zijn meettijdstippen en verzendvertragingen beter te vergelijken.
+Betrouwbaarder opstarten na het herstarten van de iPhone. De optionele locatiediagnostiek geeft nu duidelijkere informatie over locatievoorzieningen na wijzigingen in het volgen, zodat een locatie-indicator die zichtbaar blijft beter kan worden onderzocht.
 ```
 
 ## Keywords

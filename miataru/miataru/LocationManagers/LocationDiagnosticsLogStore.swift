@@ -179,6 +179,8 @@ struct LocationDiagnosticsExport: Codable, Equatable {
     let exportID: String
     let appVersion: String
     let build: String
+    let runtimeOSVersion: String?
+    let sdkVersion: String?
     let maxEntries: Int
     let criticalRetentionHours: Int
     let droppedEntryCount: Int
@@ -419,6 +421,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
 
     func makeExport(appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown",
                     build: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown",
+                    runtimeOSVersion: String? = ProcessInfo.processInfo.operatingSystemVersionString,
+                    sdkVersion: String? = Bundle.main.object(forInfoDictionaryKey: "DTSDKName") as? String,
                     generatedAt: Date = Date(),
                     exportID: String = UUID().uuidString) -> LocationDiagnosticsExport {
         flushPendingPersistence()
@@ -430,6 +434,8 @@ final class LocationDiagnosticsLogStore: ObservableObject {
             exportID: exportID,
             appVersion: appVersion,
             build: build,
+            runtimeOSVersion: runtimeOSVersion,
+            sdkVersion: sdkVersion,
             maxEntries: maxEntries,
             criticalRetentionHours: Int(Self.criticalRetentionInterval / 3600),
             droppedEntryCount: droppedEntryCount,

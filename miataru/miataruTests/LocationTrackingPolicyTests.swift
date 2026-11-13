@@ -1,3 +1,4 @@
+import Foundation
 import CoreLocation
 import Testing
 import UIKit
@@ -1011,6 +1012,28 @@ struct LocationTrackingPolicyTests {
             authorizationStatus: .authorizedAlways,
             isTracking: true
         ) == .stopDeviceKeyBlocked)
+
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .notDetermined,
+            authorizationStatusResolved: false,
+            isTracking: true
+        ) == .deferAuthorizationStatus)
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: false,
+            deviceKeyAuthBlocked: false,
+            authorizationStatus: .notDetermined,
+            authorizationStatusResolved: false,
+            isTracking: true
+        ) == .stopTrackingDisabled)
+        #expect(LocationTrackingPolicy.trackingReconcileAction(
+            trackAndReportLocation: true,
+            deviceKeyAuthBlocked: true,
+            authorizationStatus: .notDetermined,
+            authorizationStatusResolved: false,
+            isTracking: true
+        ) == .stopDeviceKeyBlocked)
     }
 
     @Test("Tracking reconciliation waits for protected preferences after reboot")
@@ -1251,5 +1274,150 @@ struct LocationTrackingPolicyTests {
             frequentBackgroundStandardUpdatesActive: false,
             delegateReady: false
         ))
+    }
+}
+
+@Suite("Location authorization status coordinator tests")
+struct LocationAuthorizationStatusCoordinatorTests {
+    @Test("Unresolved status stays nonblocking and a newer denial supersedes an old read")
+    @MainActor
+    func unresolvedStatusCoalescesReadsAndKeepsNewestStatus() async {
+        let source = BlockingLocationAuthorizationStatusSource()
+        defer { source.releaseAll(with: .denied) }
+        let coordinator = LocationAuthorizationStatusCoordinator(source: source)
+        coordinator.start()
+
+        // The source's worker remains blocked until explicitly released. The caller
+        // continues on the main thread and further refreshes coalesce behind that read.
+        let mainThreadContinued = await MainActor.run { Thread.isMainThread }
+        coordinator.requestRefresh()
+        #expect(mainThreadContinued)
+        #expect(coordinator.snapshot == LocationAuthorizationStatusSnapshot(status: .notDetermined, isResolved: false))
+        #expect(source.readCount == 1)
+        #expect(source.maximumConcurrentReads == 1)
+
+        source.emit(.denied)
+        source.releaseNext(with: .authorizedAlways)
+        let didStartFollowUpRead = await waitUntil { source.readCount == 2 }
+        #expect(didStartFollowUpRead)
+        #expect(source.readCount == 2)
+        #expect(coordinator.snapshot == LocationAuthorizationStatusSnapshot(status: .denied, isResolved: true))
+        #expect(source.maximumConcurrentReads == 1)
+
+        source.releaseNext(with: .denied)
+        let didCompleteLatestRead = await waitUntil { source.outstandingReadCount == 0 }
+        #expect(didCompleteLatestRead)
+        #expect(coordinator.snapshot == LocationAuthorizationStatusSnapshot(status: .denied, isResolved: true))
+    }
+
+    @Test("Authorization waits time out without blocking or resolving an unknown status")
+    @MainActor
+    func unresolvedAuthorizationWaitIsBounded() async {
+        let source = BlockingLocationAuthorizationStatusSource()
+        defer { source.releaseAll(with: .denied) }
+        let coordinator = LocationAuthorizationStatusCoordinator(source: source)
+        let result = await coordinator.resolvedStatus(timeout: .milliseconds(50))
+        #expect(result == nil)
+        #expect(!coordinator.snapshot.isResolved)
+        #expect(source.readCount == 1)
+        #expect(source.maximumConcurrentReads == 1)
+    }
+
+    @MainActor
+    private func waitUntil(_ condition: @MainActor () -> Bool) async -> Bool {
+        for _ in 0..<500 {
+            if condition() { return true }
+            try? await Task.sleep(nanoseconds: 10_000_000)
+        }
+        return condition()
+    }
+}
+
+private final class BlockingLocationAuthorizationStatusSource: LocationAuthorizationStatusQuerying {
+    private final class PendingRead {
+        let gate = DispatchSemaphore(value: 0)
+        let completion: (CLAuthorizationStatus) -> Void
+        var status: CLAuthorizationStatus = .notDetermined
+        var isReleased = false
+
+        init(completion: @escaping (CLAuthorizationStatus) -> Void) {
+            self.completion = completion
+        }
+    }
+
+    private let lock = NSLock()
+    private var statusChangeHandler: ((CLAuthorizationStatus) -> Void)?
+    private var pendingReads: [PendingRead] = []
+    private var startedReadCount = 0
+    private var highestOutstandingReads = 0
+
+    var readCount: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return startedReadCount
+    }
+
+    var outstandingReadCount: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return pendingReads.count
+    }
+
+    var maximumConcurrentReads: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return highestOutstandingReads
+    }
+
+    func start(onStatusChange: @escaping (CLAuthorizationStatus) -> Void) {
+        lock.lock()
+        statusChangeHandler = onStatusChange
+        lock.unlock()
+    }
+
+    func readStatus(completion: @escaping (CLAuthorizationStatus) -> Void) {
+        let read = PendingRead(completion: completion)
+        lock.lock()
+        startedReadCount += 1
+        pendingReads.append(read)
+        highestOutstandingReads = max(highestOutstandingReads, pendingReads.count)
+        lock.unlock()
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            read.gate.wait()
+            self.lock.lock()
+            self.pendingReads.removeAll { $0 === read }
+            let status = read.status
+            self.lock.unlock()
+            read.completion(status)
+        }
+    }
+
+    func emit(_ status: CLAuthorizationStatus) {
+        lock.lock()
+        let handler = statusChangeHandler
+        lock.unlock()
+        handler?(status)
+    }
+
+    func releaseNext(with status: CLAuthorizationStatus) {
+        lock.lock()
+        let read = pendingReads.first { !$0.isReleased }
+        read?.status = status
+        read?.isReleased = true
+        lock.unlock()
+        read?.gate.signal()
+    }
+
+    func releaseAll(with status: CLAuthorizationStatus) {
+        while true {
+            lock.lock()
+            let next = pendingReads.first { !$0.isReleased }
+            next?.status = status
+            next?.isReleased = true
+            lock.unlock()
+            guard let next else { return }
+            next.gate.signal()
+        }
     }
 }

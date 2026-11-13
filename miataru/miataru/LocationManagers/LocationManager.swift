@@ -32,6 +32,7 @@ final class LocationManager: NSObject, ObservableObject {
     /// Latest valid own-device speed observation, held in memory for navigation presentation only.
     @Published private(set) var latestOwnDeviceSpeedSample: NavigationHUDOwnSpeedSample?
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    @Published private(set) var authorizationStatusResolved = false
     @Published var lastUpdateTime: Date?
     @Published var isTracking: Bool = false
     @Published var userHeading: Double?
@@ -52,6 +53,9 @@ final class LocationManager: NSObject, ObservableObject {
     
     // MARK: - Private Properties
     private let coreLocationServices = CoreLocationServiceController()
+    private let authorizationStatusCoordinator = LocationAuthorizationStatusCoordinator(
+        source: CoreLocationAuthorizationStatusSource()
+    )
     private var locationManager: CLLocationManager { coreLocationServices.primaryManager }
     private var frequentBackgroundLocationManager: CLLocationManager { coreLocationServices.frequentBackgroundManager }
     private var isSignificantChangeRecoveryAnchorActive: Bool { coreLocationServices.isSignificantChangeRecoveryAnchorActive }
@@ -79,6 +83,17 @@ final class LocationManager: NSObject, ObservableObject {
     @Published private(set) var isNetworkAvailable: Bool = true
     @Published private(set) var pendingLocationUpdateCount: Int = 0
     private var pendingAlwaysAuthorizationRequestTask: Task<Void, Never>?
+    private var pendingAuthorizationPermissionRequest = false
+    private struct PendingLaunchRestore {
+        let reason: String
+        var applicationStateContext: TrackingApplicationStateContext
+    }
+    private struct PendingSignificantChangeRearm {
+        let buildIdentifier: String
+        let reason: String
+    }
+    private var pendingLaunchRestore: PendingLaunchRestore?
+    private var pendingSignificantChangeRearm: PendingSignificantChangeRearm?
     private var didAttemptAlwaysAuthorizationInCurrentSession = false
     private var didScheduleStartupHeartbeat = false
     private var lastSubmittedLocationDeduplicationKey: LocationSubmissionDeduplicationKey?
@@ -137,6 +152,10 @@ final class LocationManager: NSObject, ObservableObject {
     override private init() {
         super.init()
         coreLocationServices.configure(delegate: self, activityType: Self.activityTypeFrom(settings.locationActivityType))
+        authorizationStatusCoordinator.onChange = { [weak self] snapshot in
+            self?.handleAuthorizationStatusSnapshot(snapshot)
+        }
+        authorizationStatusCoordinator.start()
         // Enable battery monitoring to report battery percentage with location updates
         UIDevice.current.isBatteryMonitoringEnabled = true
         observeSettings()
@@ -185,6 +204,88 @@ final class LocationManager: NSObject, ObservableObject {
         // Perform initial daily reset check
         maybeResetBackgroundMetricsIfNeeded()
     }
+
+    private func handleAuthorizationStatusSnapshot(_ snapshot: LocationAuthorizationStatusSnapshot) {
+        authorizationStatus = snapshot.status
+        authorizationStatusResolved = snapshot.isResolved
+        guard snapshot.isResolved else { return }
+
+        switch snapshot.status {
+        case .notDetermined, .denied, .restricted:
+            pendingAlwaysAuthorizationRequestTask?.cancel()
+            pendingAlwaysAuthorizationRequestTask = nil
+            didAttemptAlwaysAuthorizationInCurrentSession = false
+        case .authorizedAlways:
+            pendingAlwaysAuthorizationRequestTask?.cancel()
+            pendingAlwaysAuthorizationRequestTask = nil
+        case .authorizedWhenInUse:
+            break
+        @unknown default:
+            break
+        }
+
+        diagnosticsLog.append(
+            level: snapshot.status == .authorizedAlways ? .info : .warning,
+            event: "authorizationChange",
+            summary: "Location authorization status was resolved or changed.",
+            result: "\(snapshot.status.rawValue)",
+            reason: "authorization status coordinator",
+            checks: trackingEligibilityChecks(status: snapshot.status),
+            context: [
+                "authorizationStatus": .integer(Int(snapshot.status.rawValue)),
+                "authorizationStatusResolved": .bool(snapshot.isResolved),
+                "source": .string("query-only authorization manager")
+            ],
+            persistence: .immediate
+        )
+
+        resumePendingExplicitPermissionRequestIfPossible()
+
+        drainPendingAuthorizationStartup(reason: "authorization status resolved")
+    }
+
+    private func drainPendingAuthorizationStartup(reason: String) {
+        guard trackingStateReady else { return }
+        guard settings.trackAndReportLocation, !settings.deviceKeyAuthBlocked else {
+            pendingLaunchRestore = nil
+            pendingSignificantChangeRearm = nil
+            isTracking = false
+            stopAllLocationServices()
+            return
+        }
+        guard authorizationStatusResolved else {
+            authorizationStatusCoordinator.requestRefresh()
+            return
+        }
+
+        if let pendingLaunchRestore {
+            self.pendingLaunchRestore = nil
+            restoreTrackingAfterLaunch(
+                reason: pendingLaunchRestore.reason,
+                applicationStateContext: pendingLaunchRestore.applicationStateContext
+            )
+        } else {
+            ensureAuthorizationIfNeeded()
+            reconcileTrackingState(reason: reason)
+        }
+
+        if let pendingSignificantChangeRearm {
+            self.pendingSignificantChangeRearm = nil
+            rearmSignificantChangeMonitorAfterFreshLaunchIfNeeded(
+                buildIdentifier: pendingSignificantChangeRearm.buildIdentifier,
+                reason: pendingSignificantChangeRearm.reason
+            )
+        }
+    }
+
+    private func resumePendingExplicitPermissionRequestIfPossible() {
+        guard pendingAuthorizationPermissionRequest,
+              authorizationStatusResolved,
+              currentTrackingApplicationState == .active else { return }
+        pendingAuthorizationPermissionRequest = false
+        guard !settings.trackAndReportLocation else { return }
+        requestLocationPermission()
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -204,6 +305,10 @@ final class LocationManager: NSObject, ObservableObject {
             self.finishStalePrimaryRecoveryBackgroundTask()
         }
         backgroundLocationLaunchPendingForeground = false
+        if pendingLaunchRestore?.applicationStateContext == .forceBackground {
+            pendingLaunchRestore?.applicationStateContext = .current
+        }
+        resumePendingExplicitPermissionRequestIfPossible()
         scheduleStartupHeartbeatIfNeeded()
         smartFrequentBackgroundStartupGuardPending = false
         recordForensicForegroundOpen(trigger: "app did become active")
@@ -437,7 +542,7 @@ final class LocationManager: NSObject, ObservableObject {
             trackAndReportLocation: settings.trackAndReportLocation,
             isTracking: isTracking,
             frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
-            authorizationStatus: locationManager.authorizationStatus,
+            authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             trackingPaused: settings.isTrackingPaused
         )
@@ -445,7 +550,12 @@ final class LocationManager: NSObject, ObservableObject {
 
     // MARK: - Permissions
     func requestLocationPermission() {
-        switch locationManager.authorizationStatus {
+        guard authorizationStatusResolved else {
+            pendingAuthorizationPermissionRequest = true
+            authorizationStatusCoordinator.requestRefresh()
+            return
+        }
+        switch authorizationStatus {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse:
@@ -461,10 +571,9 @@ final class LocationManager: NSObject, ObservableObject {
         }
     }
 
-    func authorizationStatusForIntent() -> CLAuthorizationStatus {
-        let status = locationManager.authorizationStatus
-        authorizationStatus = status
-        return status
+    @MainActor
+    func authorizationStatusForIntent() async -> CLAuthorizationStatus {
+        await authorizationStatusCoordinator.resolvedStatus() ?? .notDetermined
     }
 
     func requestFullLocationAuthorizationAgain() {
@@ -522,8 +631,12 @@ final class LocationManager: NSObject, ObservableObject {
 
     private func ensureAuthorizationIfNeeded() {
         guard !Self.shouldPreserveEnabledTrackingPreferenceForUITests else { return }
+        guard authorizationStatusResolved else {
+            authorizationStatusCoordinator.requestRefresh()
+            return
+        }
 
-        let status = locationManager.authorizationStatus
+        let status = authorizationStatus
         let action = LocationTrackingPolicy.authorizationRequestAction(
             trackAndReportLocation: settings.trackAndReportLocation,
             authorizationStatus: status,
@@ -542,9 +655,13 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func requestAlwaysAuthorizationIfPossible(reason: String, delay: TimeInterval = 0.6) {
+        guard authorizationStatusResolved else {
+            authorizationStatusCoordinator.requestRefresh()
+            return
+        }
         guard LocationTrackingPolicy.authorizationRequestAction(
             trackAndReportLocation: settings.trackAndReportLocation,
-            authorizationStatus: locationManager.authorizationStatus,
+            authorizationStatus: authorizationStatus,
             applicationState: currentTrackingApplicationState,
             didAttemptAlwaysAuthorization: didAttemptAlwaysAuthorizationInCurrentSession,
             hasPendingAlwaysAuthorizationRequest: pendingAlwaysAuthorizationRequestTask != nil
@@ -560,9 +677,13 @@ final class LocationManager: NSObject, ObservableObject {
             guard !Task.isCancelled else { return }
             guard let self else { return }
             self.pendingAlwaysAuthorizationRequestTask = nil
+            guard self.authorizationStatusResolved else {
+                self.authorizationStatusCoordinator.requestRefresh()
+                return
+            }
             guard LocationTrackingPolicy.authorizationRequestAction(
                 trackAndReportLocation: self.settings.trackAndReportLocation,
-                authorizationStatus: self.locationManager.authorizationStatus,
+                authorizationStatus: self.authorizationStatus,
                 applicationState: self.currentTrackingApplicationState,
                 didAttemptAlwaysAuthorization: self.didAttemptAlwaysAuthorizationInCurrentSession,
                 hasPendingAlwaysAuthorizationRequest: false
@@ -579,9 +700,12 @@ final class LocationManager: NSObject, ObservableObject {
     // MARK: - Tracking Control
     func startTracking(applicationStateContext: TrackingApplicationStateContext = .current) {
         debugLog("startTracking called")
-        guard trackingStateReady else { return }
+        guard trackingStateReady else {
+            pendingLaunchRestore = PendingLaunchRestore(reason: "start tracking", applicationStateContext: applicationStateContext)
+            return
+        }
         if Self.shouldPreserveEnabledTrackingPreferenceForUITests {
-            authorizationStatus = locationManager.authorizationStatus
+            authorizationStatusCoordinator.requestRefresh()
             isTracking = settings.trackAndReportLocation
             return
         }
@@ -592,10 +716,14 @@ final class LocationManager: NSObject, ObservableObject {
             stopAllLocationServices()
             return
         }
+        guard authorizationStatusResolved else {
+            isTracking = settings.trackAndReportLocation
+            authorizationStatusCoordinator.requestRefresh()
+            return
+        }
         handleTrackingPauseExpirationIfNeeded()
         ensureAuthorizationIfNeeded()
-        let status = locationManager.authorizationStatus
-        authorizationStatus = status
+        let status = authorizationStatus
         if Self.shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: status) {
             debugLog("startTracking suspended because location authorization is denied/restricted")
             isTracking = false
@@ -624,11 +752,23 @@ final class LocationManager: NSObject, ObservableObject {
         if applicationStateContext == .forceBackground {
             backgroundLocationLaunchPendingForeground = true
         }
-        guard trackingStateReady else { return }
+        guard trackingStateReady else {
+            pendingLaunchRestore = PendingLaunchRestore(reason: reason, applicationStateContext: applicationStateContext)
+            return
+        }
         debugLog("[LocationManager] Restoring tracking after launch: \(reason)")
-        authorizationStatus = locationManager.authorizationStatus
         if applicationStateContext == .forceBackground || UIApplication.shared.applicationState != .active {
             smartFrequentBackgroundStartupGuardPending = true
+        }
+        guard settings.trackAndReportLocation, !settings.deviceKeyAuthBlocked else {
+            isTracking = false
+            stopAllLocationServices()
+            return
+        }
+        guard authorizationStatusResolved else {
+            pendingLaunchRestore = PendingLaunchRestore(reason: reason, applicationStateContext: applicationStateContext)
+            authorizationStatusCoordinator.requestRefresh()
+            return
         }
         handleFrequentBackgroundLocationExpirationIfNeeded()
         handleTrackingPauseExpirationIfNeeded()
@@ -676,8 +816,17 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     func rearmSignificantChangeMonitorAfterFreshLaunchIfNeeded(buildIdentifier: String, reason: String) {
-        guard trackingStateReady else { return }
-        let status = locationManager.authorizationStatus
+        guard trackingStateReady else {
+            pendingSignificantChangeRearm = PendingSignificantChangeRearm(buildIdentifier: buildIdentifier, reason: reason)
+            return
+        }
+        guard settings.trackAndReportLocation, !settings.deviceKeyAuthBlocked else { return }
+        guard authorizationStatusResolved else {
+            pendingSignificantChangeRearm = PendingSignificantChangeRearm(buildIdentifier: buildIdentifier, reason: reason)
+            authorizationStatusCoordinator.requestRefresh()
+            return
+        }
+        let status = authorizationStatus
         handleTrackingPauseExpirationIfNeeded()
         let decision = backgroundForensicsRecorder.significantChangeRearmDecision(
             buildIdentifier: buildIdentifier,
@@ -726,9 +875,14 @@ final class LocationManager: NSObject, ObservableObject {
     func stopTracking() {
         debugLog("stopTracking called")
         guard trackingStateReady else { return }
+        pendingLaunchRestore = nil
+        pendingSignificantChangeRearm = nil
+        pendingAuthorizationPermissionRequest = false
+        pendingAlwaysAuthorizationRequestTask?.cancel()
+        pendingAlwaysAuthorizationRequestTask = nil
         backgroundForensicsRecorder.clearFenceConsistencyCheck()
         isTracking = false
-        applyTrackingMode(reason: "stop tracking")
+        stopAllLocationServices()
     }
 
     @discardableResult
@@ -773,7 +927,7 @@ final class LocationManager: NSObject, ObservableObject {
             summary: "Paused server update delivery temporarily.",
             result: "paused",
             reason: reason,
-            checks: trackingEligibilityChecks(status: locationManager.authorizationStatus),
+            checks: trackingEligibilityChecks(status: authorizationStatus),
             context: [
                 "expiresAt": .string(ISO8601DateFormatter().string(from: expiresAt)),
                 "durationSeconds": .integer(durationSeconds)
@@ -1059,8 +1213,7 @@ final class LocationManager: NSObject, ObservableObject {
             )
         }
 
-        let status = locationManager.authorizationStatus
-        authorizationStatus = status
+        let status = authorizationStatus
         handleFrequentBackgroundLocationExpirationIfNeeded()
         handleTrackingPauseExpirationIfNeeded()
         refreshFrequentBackgroundTrackingReminder()
@@ -1068,6 +1221,7 @@ final class LocationManager: NSObject, ObservableObject {
             trackAndReportLocation: settings.trackAndReportLocation,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             authorizationStatus: status,
+            authorizationStatusResolved: authorizationStatusResolved,
             isTracking: isTracking,
             trackingPaused: settings.isTrackingPaused,
             trackingStorageAvailable: trackingStateReady
@@ -1097,6 +1251,7 @@ final class LocationManager: NSObject, ObservableObject {
             context: [
                 "applicationStateContext": .string(String(describing: applicationStateContext)),
                 "authorizationStatus": .integer(Int(status.rawValue)),
+                "authorizationStatusResolved": .bool(authorizationStatusResolved),
                 "trackAndReportLocation": .bool(settings.trackAndReportLocation),
                 "isTracking": .bool(isTracking),
                 "trackingPaused": .bool(settings.isTrackingPaused),
@@ -1108,6 +1263,9 @@ final class LocationManager: NSObject, ObservableObject {
 
         switch action {
         case .deferProtectedDataUnavailable:
+            return action
+        case .deferAuthorizationStatus:
+            authorizationStatusCoordinator.requestRefresh()
             return action
         case .stopAuthorizationUnavailable:
             isTracking = false
@@ -1121,7 +1279,7 @@ final class LocationManager: NSObject, ObservableObject {
             applyTrackingMode(reason: effectiveReason, applicationStateContext: applicationStateContext)
         }
 
-        if locationManager.authorizationStatus == .authorizedAlways,
+        if authorizationStatus == .authorizedAlways,
            restorePersistedSmartFrequentBackgroundRuntimeMarkerIfNeeded(reason: effectiveReason) {
             applyTrackingMode(reason: "restored Smart frequent during reconciliation", applicationStateContext: applicationStateContext)
             requestSmartFrequentRestartRecoveryLocationIfNeeded(
@@ -1140,7 +1298,7 @@ final class LocationManager: NSObject, ObservableObject {
         reconcileTrackingState(reason: reason)
     }
 
-    func resumeDeferredStartupAfterProtectedDataBecomesAvailable() {
+    func resumeDeferredStartupAfterProtectedDataBecomesAvailable(reason: String = "protected data became available") {
         guard trackingStateReady else { return }
         applyLocationUpdateOutboxPolicy()
         settings.ensureFrequentBackgroundLocationUpdatesExpiration()
@@ -1151,33 +1309,46 @@ final class LocationManager: NSObject, ObservableObject {
         Task {
             await flushPendingLocationUpdatesNow()
         }
+        drainPendingAuthorizationStartup(reason: reason)
     }
 
     func recoverDeferredStartupIfPossible(reason: String) {
-        guard LocationTrackingStorageAvailability.isAvailable,
-              settings.needsProtectedSettingsReload else { return }
+        guard LocationTrackingStorageAvailability.isAvailable else { return }
+        guard settings.needsProtectedSettingsReload else {
+            if pendingLaunchRestore != nil || pendingSignificantChangeRearm != nil {
+                drainPendingAuthorizationStartup(reason: reason)
+            }
+            return
+        }
         settings.refreshFromUserDefaultsForAppActivation(
             clearExpiredTrackingPause: false,
             restoreProtectedSettings: true
         )
         KnownDeviceStore.shared.reloadAfterProtectedDataBecomesAvailable()
-        resumeDeferredStartupAfterProtectedDataBecomesAvailable()
-        reconcileTrackingState(reason: reason)
+        resumeDeferredStartupAfterProtectedDataBecomesAvailable(reason: reason)
         WidgetDataSyncCoordinator.importNewerWidgetLocationsIntoAppCache()
         WidgetDataSyncCoordinator.syncAllDevices()
     }
 
     private func applyTrackingMode(reason: String, applicationStateContext: TrackingApplicationStateContext = .current) {
         guard trackingStateReady else { return }
+        guard authorizationStatusResolved else {
+            if !settings.trackAndReportLocation || settings.deviceKeyAuthBlocked {
+                isTracking = false
+                stopAllLocationServices()
+            } else {
+                authorizationStatusCoordinator.requestRefresh()
+            }
+            return
+        }
         let state = LocationTrackingPolicy.effectiveApplicationState(
             currentState: UIApplication.shared.applicationState,
             context: applicationStateContext,
             backgroundLocationLaunchPendingForeground: backgroundLocationLaunchPendingForeground
         )
-        let status = locationManager.authorizationStatus
+        let status = authorizationStatus
         if Self.shouldPreserveEnabledTrackingPreferenceForUITests,
            settings.trackAndReportLocation {
-            authorizationStatus = status
             isTracking = true
             return
         }
@@ -1266,15 +1437,16 @@ final class LocationManager: NSObject, ObservableObject {
             ],
             persistence: .immediate
         )
+        let shouldMaintainLocationServiceSession = Self.shouldMaintainLocationServiceSession(
+            trackAndReportLocation: settings.trackAndReportLocation,
+            isTracking: isTracking,
+            authorizationStatus: status,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
+            trackingPaused: settings.isTrackingPaused
+        )
         coreLocationServices.syncLocationServiceSession(
             reason: reason,
-            shouldMaintainSession: Self.shouldMaintainLocationServiceSession(
-                trackAndReportLocation: settings.trackAndReportLocation,
-                isTracking: isTracking,
-                authorizationStatus: status,
-                deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
-                trackingPaused: settings.isTrackingPaused
-            )
+            shouldMaintainSession: shouldMaintainLocationServiceSession
         )
         coreLocationServices.syncFrequentBackgroundActivitySession(
             reason: reason,
@@ -1284,6 +1456,113 @@ final class LocationManager: NSObject, ObservableObject {
         ensureSignificantChangeRecoveryAnchorIfNeeded(reason: reason, shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor)
         reconcileSmartFrequentExitFence(reason: reason, applicationState: state)
         publishFrequentBackgroundRefreshEligibilityIfNeeded()
+        if mode != .stopped {
+            recordLocationServiceStateSnapshot(
+                mode: mode,
+                applicationState: state,
+                authorizationStatus: status,
+                reason: reason,
+                shouldMaintainRecoveryAnchor: shouldMaintainRecoveryAnchor,
+                shouldMaintainLocationServiceSession: shouldMaintainLocationServiceSession,
+                shouldMaintainFrequentActivitySession: shouldMaintainFrequentActivitySession
+            )
+        }
+    }
+
+    private func recordLocationServiceStateSnapshot(
+        mode: TrackingMode,
+        applicationState: UIApplication.State,
+        authorizationStatus: CLAuthorizationStatus,
+        reason: String,
+        shouldMaintainRecoveryAnchor: Bool,
+        shouldMaintainLocationServiceSession: Bool,
+        shouldMaintainFrequentActivitySession: Bool
+    ) {
+        guard diagnosticsLog.isEnabled else { return }
+
+        let isFrequentMode: Bool
+        let isBackgroundMode: Bool
+        let isForegroundHighAccuracyMode: Bool
+        switch mode {
+        case .stopped:
+            isFrequentMode = false
+            isBackgroundMode = false
+            isForegroundHighAccuracyMode = false
+        case .foregroundHighAccuracy:
+            isFrequentMode = false
+            isBackgroundMode = false
+            isForegroundHighAccuracyMode = true
+        case .backgroundSignificantChange:
+            isFrequentMode = false
+            isBackgroundMode = true
+            isForegroundHighAccuracyMode = false
+        case .backgroundFrequent:
+            isFrequentMode = true
+            isBackgroundMode = true
+            isForegroundHighAccuracyMode = false
+        }
+
+        // `ensureSignificantChangeRecoveryAnchorIfNeeded` runs after the mode
+        // application and owns the final primary significant-change request.
+        let expectedPrimarySignificantChange = shouldMaintainRecoveryAnchor
+        let expectedPrimaryBackgroundUpdates = isBackgroundMode
+        let expectedSecondaryIndicator = Self.shouldShowBackgroundLocationIndicator(for: mode)
+        let snapshot = coreLocationServices.serviceStateSnapshot
+        var context = snapshot.diagnosticContext(
+            expectedPrimaryStandardUpdatesRequested: isForegroundHighAccuracyMode,
+            expectedPrimarySignificantChangeMonitoringRequested: expectedPrimarySignificantChange,
+            expectedPrimaryAllowsBackgroundLocationUpdates: expectedPrimaryBackgroundUpdates,
+            expectedPrimaryShowsBackgroundLocationIndicator: false,
+            expectedSecondaryStandardUpdatesRequested: isFrequentMode,
+            expectedSecondarySignificantChangeMonitoringRequested: false,
+            expectedSecondaryAllowsBackgroundLocationUpdates: isFrequentMode,
+            expectedSecondaryPausesLocationUpdatesAutomatically: !isFrequentMode,
+            expectedSecondaryShowsBackgroundLocationIndicator: expectedSecondaryIndicator,
+            expectedSignificantChangeRecoveryAnchorActive: shouldMaintainRecoveryAnchor,
+            expectedLocationServiceSessionObjectHeld: shouldMaintainLocationServiceSession,
+            expectedFrequentBackgroundActivitySessionObjectHeld: shouldMaintainFrequentActivitySession,
+            trackingMode: String(describing: mode),
+            reason: reason
+        )
+        context["applicationState"] = .integer(applicationState.rawValue)
+        context["authorizationStatus"] = .integer(Int(authorizationStatus.rawValue))
+        context["authorizationStatusResolved"] = .bool(authorizationStatusResolved)
+        context["appVersion"] = .string(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown")
+        context["appBuild"] = .string(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "Unknown")
+        context["trackingEnabled"] = .bool(settings.trackAndReportLocation)
+        context["trackingActive"] = .bool(isTracking)
+        context["trackingPaused"] = .bool(settings.isTrackingPaused)
+        context["manualFrequentEnabled"] = .bool(settings.frequentBackgroundLocationUpdatesEnabled)
+        context["smartEnabled"] = .bool(settings.smartFrequentBackgroundLocationUpdatesEnabled)
+        context["smartRuntimeActive"] = .bool(smartFrequentBackgroundRuntimeActive)
+        context["smartRuntimePhase"] = .string(smartFrequentBackgroundRuntimePhase.rawValue)
+        context["effectiveFrequent"] = .bool(effectiveFrequentBackgroundUpdatesEnabled)
+        context["deviceKeyAuthBlocked"] = .bool(settings.deviceKeyAuthBlocked)
+
+        let matchesExpectation = context["serviceStateMatchesExpectation"] == .bool(true)
+        if matchesExpectation {
+            diagnosticsLog.appendCoalesced(
+                level: .info,
+                event: "locationServiceState",
+                summary: "Recorded requested and configured Core Location state after mode application.",
+                result: "consistent",
+                reason: reason,
+                coalescingKey: "locationServiceState|consistent|\(String(describing: mode))",
+                context: context,
+                sampleEvery: 50,
+                persistence: .deferred
+            )
+        } else {
+            diagnosticsLog.append(
+                level: .warning,
+                event: "locationServiceState",
+                summary: "Core Location state differs from the requested tracking mode.",
+                result: "mismatch",
+                reason: reason,
+                context: context,
+                persistence: .immediate
+            )
+        }
     }
 
     private func publishFrequentBackgroundRefreshEligibilityIfNeeded() {
@@ -1326,7 +1605,7 @@ final class LocationManager: NSObject, ObservableObject {
         recordForensicServiceAssertion(mode: .foregroundHighAccuracy)
         let shouldMaintainPrimarySignificantChangeMonitor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: settings.trackAndReportLocation && isTracking,
-            authorizationStatus: locationManager.authorizationStatus,
+            authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             trackingPaused: settings.isTrackingPaused
         )
@@ -1354,7 +1633,7 @@ final class LocationManager: NSObject, ObservableObject {
             summary: "Started significant-change background monitoring.",
             result: "significant-change active",
             reason: nil,
-            checks: trackingEligibilityChecks(status: locationManager.authorizationStatus),
+            checks: trackingEligibilityChecks(status: authorizationStatus),
             context: [
                 "allowsBackgroundLocationUpdates": .bool(locationManager.allowsBackgroundLocationUpdates),
                 "primaryRecoveryAnchorActive": .bool(isSignificantChangeRecoveryAnchorActive)
@@ -1381,7 +1660,7 @@ final class LocationManager: NSObject, ObservableObject {
             summary: "Started frequent background location updates.",
             result: "frequent background active",
             reason: nil,
-            checks: trackingEligibilityChecks(status: locationManager.authorizationStatus),
+            checks: trackingEligibilityChecks(status: authorizationStatus),
             context: [
                 "distanceFilterMeters": .double(configuration.distanceFilter),
                 "desiredAccuracy": .double(configuration.desiredAccuracy),
@@ -1449,7 +1728,7 @@ final class LocationManager: NSObject, ObservableObject {
     ) {
         let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: settings.trackAndReportLocation && isTracking,
-            authorizationStatus: locationManager.authorizationStatus,
+            authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             trackingPaused: settings.isTrackingPaused
         )
@@ -1483,7 +1762,7 @@ final class LocationManager: NSObject, ObservableObject {
         let shouldMaintainFence = Self.shouldMaintainSmartFrequentExitFence(
             trackAndReportLocation: settings.trackAndReportLocation,
             isTracking: isTracking,
-            authorizationStatus: locationManager.authorizationStatus,
+            authorizationStatus: authorizationStatus,
             deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
             smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
             manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
@@ -1611,7 +1890,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func reconcileFenceConsistencyCheck(now: Date = Date()) {
         let eligible = trackingStateReady && isTracking && settings.trackAndReportLocation &&
             currentTrackingApplicationState != .active &&
-            locationManager.authorizationStatus == .authorizedAlways &&
+            authorizationStatus == .authorizedAlways &&
             !settings.deviceKeyAuthBlocked && settings.smartFrequentBackgroundLocationUpdatesEnabled &&
             !settings.frequentBackgroundLocationUpdatesEnabled && !isBatteryAtOrBelowFrequentBackgroundThreshold()
         backgroundForensicsRecorder.reconcileFenceConsistencyCheck(eligible: eligible, now: now)
@@ -1641,7 +1920,7 @@ final class LocationManager: NSObject, ObservableObject {
         let baseEligibility = applicationState != .active &&
         isTracking &&
         settings.trackAndReportLocation &&
-        locationManager.authorizationStatus == .authorizedAlways &&
+        authorizationStatus == .authorizedAlways &&
         !settings.deviceKeyAuthBlocked &&
         settings.smartFrequentBackgroundLocationUpdatesEnabled &&
         !settings.frequentBackgroundLocationUpdatesEnabled &&
@@ -2188,7 +2467,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func requestFrequentBackgroundLocationIfSafe(reason: String, now: Date = Date()) {
-        let status = locationManager.authorizationStatus
+        let status = authorizationStatus
         let frequentUpdatesEnabled = effectiveFrequentBackgroundUpdatesEnabled
         let frequentStandardUpdatesActive = isFrequentBackgroundStandardUpdatesActive
         let delegateReady = coreLocationServices.frequentBackgroundLocationRequestDelegateReady
@@ -3083,7 +3362,7 @@ final class LocationManager: NSObject, ObservableObject {
                 summary: "Skipped location upload because server updates are paused.",
                 result: "paused",
                 reason: "server update pause active",
-                checks: trackingEligibilityChecks(status: locationManager.authorizationStatus),
+                checks: trackingEligibilityChecks(status: authorizationStatus),
                 context: diagnosticsLocationContext(location, extra: [
                     ("trackingPauseExpiresAt", settings.trackingPauseExpiresAt.map { .string(ISO8601DateFormatter().string(from: $0)) } ?? .string("none"))
                 ]),
@@ -3535,6 +3814,15 @@ final class LocationManager: NSObject, ObservableObject {
         coreLocationServices.stopFrequentBackgroundActivitySession(reason: "stop all location services")
         stopHeadingUpdates()
         stopForegroundLocationTimer()
+        recordLocationServiceStateSnapshot(
+            mode: .stopped,
+            applicationState: currentTrackingApplicationState,
+            authorizationStatus: authorizationStatus,
+            reason: "stop all location services",
+            shouldMaintainRecoveryAnchor: false,
+            shouldMaintainLocationServiceSession: false,
+            shouldMaintainFrequentActivitySession: false
+        )
     }
 
     @MainActor
@@ -3628,6 +3916,15 @@ extension LocationManager: CLLocationManagerDelegate {
             }
             self.recoverDeferredStartupIfPossible(reason: "location callback after first unlock")
             guard trackingStateReady else { return }
+            guard authorizationStatusResolved else {
+                if !settings.trackAndReportLocation {
+                    isTracking = false
+                    stopAllLocationServices()
+                } else {
+                    authorizationStatusCoordinator.requestRefresh()
+                }
+                return
+            }
             self.reconcileFenceConsistencyCheck()
             let orderedLocations = Self.processableLocationUpdates(from: locations)
             guard !orderedLocations.isEmpty else {
@@ -3796,7 +4093,7 @@ extension LocationManager: CLLocationManagerDelegate {
             let recoveryNow = Date()
             if LocationTrackingPolicy.shouldRequestFreshLocationAfterStaleBackgroundBatch(
                 isTracking: self.isTracking && self.settings.trackAndReportLocation && !self.settings.deviceKeyAuthBlocked,
-                authorizationStatus: self.locationManager.authorizationStatus,
+                authorizationStatus: self.authorizationStatus,
                 applicationState: applicationState,
                 updateSourceIsPrimary: updateSource == .primary,
                 receivedStaleSample: receivedStalePrimarySample,
@@ -3815,7 +4112,7 @@ extension LocationManager: CLLocationManagerDelegate {
                     summary: "Requested a fresh location after a stale background significant-change callback.",
                     result: "one-shot requested",
                     reason: "no fresh primary sample in callback batch",
-                    checks: self.trackingEligibilityChecks(status: self.locationManager.authorizationStatus),
+                    checks: self.trackingEligibilityChecks(status: self.authorizationStatus),
                     context: ["source": .string(updateSource.rawValue)],
                     persistence: .immediate
                 )
@@ -4180,53 +4477,11 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     @available(iOS 14.0, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        handleAuthorizationChange()
+        authorizationStatusCoordinator.requestRefresh()
     }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        handleAuthorizationChange()
-    }
-
-    private func handleAuthorizationChange() {
-        Task { @MainActor in
-            // Delegate callbacks can be queued from both managers. Reconcile against the
-            // primary manager's current authorization, not a captured, potentially stale event.
-            let status = self.locationManager.authorizationStatus
-            self.authorizationStatus = status
-            switch status {
-            case .notDetermined, .denied, .restricted:
-                self.pendingAlwaysAuthorizationRequestTask?.cancel()
-                self.pendingAlwaysAuthorizationRequestTask = nil
-                self.didAttemptAlwaysAuthorizationInCurrentSession = false
-            case .authorizedAlways:
-                self.pendingAlwaysAuthorizationRequestTask?.cancel()
-                self.pendingAlwaysAuthorizationRequestTask = nil
-            case .authorizedWhenInUse:
-                break
-            @unknown default:
-                break
-            }
-
-            if Self.shouldPreserveEnabledTrackingPreferenceForUITests,
-               self.settings.trackAndReportLocation {
-                self.isTracking = true
-                return
-            }
-            if status == .authorizedWhenInUse,
-               settings.trackAndReportLocation {
-                self.requestAlwaysAuthorizationIfPossible(reason: "authorization changed")
-            }
-            self.reconcileTrackingState(reason: "authorization changed")
-            self.diagnosticsLog.append(
-                level: status == .authorizedAlways ? .info : .warning,
-                event: "authorizationChange",
-                summary: "Location authorization changed.",
-                result: "\(status.rawValue)",
-                reason: nil,
-                checks: self.trackingEligibilityChecks(status: status),
-                context: ["authorizationStatus": .integer(Int(status.rawValue))]
-            )
-        }
+        authorizationStatusCoordinator.requestRefresh()
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Task { @MainActor in

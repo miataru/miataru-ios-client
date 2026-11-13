@@ -59,6 +59,7 @@ enum LocationTrackingPolicy {
 
     enum ReconcileAction: String, Equatable {
         case deferProtectedDataUnavailable
+        case deferAuthorizationStatus
         case stopTrackingDisabled
         case stopDeviceKeyBlocked
         case stopAuthorizationUnavailable
@@ -378,6 +379,7 @@ enum LocationTrackingPolicy {
     static func trackingReconcileAction(trackAndReportLocation: Bool,
                                         deviceKeyAuthBlocked: Bool,
                                         authorizationStatus: CLAuthorizationStatus,
+                                        authorizationStatusResolved: Bool = true,
                                         isTracking: Bool,
                                         trackingPaused: Bool = false,
                                         trackingStorageAvailable: Bool = true) -> ReconcileAction {
@@ -389,6 +391,9 @@ enum LocationTrackingPolicy {
         }
         guard !deviceKeyAuthBlocked else {
             return .stopDeviceKeyBlocked
+        }
+        guard authorizationStatusResolved else {
+            return .deferAuthorizationStatus
         }
 
         if shouldSuspendTrackingForUnavailableAuthorization(authorizationStatus: authorizationStatus) {

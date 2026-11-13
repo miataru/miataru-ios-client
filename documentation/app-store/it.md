@@ -18,7 +18,7 @@ Usa i widget per i dispositivi selezionati e chiedi a Siri o Comandi l’ultima 
 
 ## What's New
 ```text
-Migliorato il filtro dei salti improvvisi della posizione GPS, mantenendo le misurazioni valide anche ad alta velocità. Gli invii della posizione restano affidabili in presenza di aggiornamenti in attesa. La diagnostica facoltativa rende più semplice confrontare gli orari delle misurazioni e i ritardi di invio.
+Avvio più affidabile dopo il riavvio dell’iPhone. La diagnostica facoltativa della posizione fornisce informazioni più chiare sui servizi di localizzazione dopo le modifiche al tracciamento, per aiutare a capire perché un indicatore rimane visibile.
 ```
 
 ## Keywords

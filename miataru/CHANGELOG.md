@@ -1,4 +1,8 @@
 version 3.6.2
+- Prepared build 3 with matching app and widget metadata.
+- Added opt-in post-application location-service snapshots with requested manager state, configured flags, session lifecycles, consistency checks, and optional OS/SDK export metadata.
+- Explicitly clear the primary manager background-update flag when tracking is fully stopped, while preserving significant-change recovery when tracking remains enabled.
+- Isolated startup authorization-status queries from the main thread to avoid a launch watchdog while Core Location is unresponsive after reboot; tracking intent and pending restoration remain preserved until authorization resolves.
 - Prepared build 2 with matching app and widget metadata.
 - Reject short coordinate speed spikes when a trusted GPS speed contradicts the measured displacement, while preserving compatible high-speed travel and position uncertainty.
 - Added precise measurement timestamps and delivery ages to optional location diagnostics for clearer comparisons with server exports.

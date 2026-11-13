@@ -18,7 +18,7 @@ Brug widgets til udvalgte enheder, og bed Siri eller Genveje om en enheds senest
 
 ## What's New
 ```text
-Forbedret filtrering af pludselige spring i GPS-positionen, mens gyldige målinger ved høj hastighed bevares. Lokationsopdateringer håndteres pålideligt, mens ventende opdateringer sendes. Valgfri diagnostik gør måletidspunkter og forsinkelser i overførslen lettere at sammenligne.
+Forbedret opstart efter genstart af iPhone. Valgfri lokationsdiagnostik viser nu tydeligere oplysninger om lokationstjenester efter ændringer i sporing, så en lokationsindikator, der bliver ved med at være synlig, kan undersøges nærmere.
 ```
 
 ## Keywords

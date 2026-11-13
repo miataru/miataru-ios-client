@@ -856,6 +856,157 @@ struct SmartFrequentBackgroundPolicyTests {
         #expect(primary.startedRegions.last === recentered)
         #expect(secondary.startedRegions.isEmpty)
     }
+
+    @Test("Service snapshots confirm frequent teardown, foreground mode, and full tracking stop")
+    func serviceSnapshotsConfirmRequestedStateAndSessionTeardown() {
+        let primary = RecordingServiceStateLocationManager()
+        let secondary = RecordingServiceStateLocationManager()
+        let delegate = RecordingServiceStateDelegate()
+        let locationSession = RecordingCoreLocationServiceSession()
+        var activitySessions: [RecordingCoreLocationServiceSession] = []
+        var locationSessionFactoryCalls = 0
+        var activitySessionFactoryCalls = 0
+        let controller = CoreLocationServiceController(
+            primaryManager: primary,
+            frequentBackgroundManager: secondary,
+            locationServiceSessionFactory: {
+                locationSessionFactoryCalls += 1
+                return locationSession
+            },
+            frequentBackgroundActivitySessionFactory: {
+                activitySessionFactoryCalls += 1
+                let session = RecordingCoreLocationServiceSession()
+                activitySessions.append(session)
+                return session
+            }
+        )
+        controller.configure(delegate: delegate, activityType: .other)
+        controller.syncLocationServiceSession(reason: "tracking enabled", shouldMaintainSession: true)
+        controller.syncFrequentBackgroundActivitySession(reason: "Smart frequent", shouldMaintainSession: true)
+        controller.startFrequentBackgroundLocationUpdates(
+            configuration: .init(
+                usesSignificantChangeMonitoring: false,
+                distanceFilter: 5,
+                desiredAccuracy: kCLLocationAccuracyNearestTenMeters
+            ),
+            delegate: delegate,
+            activityType: .other
+        )
+        controller.startSignificantChangeRecoveryAnchor(reason: "tracking recovery anchor")
+
+        let frequent = controller.serviceStateSnapshot
+        #expect(frequent.primarySignificantChangeMonitoringRequested)
+        #expect(frequent.secondaryStandardUpdatesRequested)
+        #expect(frequent.secondaryAllowsBackgroundLocationUpdates)
+        #expect(!frequent.secondaryPausesLocationUpdatesAutomatically)
+        #expect(frequent.secondaryShowsBackgroundLocationIndicator)
+        #expect(frequent.frequentBackgroundActivitySessionObjectHeld)
+        #expect(frequent.locationServiceSessionObjectHeld)
+        let frequentContext = frequent.diagnosticContext(
+            expectedPrimaryStandardUpdatesRequested: false,
+            expectedPrimarySignificantChangeMonitoringRequested: true,
+            expectedPrimaryAllowsBackgroundLocationUpdates: true,
+            expectedPrimaryShowsBackgroundLocationIndicator: false,
+            expectedSecondaryStandardUpdatesRequested: true,
+            expectedSecondarySignificantChangeMonitoringRequested: false,
+            expectedSecondaryAllowsBackgroundLocationUpdates: true,
+            expectedSecondaryPausesLocationUpdatesAutomatically: false,
+            expectedSecondaryShowsBackgroundLocationIndicator: true,
+            expectedSignificantChangeRecoveryAnchorActive: true,
+            expectedLocationServiceSessionObjectHeld: true,
+            expectedFrequentBackgroundActivitySessionObjectHeld: true,
+            trackingMode: "backgroundFrequent",
+            reason: "Smart frequent"
+        )
+        #expect(frequentContext["serviceStateMatchesExpectation"] == .bool(true))
+
+        controller.startSignificantChangeMonitoring()
+        controller.syncFrequentBackgroundActivitySession(reason: "Smart waiting", shouldMaintainSession: false)
+        let significantChange = controller.serviceStateSnapshot
+        #expect(!significantChange.secondaryStandardUpdatesRequested)
+        #expect(!significantChange.secondaryAllowsBackgroundLocationUpdates)
+        #expect(!significantChange.secondaryShowsBackgroundLocationIndicator)
+        #expect(!significantChange.secondaryDelegateInstalled)
+        #expect(significantChange.locationServiceSessionObjectHeld)
+        #expect(!significantChange.frequentBackgroundActivitySessionObjectHeld)
+        #expect(significantChange.frequentBackgroundActivitySessionTransitionCount == 2)
+
+        // Foreground high accuracy stops the secondary location manager. The activity
+        // session remains held while the current Smart activity policy requests it.
+        controller.startHighAccuracyUpdates(shouldMaintainPrimarySignificantChangeMonitor: true)
+        controller.startSignificantChangeRecoveryAnchor(reason: "foreground recovery anchor")
+        controller.syncFrequentBackgroundActivitySession(reason: "foreground Smart active", shouldMaintainSession: true)
+        let foreground = controller.serviceStateSnapshot
+        #expect(foreground.primaryStandardUpdatesRequested)
+        #expect(foreground.primarySignificantChangeMonitoringRequested)
+        #expect(!foreground.primaryAllowsBackgroundLocationUpdates)
+        #expect(!foreground.secondaryStandardUpdatesRequested)
+        #expect(foreground.frequentBackgroundActivitySessionObjectHeld)
+
+        controller.stopManagedLocationUpdates()
+        controller.syncLocationServiceSession(reason: "tracking disabled", shouldMaintainSession: false)
+        controller.syncFrequentBackgroundActivitySession(reason: "tracking disabled", shouldMaintainSession: false)
+        let stopped = controller.serviceStateSnapshot
+        #expect(!stopped.primaryStandardUpdatesRequested)
+        #expect(!stopped.primarySignificantChangeMonitoringRequested)
+        #expect(!stopped.primaryAllowsBackgroundLocationUpdates)
+        #expect(!stopped.primaryShowsBackgroundLocationIndicator)
+        #expect(!stopped.secondaryStandardUpdatesRequested)
+        #expect(!stopped.secondarySignificantChangeMonitoringRequested)
+        #expect(!stopped.secondaryAllowsBackgroundLocationUpdates)
+        #expect(!stopped.secondaryShowsBackgroundLocationIndicator)
+        #expect(!stopped.secondaryDelegateInstalled)
+        #expect(!stopped.significantChangeRecoveryAnchorActive)
+        #expect(!stopped.locationServiceSessionObjectHeld)
+        #expect(!stopped.frequentBackgroundActivitySessionObjectHeld)
+        #expect(stopped.locationServiceSessionTransitionCount == 2)
+        #expect(stopped.frequentBackgroundActivitySessionTransitionCount == 4)
+        #expect(stopped.locationServiceSessionLastAction == "stopped")
+        #expect(stopped.locationServiceSessionLastReason == "tracking disabled")
+        #expect(stopped.frequentBackgroundActivitySessionLastAction == "stopped")
+        #expect(stopped.frequentBackgroundActivitySessionLastReason == "tracking disabled")
+        #expect(stopped.locationServiceSessionCurrentID == nil)
+        #expect(stopped.frequentBackgroundActivitySessionCurrentID == nil)
+        #expect(primary.standardStartCount == 1)
+        #expect(primary.standardStopCount >= 2)
+        #expect(secondary.standardStartCount == 1)
+        #expect(secondary.standardStopCount >= 3)
+        #expect(locationSession.invalidationCount == 1)
+        #expect(activitySessions.count == 2)
+        #expect(activitySessions.allSatisfy { $0.invalidationCount == 1 })
+        #expect(locationSessionFactoryCalls == 1)
+        #expect(activitySessionFactoryCalls == 2)
+
+        let stoppedContext = stopped.diagnosticContext(
+            expectedPrimaryStandardUpdatesRequested: false,
+            expectedPrimarySignificantChangeMonitoringRequested: false,
+            expectedPrimaryAllowsBackgroundLocationUpdates: false,
+            expectedPrimaryShowsBackgroundLocationIndicator: false,
+            expectedSecondaryStandardUpdatesRequested: false,
+            expectedSecondarySignificantChangeMonitoringRequested: false,
+            expectedSecondaryAllowsBackgroundLocationUpdates: false,
+            expectedSecondaryPausesLocationUpdatesAutomatically: true,
+            expectedSecondaryShowsBackgroundLocationIndicator: false,
+            expectedSignificantChangeRecoveryAnchorActive: false,
+            expectedLocationServiceSessionObjectHeld: false,
+            expectedFrequentBackgroundActivitySessionObjectHeld: false,
+            trackingMode: "stopped",
+            reason: "tracking disabled"
+        )
+        #expect(stoppedContext["serviceStateMatchesExpectation"] == .bool(true))
+        #expect(stoppedContext["primaryStandardUpdatesRequested"] == .bool(false))
+        #expect(stoppedContext["secondaryStandardUpdatesRequested"] == .bool(false))
+        #expect(stoppedContext["locationServiceSessionObjectHeld"] == .bool(false))
+        #expect(stoppedContext["frequentBackgroundActivitySessionObjectHeld"] == .bool(false))
+
+        controller.stopManagedLocationUpdates()
+        controller.syncLocationServiceSession(reason: "repeated stop", shouldMaintainSession: false)
+        controller.syncFrequentBackgroundActivitySession(reason: "repeated stop", shouldMaintainSession: false)
+        #expect(controller.serviceStateSnapshot.locationServiceSessionTransitionCount == 2)
+        #expect(controller.serviceStateSnapshot.frequentBackgroundActivitySessionTransitionCount == 4)
+        #expect(locationSessionFactoryCalls == 1)
+        #expect(activitySessionFactoryCalls == 2)
+    }
 }
 
 private final class RecordingSmartExitFenceLocationManager: CLLocationManager {
@@ -868,5 +1019,38 @@ private final class RecordingSmartExitFenceLocationManager: CLLocationManager {
 
     override func stopMonitoring(for region: CLRegion) {
         stoppedRegions.append(region)
+    }
+}
+
+private final class RecordingServiceStateLocationManager: CLLocationManager {
+    private(set) var standardStartCount = 0
+    private(set) var standardStopCount = 0
+    private(set) var significantChangeStartCount = 0
+    private(set) var significantChangeStopCount = 0
+
+    override func startUpdatingLocation() {
+        standardStartCount += 1
+    }
+
+    override func stopUpdatingLocation() {
+        standardStopCount += 1
+    }
+
+    override func startMonitoringSignificantLocationChanges() {
+        significantChangeStartCount += 1
+    }
+
+    override func stopMonitoringSignificantLocationChanges() {
+        significantChangeStopCount += 1
+    }
+}
+
+private final class RecordingServiceStateDelegate: NSObject, CLLocationManagerDelegate {}
+
+private final class RecordingCoreLocationServiceSession: CoreLocationServiceSessionHandle {
+    private(set) var invalidationCount = 0
+
+    func invalidate() {
+        invalidationCount += 1
     }
 }

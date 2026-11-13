@@ -288,29 +288,38 @@ final class IntentFrequentTrackingService: @unchecked Sendable {
 
 struct MiataruIntentFrequentTrackingController: IntentFrequentTrackingControlling {
     func state() async -> IntentFrequentTrackingState {
-        await MainActor.run {
-            let settings = SettingsManager.shared
-            let locationManager = LocationManager.shared
-            let batteryPercent = LocationManager.batteryPercent(from: UIDevice.current.batteryLevel)
-            let lowBatteryFrequentTrackingDisabled = LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
-                frequentUpdatesEnabled: true,
-                batteryPercent: batteryPercent,
-                thresholdPercent: settings.frequentBackgroundBatteryAutoDisableLevel
-            )
-            return IntentFrequentTrackingState(
-                locationTrackingEnabled: settings.trackAndReportLocation,
-                deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
-                authorizationStatus: locationManager.authorizationStatusForIntent(),
-                manualFrequentTrackingEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
-                smartFrequentTrackingEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
-                smartFrequentTrackingRuntimeActive: locationManager.smartFrequentBackgroundRuntimeActive,
-                frequentTrackingExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
-                durationMode: settings.frequentBackgroundLocationUpdateDurationMode,
-                applicationState: UIApplication.shared.applicationState,
-                locationTrackingActive: locationManager.isTracking,
-                lowBatteryFrequentTrackingDisabled: lowBatteryFrequentTrackingDisabled
-            )
+        await stateOnMainActor()
+    }
+
+    @MainActor
+    private func stateOnMainActor() async -> IntentFrequentTrackingState {
+        let settings = SettingsManager.shared
+        let locationManager = LocationManager.shared
+        let authorizationStatus: CLAuthorizationStatus
+        if settings.trackAndReportLocation && !settings.deviceKeyAuthBlocked {
+            authorizationStatus = await locationManager.authorizationStatusForIntent()
+        } else {
+            authorizationStatus = locationManager.authorizationStatus
         }
+        let batteryPercent = LocationManager.batteryPercent(from: UIDevice.current.batteryLevel)
+        let lowBatteryFrequentTrackingDisabled = LocationManager.shouldDisableFrequentBackgroundUpdatesForBattery(
+            frequentUpdatesEnabled: true,
+            batteryPercent: batteryPercent,
+            thresholdPercent: settings.frequentBackgroundBatteryAutoDisableLevel
+        )
+        return IntentFrequentTrackingState(
+            locationTrackingEnabled: settings.trackAndReportLocation,
+            deviceKeyAuthBlocked: settings.deviceKeyAuthBlocked,
+            authorizationStatus: authorizationStatus,
+            manualFrequentTrackingEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+            smartFrequentTrackingEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+            smartFrequentTrackingRuntimeActive: locationManager.smartFrequentBackgroundRuntimeActive,
+            frequentTrackingExpiresAt: settings.frequentBackgroundLocationUpdatesExpiresAt,
+            durationMode: settings.frequentBackgroundLocationUpdateDurationMode,
+            applicationState: UIApplication.shared.applicationState,
+            locationTrackingActive: locationManager.isTracking,
+            lowBatteryFrequentTrackingDisabled: lowBatteryFrequentTrackingDisabled
+        )
     }
 
     func startManualFrequentTracking(now: Date, durationMode: FrequentBackgroundLocationUpdateDuration?) async {

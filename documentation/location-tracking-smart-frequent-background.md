@@ -61,6 +61,8 @@ Shared preconditions:
 - Denied, restricted, or not determined authorization resolves to stopped.
 - A missing authorization suspends the active services without changing the user's saved tracking preference. When authorization returns, reconciliation restarts eligible monitoring.
 
+At cold launch, the primary manager's `authorizationStatus` is not synchronously read on the main thread. A query-only manager owned by a dedicated thread with an active run loop resolves and refreshes cached status; it never requests permission, location updates, or service sessions. Until the first result, `notDetermined` is explicitly marked unresolved. Restore and fresh-launch re-arm wait without clearing the saved tracking preference or Smart runtime marker. Disabling tracking still stops services immediately, and a query result is ignored if a newer authorization callback arrived while it was in flight. Permission prompts wait for a resolved status and an active app state. Cold Siri/Shortcuts state acquisition waits asynchronously for the first resolved status for up to five seconds; timeout or cancellation keeps the start ineligible instead of blocking the app or assuming permission.
+
 Resolver logic:
 
 ```text
@@ -516,6 +518,7 @@ iOS boundaries:
 - Ring buffer capped at 2500 entries, with up to 250 coalesced event summaries.
 - UI shows newest 20 entries.
 - Export includes the full buffer, metadata, and whether logging is enabled at export time.
+- Export metadata adds the runtime OS version and, when available, the SDK name. Both fields are optional when decoding older exports.
 - Disabling logging keeps old entries until the user clears them.
 - A cold launch before protected storage is available does not replace an unreadable prior log with an empty one or create a replacement diagnostics source ID. New events wait in memory and merge with the prior entries and coalesced counts after protected data becomes available. Export fails while that earlier history is still unreadable, instead of presenting an incomplete diagnostic record. After the first unlock, until-first-unlock files remain writable during later screen locks, so diagnostics can persist during normal locked background tracking.
 
@@ -530,6 +533,10 @@ The warning includes reason, trigger/fix timestamps, evaluation delay, radius, d
 Authority: this check only observes and records diagnostics. It never starts, stops, delays, or repairs tracking, changes location acceptance, or submits uploads. V1 uses no Core Motion APIs and requests no additional permission.
 
 Entries include ID, timestamp, level, event, summary, result, reason, checks, and context. The log records location/tracking decisions only, not generic UI/map/device-cache logs.
+
+### Core Location service-state snapshots
+
+When diagnostics are enabled, a post-application `locationServiceState` snapshot records the requested primary/secondary update and recovery-anchor state, manager property readbacks, controller-held service-session objects, process-local session transition IDs/counts, and expected-versus-observed consistency. The inactive secondary manager’s automatic-pause readback remains informational because Core Location can normalize it after stop; active-mode pause configuration still participates in consistency checks. Consistent snapshots are coalesced and sampled; a mismatch is written immediately. These fields describe app requests and observable manager configuration, not proof that iOS is actively receiving GPS callbacks or showing the system location indicator. A full tracking stop explicitly clears the primary manager's background-update permission and records the resulting state; this cleanup is not a confirmed fix for a system location arrow that remains visible.
 
 When diagnostics are enabled, `locationPowerSample` records the expected tracking mode, app state, battery-monitoring state, battery percentage when available, charging state, Low Power Mode, and counts of location callbacks, accepted locations, and acknowledged uploads (including delayed/outbox delivery) since the previous sample. Switching diagnostics on in the triple-tap settings panel applies synchronously, enables battery monitoring, and writes an immediate baseline. Further samples are written on background restoration, foreground opening, mode changes, and at most once per 30 minutes when existing location callbacks arrive. The location manager already enables battery monitoring for upload data and the frequent-tracking battery threshold; turning diagnostics off leaves that monitoring in place. Readings that iOS cannot provide remain `unknown`. Samples are persisted immediately when storage is available; before the first unlock, they remain in memory and can be lost if iOS terminates the process before storage becomes available. Sampling schedules no timer, requests no extra location, and never wakes the app on its own. A quiet suspended period is observable only at the next launch, foreground opening, or location callback. Activity counters restart after process relaunch. Battery percentages are device-wide and cannot attribute drain to Miataru alone; charging and Low Power Mode must be considered when comparing intervals. The legacy `directUploadAcknowledgementsSincePreviousSample` field now counts all acknowledgements, including later outbox delivery, through one notification path. The persisted last-background-upload time advances when an acknowledgement arrives in the background; `locationUpload|flushed` remains the separate coalesced replay count.
 

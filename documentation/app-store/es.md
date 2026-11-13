@@ -18,7 +18,7 @@ Usa widgets para los dispositivos que elijas y pide a Siri o Atajos la última u
 
 ## What's New
 ```text
-Hemos mejorado el filtrado de saltos bruscos de posición GPS sin descartar mediciones válidas a alta velocidad. Los envíos de ubicación siguen siendo fiables cuando hay actualizaciones pendientes. Los diagnósticos opcionales permiten comparar mejor las horas de medición y los retrasos de envío.
+Hemos mejorado la fiabilidad del inicio tras reiniciar el iPhone. Los diagnósticos de ubicación opcionales ofrecen información más clara sobre los servicios de localización después de cambiar el seguimiento, para investigar un indicador que permanece visible.
 ```
 
 ## Keywords

@@ -18,7 +18,7 @@ Käytä valittujen laitteiden widgetejä ja pyydä Siriltä tai Pikakomentoilta 
 
 ## What's New
 ```text
-Äkillisten GPS-sijaintihyppyjen suodatusta on parannettu. Kelvolliset mittaukset säilyvät myös suurilla nopeuksilla. Sijaintipäivitykset käsitellään luotettavasti myös silloin, kun aiempia päivityksiä odottaa lähetystä. Valinnainen diagnostiikka helpottaa mittausaikojen ja lähetysviiveiden vertailua.
+Käynnistymisen luotettavuutta iPhonen uudelleenkäynnistyksen jälkeen on parannettu. Valinnainen sijaintidiagnostiikka näyttää sijaintipalvelujen tilan aiempaa tarkemmin seuranta-asetusten muutosten jälkeen ja auttaa selvittämään näkyviin jäävää sijainti-ilmaisinta.
 ```
 
 ## Keywords

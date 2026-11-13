@@ -463,6 +463,8 @@ struct LocationBackgroundForensicsTests {
         encoder.dateEncodingStrategy = .iso8601
         var previousExport = try #require(JSONSerialization.jsonObject(with: encoder.encode(export)) as? [String: Any])
         previousExport.removeValue(forKey: "loggingEnabledAtExport")
+        previousExport.removeValue(forKey: "runtimeOSVersion")
+        previousExport.removeValue(forKey: "sdkVersion")
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         let decodedPreviousExport = try decoder.decode(
@@ -470,6 +472,9 @@ struct LocationBackgroundForensicsTests {
             from: JSONSerialization.data(withJSONObject: previousExport)
         )
         #expect(decodedPreviousExport.loggingEnabledAtExport == nil)
+        #expect(decodedPreviousExport.runtimeOSVersion == nil)
+        #expect(decodedPreviousExport.sdkVersion == nil)
+        #expect(export.runtimeOSVersion?.isEmpty == false)
 
         batteryMonitoringEnabled = false
         defaults.set(true, forKey: SettingsKeys.locationDiagnosticsLoggingEnabled)
