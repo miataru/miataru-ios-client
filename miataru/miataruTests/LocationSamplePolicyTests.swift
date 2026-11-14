@@ -392,6 +392,18 @@ struct LocationSamplePolicyTests {
             candidate: confirmation,
             pendingCandidate: pending
         ))
+        #expect(!LocationSamplePolicy.confirmsDeferredLargeJump(
+            candidate: sampleLocation(
+                latitude: 49.8294,
+                longitude: 10.8078,
+                timestamp: pending.timestamp
+            ),
+            pendingCandidate: pending
+        ))
+        #expect(LocationSamplePolicy.confirmsDeferredLargeJump(
+            candidate: confirmation,
+            pendingCandidate: pending
+        ))
     }
 
     @Test("Return near the previous accepted point discards a deferred large jump")
@@ -410,6 +422,100 @@ struct LocationSamplePolicyTests {
         #expect(LocationSamplePolicy.returnsToPreviousAcceptedLocation(
             candidate: returned,
             previousAcceptedLocation: previous
+        ))
+    }
+
+    @Test("Follow-up GPS probe requires meaningful motion and accepts only a newer fix")
+    func followUpProbeRequiresMeaningfulMotionAndNewerFix() {
+        let requestAt = Date(timeIntervalSince1970: 7_000)
+        let triggerAt = Date(timeIntervalSince1970: 6_990)
+        let state = LocationFollowUpProbeState(startedAt: requestAt, triggerTimestamp: triggerAt)
+        let replay = sampleLocation(
+            latitude: 49.8290,
+            longitude: 10.8077,
+            timestamp: triggerAt
+        )
+        let newer = sampleLocation(
+            latitude: 49.8291,
+            longitude: 10.8077,
+            timestamp: triggerAt.addingTimeInterval(1)
+        )
+
+        #expect(!state.accepts(replay, now: requestAt.addingTimeInterval(1)))
+        #expect(state.accepts(newer, now: requestAt.addingTimeInterval(2)))
+        #expect(!state.accepts(newer, now: requestAt.addingTimeInterval(LocationFollowUpProbeState.timeout + 1)))
+        #expect(!state.accepts(newer, now: requestAt.addingTimeInterval(61)))
+        let olderThanTrigger = sampleLocation(
+            latitude: 49.8291,
+            longitude: 10.8077,
+            timestamp: triggerAt.addingTimeInterval(-1)
+        )
+        #expect(!state.accepts(olderThanTrigger, now: requestAt.addingTimeInterval(1)))
+        let futureDated = sampleLocation(
+            latitude: 49.8291,
+            longitude: 10.8077,
+            timestamp: requestAt.addingTimeInterval(120)
+        )
+        #expect(!state.accepts(futureDated, now: requestAt.addingTimeInterval(2)))
+        let staleTrigger = LocationFollowUpProbeState(
+            startedAt: requestAt,
+            triggerTimestamp: requestAt.addingTimeInterval(-LocationFollowUpProbeState.maximumTriggerAge - 1)
+        )
+        #expect(!staleTrigger.accepts(newer, now: requestAt.addingTimeInterval(2)))
+        #expect(LocationFollowUpProbeState.canStart(now: requestAt, lastStartedAt: nil, hasPendingProbe: false))
+        #expect(!LocationFollowUpProbeState.canStart(now: requestAt, lastStartedAt: requestAt, hasPendingProbe: false))
+        #expect(!LocationFollowUpProbeState.canStart(now: requestAt, lastStartedAt: nil, hasPendingProbe: true))
+        let commonEligibility: [Bool] = [true, true, true, false, false, false, true, true, true, true, false, false]
+        #expect(LocationFollowUpProbeState.isEligible(
+            trackingEnabled: commonEligibility[0], isTracking: commonEligibility[1], smartEnabled: commonEligibility[2],
+            manualFrequentEnabled: commonEligibility[3], deviceKeyBlocked: commonEligibility[4], trackingPaused: commonEligibility[5],
+            authorizationResolved: commonEligibility[6], authorizationAlways: commonEligibility[7], batteryAboveThreshold: commonEligibility[8],
+            backgroundSignificantChangeMode: commonEligibility[9], startupGuardPending: commonEligibility[10], stalePrimaryRecoveryPending: commonEligibility[11]
+        ))
+        #expect(!LocationFollowUpProbeState.isEligible(
+            trackingEnabled: false, isTracking: true, smartEnabled: true, manualFrequentEnabled: false,
+            deviceKeyBlocked: false, trackingPaused: false, authorizationResolved: true, authorizationAlways: true,
+            batteryAboveThreshold: true, backgroundSignificantChangeMode: true, startupGuardPending: false, stalePrimaryRecoveryPending: false
+        ))
+        #expect(!LocationFollowUpProbeState.isEligible(
+            trackingEnabled: true, isTracking: true, smartEnabled: true, manualFrequentEnabled: true,
+            deviceKeyBlocked: false, trackingPaused: false, authorizationResolved: true, authorizationAlways: true,
+            batteryAboveThreshold: true, backgroundSignificantChangeMode: true, startupGuardPending: false, stalePrimaryRecoveryPending: false
+        ))
+        #expect(!LocationFollowUpProbeState.isEligible(
+            trackingEnabled: true, isTracking: true, smartEnabled: true, manualFrequentEnabled: false,
+            deviceKeyBlocked: false, trackingPaused: false, authorizationResolved: true, authorizationAlways: true,
+            batteryAboveThreshold: true, backgroundSignificantChangeMode: false, startupGuardPending: false, stalePrimaryRecoveryPending: false
+        ))
+        #expect(!LocationFollowUpProbeState.isEligible(
+            trackingEnabled: true, isTracking: true, smartEnabled: true, manualFrequentEnabled: false,
+            deviceKeyBlocked: false, trackingPaused: false, authorizationResolved: true, authorizationAlways: true,
+            batteryAboveThreshold: true, backgroundSignificantChangeMode: true, startupGuardPending: true, stalePrimaryRecoveryPending: false
+        ))
+
+        #expect(LocationFollowUpProbeState.shouldProbeForInsufficientEvidence(
+            distanceMeters: 45,
+            elapsedSeconds: 10,
+            horizontalAccuracy: 20,
+            speedKmh: 8
+        ))
+        #expect(!LocationFollowUpProbeState.shouldProbeForInsufficientEvidence(
+            distanceMeters: 20,
+            elapsedSeconds: 10,
+            horizontalAccuracy: 10,
+            speedKmh: 8
+        ))
+        #expect(!LocationFollowUpProbeState.shouldProbeForInsufficientEvidence(
+            distanceMeters: 100,
+            elapsedSeconds: 10,
+            horizontalAccuracy: 101,
+            speedKmh: 8
+        ))
+        #expect(!LocationFollowUpProbeState.shouldProbeForInsufficientEvidence(
+            distanceMeters: 100,
+            elapsedSeconds: 10,
+            horizontalAccuracy: 10,
+            speedKmh: 250
         ))
     }
 

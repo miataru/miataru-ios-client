@@ -857,6 +857,60 @@ struct SmartFrequentBackgroundPolicyTests {
         #expect(secondary.startedRegions.isEmpty)
     }
 
+    @Test("Isolated one-shot probe has independent request and cancellation lifecycle")
+    func isolatedOneShotProbeDoesNotMutateTrackingManagers() {
+        let primary = RecordingServiceStateLocationManager()
+        let secondary = RecordingServiceStateLocationManager()
+        let probeManager = RecordingServiceStateLocationManager()
+        let probe = CoreLocationOneShotProbe(managerFactory: { probeManager })
+        let delegate = RecordingServiceStateDelegate()
+        let locationSession = RecordingCoreLocationServiceSession()
+        let activitySession = RecordingCoreLocationServiceSession()
+        let controller = CoreLocationServiceController(
+            primaryManager: primary,
+            frequentBackgroundManager: secondary,
+            locationServiceSessionFactory: { locationSession },
+            frequentBackgroundActivitySessionFactory: { activitySession },
+            oneShotProbe: probe
+        )
+        controller.configure(delegate: delegate, activityType: .other)
+        controller.startSignificantChangeRecoveryAnchor(reason: "test")
+        controller.startFrequentBackgroundLocationUpdates(
+            configuration: .init(usesSignificantChangeMonitoring: false, distanceFilter: 5, desiredAccuracy: kCLLocationAccuracyNearestTenMeters),
+            delegate: delegate,
+            activityType: .other
+        )
+        controller.syncLocationServiceSession(reason: "test", shouldMaintainSession: true)
+        controller.syncFrequentBackgroundActivitySession(reason: "test", shouldMaintainSession: true)
+        let primaryAndSecondaryBeforeProbe = controller.serviceStateSnapshot
+
+        let started = controller.requestIsolatedOneShotLocation(
+            activityType: .other,
+            didReceive: { _, _ in },
+            didFail: { _, _ in }
+        )
+        #expect(started)
+        #expect(controller.isOneShotProbePending)
+        #expect(probeManager.requestLocationCount == 1)
+        #expect(probeManager.delegate === probe)
+        #expect(probeManager.allowsBackgroundLocationUpdates)
+        #expect(probeManager.showsBackgroundLocationIndicator == false)
+        #expect(!controller.requestIsolatedOneShotLocation(
+            activityType: .other,
+            didReceive: { _, _ in },
+            didFail: { _, _ in }
+        ))
+        controller.cancelIsolatedOneShotLocation()
+
+        #expect(probeManager.standardStopCount == 1)
+        #expect(probeManager.delegate == nil)
+        #expect(!probeManager.allowsBackgroundLocationUpdates)
+        #expect(!controller.isOneShotProbePending)
+        #expect(controller.serviceStateSnapshot == primaryAndSecondaryBeforeProbe)
+        #expect(locationSession.invalidationCount == 0)
+        #expect(activitySession.invalidationCount == 0)
+    }
+
     @Test("Service snapshots confirm frequent teardown, foreground mode, and full tracking stop")
     func serviceSnapshotsConfirmRequestedStateAndSessionTeardown() {
         let primary = RecordingServiceStateLocationManager()
@@ -1027,6 +1081,7 @@ private final class RecordingServiceStateLocationManager: CLLocationManager {
     private(set) var standardStopCount = 0
     private(set) var significantChangeStartCount = 0
     private(set) var significantChangeStopCount = 0
+    private(set) var requestLocationCount = 0
 
     override func startUpdatingLocation() {
         standardStartCount += 1
@@ -1042,6 +1097,10 @@ private final class RecordingServiceStateLocationManager: CLLocationManager {
 
     override func stopMonitoringSignificantLocationChanges() {
         significantChangeStopCount += 1
+    }
+
+    override func requestLocation() {
+        requestLocationCount += 1
     }
 }
 

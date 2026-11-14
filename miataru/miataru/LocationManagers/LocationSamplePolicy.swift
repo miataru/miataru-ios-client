@@ -235,6 +235,21 @@ enum LocationSamplePolicy {
         return distance.isFinite && distance <= radiusMeters
     }
 
+    static func confirmsDeferredLargeJump(candidate: CLLocation,
+                                          pendingCandidate: CLLocation,
+                                          radiusMeters: CLLocationDistance = largeJumpConfirmationRadius) -> Bool {
+        guard isStrictlyNewerMeasurement(candidate.timestamp, than: pendingCandidate.timestamp) else {
+            return false
+        }
+        return confirmsLargeJump(candidate: candidate, pendingCandidate: pendingCandidate, radiusMeters: radiusMeters)
+    }
+
+    static func isStrictlyNewerMeasurement(_ candidate: Date, than previous: Date?) -> Bool {
+        guard candidate.timeIntervalSince1970.isFinite else { return false }
+        guard let previous else { return true }
+        return previous.timeIntervalSince1970.isFinite && candidate > previous
+    }
+
     static func returnsToPreviousAcceptedLocation(candidate: CLLocation,
                                                   previousAcceptedLocation: CLLocation,
                                                   radiusMeters: CLLocationDistance = largeJumpConfirmationRadius) -> Bool {
@@ -357,5 +372,74 @@ enum LocationSamplePolicy {
             previousAcceptedLocation.horizontalAccuracy +
             location.speedAccuracy * elapsedSeconds
         return maximumSupportedDisplacement.isFinite && distanceMeters <= maximumSupportedDisplacement
+    }
+}
+
+struct LocationFollowUpProbeState: Equatable {
+    static let timeout: TimeInterval = 20
+    static let cooldown: TimeInterval = 60
+    static let maximumTriggerAge: TimeInterval = 60
+    static let maximumResultAge: TimeInterval = 60
+    static let allowedFutureSkew = LocationSamplePolicy.maximumFutureSkew
+    static let minimumInsufficientEvidenceDistance: CLLocationDistance = 25
+    static let maximumInsufficientEvidenceAccuracy: CLLocationAccuracy = 100
+    static let maximumInsufficientEvidenceSpeedKmh = SmartFrequentBackgroundPolicy.maximumActivationSpeedKmh
+
+    let startedAt: Date
+    let triggerTimestamp: Date
+
+    var deadline: Date { startedAt.addingTimeInterval(Self.timeout) }
+
+    func accepts(_ location: CLLocation, now: Date) -> Bool {
+        let triggerAge = now.timeIntervalSince(triggerTimestamp)
+        let resultAge = now.timeIntervalSince(location.timestamp)
+        return now.timeIntervalSince1970.isFinite &&
+        now <= deadline &&
+        LocationSamplePolicy.isStrictlyNewerMeasurement(location.timestamp, than: triggerTimestamp) &&
+        triggerAge.isFinite && triggerAge <= Self.maximumTriggerAge && triggerAge >= -Self.allowedFutureSkew &&
+        resultAge.isFinite && resultAge <= Self.maximumResultAge && resultAge >= -Self.allowedFutureSkew
+    }
+
+    static func canStart(now: Date, lastStartedAt: Date?, hasPendingProbe: Bool) -> Bool {
+        guard now.timeIntervalSince1970.isFinite, !hasPendingProbe else { return false }
+        guard let lastStartedAt else { return true }
+        return now.timeIntervalSince(lastStartedAt) >= cooldown
+    }
+
+    static func isEligible(trackingEnabled: Bool,
+                           isTracking: Bool,
+                           smartEnabled: Bool,
+                           manualFrequentEnabled: Bool,
+                           deviceKeyBlocked: Bool,
+                           trackingPaused: Bool,
+                           authorizationResolved: Bool,
+                           authorizationAlways: Bool,
+                           batteryAboveThreshold: Bool,
+                           backgroundSignificantChangeMode: Bool,
+                           startupGuardPending: Bool,
+                           stalePrimaryRecoveryPending: Bool) -> Bool {
+        trackingEnabled && isTracking && smartEnabled && !manualFrequentEnabled &&
+        !deviceKeyBlocked && !trackingPaused && authorizationResolved && authorizationAlways &&
+        batteryAboveThreshold && backgroundSignificantChangeMode && !startupGuardPending &&
+        !stalePrimaryRecoveryPending
+    }
+
+    static func shouldProbeForInsufficientEvidence(distanceMeters: CLLocationDistance?,
+                                                   elapsedSeconds: TimeInterval?,
+                                                   horizontalAccuracy: CLLocationAccuracy,
+                                                   speedKmh: Double?) -> Bool {
+        guard let distanceMeters, distanceMeters.isFinite,
+              let elapsedSeconds, elapsedSeconds.isFinite, elapsedSeconds > 0,
+              horizontalAccuracy.isFinite,
+              horizontalAccuracy >= 0,
+              horizontalAccuracy <= maximumInsufficientEvidenceAccuracy,
+              distanceMeters >= max(minimumInsufficientEvidenceDistance, horizontalAccuracy * 1.5) else {
+            return false
+        }
+        if let speedKmh {
+            guard speedKmh.isFinite, speedKmh >= 0,
+                  speedKmh <= maximumInsufficientEvidenceSpeedKmh else { return false }
+        }
+        return true
     }
 }

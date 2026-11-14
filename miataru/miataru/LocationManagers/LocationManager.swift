@@ -119,6 +119,10 @@ final class LocationManager: NSObject, ObservableObject {
     private var lastStalePrimaryRecoveryRequestAt: Date?
     private var pendingStalePrimaryRecoveryBackgroundTask: LocationUploadBackgroundTaskToken?
     private var pendingStalePrimaryRecoveryExpirationTask: Task<Void, Never>?
+    private var pendingSmartFollowUpProbe: LocationFollowUpProbeState?
+    private var lastSmartFollowUpProbeAt: Date?
+    private var smartFollowUpProbeExpirationTask: Task<Void, Never>?
+    private var smartFollowUpProbeBackgroundTask: LocationUploadBackgroundTaskToken?
     private var isSmartFrequentExitFenceActive = false
     private var smartFrequentExitFenceRecoveryAwaitingLocationUpdate = false
     private var pendingLargeJumpLocation: PendingLargeJumpLocation?
@@ -126,6 +130,7 @@ final class LocationManager: NSObject, ObservableObject {
     private enum LocationUpdateSource: String {
         case primary
         case frequentBackground
+        case smartFollowUpProbe
         case unknown
     }
 
@@ -1385,6 +1390,9 @@ final class LocationManager: NSObject, ObservableObject {
             hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty,
             accuracyRecoveryActive: frequentBackgroundAccuracyRecoveryActive
         )
+        if mode != .backgroundSignificantChange {
+            finishSmartFollowUpProbe(reason: "tracking mode changed")
+        }
         let shouldMaintainRecoveryAnchor = Self.shouldMaintainSignificantChangeRecoveryAnchor(
             trackAndReportLocation: settings.trackAndReportLocation && isTracking,
             authorizationStatus: status,
@@ -2736,6 +2744,16 @@ final class LocationManager: NSObject, ObservableObject {
             frequentDistanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
             isStartupBatch: isStartupBatch
         )
+        if updateSource == .primary,
+           activationEvidence.kind == .insufficient,
+           LocationFollowUpProbeState.shouldProbeForInsufficientEvidence(
+               distanceMeters: activationEvidence.distanceMeters,
+               elapsedSeconds: activationEvidence.elapsedSeconds,
+               horizontalAccuracy: location.horizontalAccuracy,
+               speedKmh: activationEvidence.speedKmh
+           ) {
+            requestSmartFollowUpProbeIfEligible(after: location, now: now, reason: "insufficient movement evidence")
+        }
         updateSmartFrequentBackgroundSpeedReference(with: location)
 
         guard !smartFrequentBackgroundRuntimeActive else {
@@ -2745,7 +2763,7 @@ final class LocationManager: NSObject, ObservableObject {
             return didDeactivateForInactivity
         }
 
-        let sourceIsPrimary = updateSource == .primary
+        let sourceIsPrimary = updateSource == .primary || updateSource == .smartFollowUpProbe
         let canActivate = Self.canActivateSmartFrequentBackgroundUpdates(
             now: now,
             locationTimestamp: location.timestamp,
@@ -2959,6 +2977,7 @@ final class LocationManager: NSObject, ObservableObject {
     private func deactivateSmartFrequentBackgroundRuntime(reason: String,
                                                           sendsModeChangeNotification: Bool = true,
                                                           diagnosticsContext: [String: LocationDiagnosticsValue] = [:]) -> Bool {
+        finishSmartFollowUpProbe(reason: "Smart frequent runtime deactivated")
         let wasActive = smartFrequentBackgroundRuntimeActive
         let shouldNotifyDeactivation = wasActive && smartFrequentBackgroundActivationNotificationDelivered && sendsModeChangeNotification
         transitionSmartFrequentBackgroundRuntime(to: .waiting, reason: reason)
@@ -3005,6 +3024,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func resetSmartFrequentBackgroundRuntime(preservePersistedMarker: Bool = false) {
+        finishSmartFollowUpProbe(reason: "Smart frequent runtime reset")
         smartFrequentBackgroundRuntimeActive = false
         smartFrequentBackgroundRuntimePhase = .waiting
         smartFrequentBackgroundLastActivationReason = nil
@@ -3335,7 +3355,11 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func updateSmartFrequentBackgroundSpeedReference(with location: CLLocation) {
-        if isUsableForSmartFrequentBackgroundState(location) {
+        if isUsableForSmartFrequentBackgroundState(location),
+           LocationSamplePolicy.isStrictlyNewerMeasurement(
+            location.timestamp,
+            than: smartFrequentBackgroundSpeedReferenceLocation?.timestamp
+           ) {
             smartFrequentBackgroundSpeedReferenceLocation = location
         }
     }
@@ -3803,6 +3827,7 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func stopAllLocationServices(preserveSmartRuntimeMarker: Bool = false) {
+        finishSmartFollowUpProbe(reason: "tracking services stopped")
         backgroundForensicsRecorder.clearFenceConsistencyCheck()
         guard trackingStateReady else { return }
         debugLog("[LocationManager] Stopping all location services")
@@ -3822,6 +3847,150 @@ final class LocationManager: NSObject, ObservableObject {
             shouldMaintainRecoveryAnchor: false,
             shouldMaintainLocationServiceSession: false,
             shouldMaintainFrequentActivitySession: false
+        )
+    }
+
+    private func requestSmartFollowUpProbeIfEligible(after trigger: CLLocation, now: Date, reason: String) {
+        guard Thread.isMainThread else { return }
+        let triggerAge = now.timeIntervalSince(trigger.timestamp)
+        let mode = LocationTrackingPolicy.resolvedTrackingMode(
+            isTracking: isTracking,
+            authorizationStatus: authorizationStatus,
+            applicationState: .background,
+            frequentUpdatesEnabled: effectiveFrequentBackgroundUpdatesEnabled,
+            distanceFilterMeters: settings.frequentBackgroundLocationDistanceFilter,
+            hasNavigationLocationSession: !navigationLocationSessionIDs.isEmpty,
+            accuracyRecoveryActive: frequentBackgroundAccuracyRecoveryActive
+        )
+        guard triggerAge.isFinite,
+              triggerAge >= -LocationFollowUpProbeState.allowedFutureSkew,
+              triggerAge <= LocationFollowUpProbeState.maximumTriggerAge,
+              currentTrackingApplicationState != .active,
+              LocationFollowUpProbeState.isEligible(
+                  trackingEnabled: settings.trackAndReportLocation,
+                  isTracking: isTracking,
+                  smartEnabled: settings.smartFrequentBackgroundLocationUpdatesEnabled,
+                  manualFrequentEnabled: settings.frequentBackgroundLocationUpdatesEnabled,
+                  deviceKeyBlocked: settings.deviceKeyAuthBlocked,
+                  trackingPaused: settings.isTrackingPaused,
+                  authorizationResolved: authorizationStatusResolved,
+                  authorizationAlways: authorizationStatus == .authorizedAlways,
+                  batteryAboveThreshold: !isBatteryAtOrBelowFrequentBackgroundThreshold(),
+                  backgroundSignificantChangeMode: mode == .backgroundSignificantChange,
+                  startupGuardPending: smartFrequentBackgroundStartupGuardPending,
+                  stalePrimaryRecoveryPending: pendingStalePrimaryRecoveryBackgroundTask != nil
+              ),
+              LocationFollowUpProbeState.canStart(
+                  now: now,
+                  lastStartedAt: lastSmartFollowUpProbeAt,
+                  hasPendingProbe: pendingSmartFollowUpProbe != nil || coreLocationServices.isOneShotProbePending
+              ) else { return }
+
+        pendingSmartFollowUpProbe = LocationFollowUpProbeState(startedAt: now, triggerTimestamp: trigger.timestamp)
+        lastSmartFollowUpProbeAt = now
+        if Thread.isMainThread {
+            smartFollowUpProbeBackgroundTask = MainActor.assumeIsolated {
+                LocationUploadBackgroundTaskToken.beginForLocationCallbackIfNeeded(
+                    applicationState: currentTrackingApplicationState
+                )
+            }
+        } else {
+            smartFollowUpProbeBackgroundTask = nil
+        }
+        smartFollowUpProbeExpirationTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(LocationFollowUpProbeState.timeout * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            self?.finishSmartFollowUpProbe(reason: "one-shot timeout")
+        }
+        let started = coreLocationServices.requestIsolatedOneShotLocation(
+            activityType: Self.activityTypeFrom(settings.locationActivityType),
+            didReceive: { [weak self] manager, locations in
+                Task { @MainActor [weak self] in
+                    guard let self,
+                          let acceptedLocations = self.acceptSmartFollowUpProbeResponse(manager: manager, locations: locations) else { return }
+                    // Hand off the accepted fresh fix first. The normal delegate callback
+                    // acquires its own short background-task token before this probe ends.
+                    self.handleLocationUpdates(manager: manager, locations: acceptedLocations, sourceOverride: .smartFollowUpProbe)
+                    self.finishSmartFollowUpProbe(reason: "fresh one-shot fix handed to normal pipeline")
+                }
+            },
+            didFail: { [weak self] manager, error in
+                Task { @MainActor [weak self] in
+                    guard let self, self.coreLocationServices.isIsolatedOneShotManager(manager) else { return }
+                    self.finishSmartFollowUpProbe(reason: "one-shot failed")
+                    self.diagnosticsLog.append(
+                        level: .info,
+                        event: "smartFrequentFollowUpProbe",
+                        summary: "Smart frequent follow-up location request ended without a fix.",
+                        result: "failed",
+                        reason: error.localizedDescription
+                    )
+                }
+            }
+        )
+        if !started {
+            finishSmartFollowUpProbe(reason: "one-shot request unavailable")
+            return
+        }
+        diagnosticsLog.append(
+            level: .info,
+            event: "smartFrequentFollowUpProbe",
+            summary: "Requested one isolated follow-up location fix.",
+            result: "requested",
+            reason: reason,
+            context: ["deadlineSeconds": .integer(Int(LocationFollowUpProbeState.timeout)),
+                      "cooldownSeconds": .integer(Int(LocationFollowUpProbeState.cooldown))]
+        )
+    }
+
+    private func acceptSmartFollowUpProbeResponse(manager: CLLocationManager, locations: [CLLocation]) -> [CLLocation]? {
+        guard coreLocationServices.isIsolatedOneShotManager(manager),
+              let pendingSmartFollowUpProbe else { return nil }
+        let now = Date()
+        let acceptedLocations = LocationSamplePolicy.processableLocationUpdates(from: locations).filter { location in
+            pendingSmartFollowUpProbe.accepts(location, now: now) &&
+            location.horizontalAccuracy.isFinite &&
+            location.horizontalAccuracy >= 0 &&
+            location.horizontalAccuracy <= LocationSamplePolicy.maximumAcceptedHorizontalAccuracy
+        }
+        return acceptedLocations.isEmpty ? nil : acceptedLocations
+    }
+
+    private func finishSmartFollowUpProbe(reason: String) {
+        guard Thread.isMainThread else {
+            guard let expectedState = pendingSmartFollowUpProbe else { return }
+            Task { @MainActor [weak self] in
+                self?.finishSmartFollowUpProbe(reason: reason, expectedState: expectedState)
+            }
+            return
+        }
+        MainActor.assumeIsolated {
+            finishSmartFollowUpProbeOnMain(reason: reason)
+        }
+    }
+
+    @MainActor
+    private func finishSmartFollowUpProbe(reason: String, expectedState: LocationFollowUpProbeState) {
+        guard pendingSmartFollowUpProbe == expectedState else { return }
+        finishSmartFollowUpProbeOnMain(reason: reason)
+    }
+
+    @MainActor
+    private func finishSmartFollowUpProbeOnMain(reason: String) {
+        guard pendingSmartFollowUpProbe != nil || coreLocationServices.isOneShotProbePending else { return }
+        pendingSmartFollowUpProbe = nil
+        smartFollowUpProbeExpirationTask?.cancel()
+        smartFollowUpProbeExpirationTask = nil
+        coreLocationServices.cancelIsolatedOneShotLocation()
+        let backgroundTask = smartFollowUpProbeBackgroundTask
+        smartFollowUpProbeBackgroundTask = nil
+        backgroundTask?.end()
+        diagnosticsLog.append(
+            level: .info,
+            event: "smartFrequentFollowUpProbe",
+            summary: "Smart frequent follow-up location request ended.",
+            result: "ended",
+            reason: reason
         )
     }
 
@@ -3850,6 +4019,9 @@ final class LocationManager: NSObject, ObservableObject {
     }
 
     private func locationUpdateSource(for manager: CLLocationManager) -> LocationUpdateSource {
+        if coreLocationServices.isIsolatedOneShotManager(manager) {
+            return .smartFollowUpProbe
+        }
         if manager === locationManager {
             return .primary
         }
@@ -3900,6 +4072,12 @@ final class LocationManager: NSObject, ObservableObject {
 // MARK: - CLLocationManagerDelegate
 extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        handleLocationUpdates(manager: manager, locations: locations, sourceOverride: locationUpdateSource(for: manager))
+    }
+
+    private func handleLocationUpdates(manager: CLLocationManager,
+                                       locations: [CLLocation],
+                                       sourceOverride: LocationUpdateSource) {
         // Core Location can relaunch the app with only a short background execution window.
         // Protect the callback before hopping to MainActor and before creating upload tasks.
         let callbackBackgroundTask = Thread.isMainThread ? MainActor.assumeIsolated {
@@ -3948,7 +4126,7 @@ extension LocationManager: CLLocationManagerDelegate {
             }
 
             let applicationState = self.currentTrackingApplicationState
-            let updateSource = self.locationUpdateSource(for: manager)
+            let updateSource = sourceOverride
             let isSmartFrequentStartupBatch = self.smartFrequentBackgroundStartupGuardPending &&
             applicationState != .active &&
             updateSource == .primary
@@ -4162,7 +4340,7 @@ extension LocationManager: CLLocationManagerDelegate {
 
         var confirmedPendingLargeJump: PendingLargeJumpLocation?
         if let pendingLargeJumpLocation {
-            if LocationSamplePolicy.confirmsLargeJump(
+            if LocationSamplePolicy.confirmsDeferredLargeJump(
                 candidate: location,
                 pendingCandidate: pendingLargeJumpLocation.candidate
             ) {
@@ -4248,6 +4426,9 @@ extension LocationManager: CLLocationManagerDelegate {
                     previousAcceptedLocation: previousLocation,
                     metrics: metrics
                 )
+                if updateSource == .primary {
+                    requestSmartFollowUpProbeIfEligible(after: location, now: Date(), reason: "deferred large jump")
+                }
                 debugLog("[LocationManager] Location update deferred: large jump awaiting confirmation.")
                 diagnosticsLog.appendCoalesced(
                     level: .warning,

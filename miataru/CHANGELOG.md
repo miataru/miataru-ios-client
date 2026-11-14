@@ -1,4 +1,7 @@
 version 3.6.2
+- Prepared development build 4 with matching app and widget metadata.
+- Require a newer measurement to confirm a deferred large location jump, preventing cached fixes from confirming themselves.
+- Request a bounded fresh GPS follow-up after eligible Smart movement triggers lack sufficient evidence, without adding motion sensors or weakening location acceptance.
 - Prepared build 3 with matching app and widget metadata.
 - Added opt-in post-application location-service snapshots with requested manager state, configured flags, session lifecycles, consistency checks, and optional OS/SDK export metadata.
 - Explicitly clear the primary manager background-update flag when tracking is fully stopped, while preserving significant-change recovery when tracking remains enabled.

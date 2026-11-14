@@ -406,7 +406,7 @@ and elapsed time since last accepted location >= 120 s
 and GPS speed is not trusted
 ```
 
-The deferred candidate is not cached or uploaded. A later sample within 150 m of that candidate confirms the new position and can proceed through the normal acceptance path; a later sample within 150 m of the previous accepted location discards the pending jump as a likely reception anomaly. A new unconfirmed large jump replaces the previous pending candidate.
+The deferred candidate is not cached or uploaded. A sample with a strictly newer, finite measurement timestamp within 150 m of that candidate confirms the new position and can proceed through the normal acceptance path; a later sample within 150 m of the previous accepted location discards the pending jump as a likely reception anomaly. An equal-timestamp replay cannot confirm the pending candidate. A new unconfirmed large jump replaces the previous pending candidate.
 
 Location Sensitivity normally rejects candidates that moved too little and did not improve accuracy enough. Exception:
 
@@ -444,6 +444,16 @@ timestamp seconds + latitude microdegrees + longitude microdegrees
 ```
 
 Background uploads are wrapped in a short background-task token.
+
+## Bounded Smart Follow-up Fix
+
+While Smart is waiting in background significant-change mode, a fresh primary fix may suggest movement without sufficient activation evidence, or be deferred as an unconfirmed large jump. An eligible trigger can request one extra GPS fix from a dedicated short-lived manager; it does not stop or reconfigure the primary or frequent-background manager, alter the recovery anchor, or start continuous updates.
+
+The request requires enabled and unpaused tracking, Smart enabled, manual Frequent disabled, resolved Always authorization, an unblocked DeviceKey, and battery above the Frequent threshold. It is limited to one in-flight request, a 20-second deadline, and a 60-second cooldown. The trigger must be at most 60 seconds old. Insufficient-evidence triggers additionally require meaningful displacement (at least 25 m and 1.5 times the reported horizontal accuracy), at most 100 m horizontal accuracy, and plausible available speed. Large-jump triggers still pass the existing shared acceptance policy.
+
+Only fixes with a strictly newer measurement timestamp and bounded age are handed to the normal callback pipeline with the distinct `smartFollowUpProbe` source. They do not bypass sample ordering, plausibility, large-jump confirmation, sensitivity, upload deduplication, or Smart activation evidence. They cannot directly confirm Smart runtime; accepted subsequent frequent movement remains required. Timeout, failure, foreground activation, or loss of eligibility cleans up only the extra request and its background-task token. Existing significant-change, region-exit, and frequent recovery paths remain available. iOS delivery of this extra fix is best effort; no route reconstruction or wake-time guarantee is implied. No Core Motion API or additional motion permission is used.
+
+The opt-in `smartFrequentFollowUpProbe` diagnostic event records request and end/failure reasons, deadline and cooldown. It is separate from the requested/configured state snapshots for the two regular managers.
 
 ## Retry And Outbox
 

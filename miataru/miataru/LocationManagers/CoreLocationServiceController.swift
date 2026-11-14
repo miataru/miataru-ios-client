@@ -8,6 +8,70 @@
 import CoreLocation
 import Foundation
 
+protocol CoreLocationOneShotProbeDriving: AnyObject {
+    var hasPendingRequest: Bool { get }
+    func request(activityType: CLActivityType,
+                 didReceive: @escaping (CLLocationManager, [CLLocation]) -> Void,
+                 didFail: @escaping (CLLocationManager, Error) -> Void) -> Bool
+    func cancel()
+    func owns(_ manager: CLLocationManager) -> Bool
+}
+
+final class CoreLocationOneShotProbe: NSObject, CoreLocationOneShotProbeDriving, CLLocationManagerDelegate {
+    private var manager: CLLocationManager?
+    private let managerFactory: () -> CLLocationManager
+    private var locationHandler: ((CLLocationManager, [CLLocation]) -> Void)?
+    private var errorHandler: ((CLLocationManager, Error) -> Void)?
+
+    var hasPendingRequest: Bool { manager != nil }
+
+    init(managerFactory: @escaping () -> CLLocationManager = { CLLocationManager() }) {
+        self.managerFactory = managerFactory
+        super.init()
+    }
+
+    func request(activityType: CLActivityType,
+                 didReceive: @escaping (CLLocationManager, [CLLocation]) -> Void,
+                 didFail: @escaping (CLLocationManager, Error) -> Void) -> Bool {
+        guard manager == nil else { return false }
+        let manager = managerFactory()
+        manager.delegate = self
+        manager.activityType = activityType
+        manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        manager.distanceFilter = kCLDistanceFilterNone
+        manager.allowsBackgroundLocationUpdates = true
+        manager.pausesLocationUpdatesAutomatically = true
+        manager.showsBackgroundLocationIndicator = false
+        self.locationHandler = didReceive
+        self.errorHandler = didFail
+        self.manager = manager
+        manager.requestLocation()
+        return true
+    }
+
+    func cancel() {
+        guard let manager else { return }
+        manager.stopUpdatingLocation()
+        manager.delegate = nil
+        manager.allowsBackgroundLocationUpdates = false
+        self.manager = nil
+        locationHandler = nil
+        errorHandler = nil
+    }
+
+    func owns(_ manager: CLLocationManager) -> Bool { self.manager === manager }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard owns(manager) else { return }
+        locationHandler?(manager, locations)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        guard owns(manager) else { return }
+        errorHandler?(manager, error)
+    }
+}
+
 protocol CoreLocationServiceSessionHandle: AnyObject {
     func invalidate()
 }
@@ -174,6 +238,8 @@ final class CoreLocationServiceController {
     private var frequentBackgroundActivitySession: CoreLocationServiceSessionHandle?
     private let locationServiceSessionFactory: () -> CoreLocationServiceSessionHandle
     private let frequentBackgroundActivitySessionFactory: () -> CoreLocationServiceSessionHandle
+    private let oneShotProbe: CoreLocationOneShotProbeDriving
+    private(set) var isOneShotProbePending = false
     private(set) var locationServiceSessionCurrentID: String?
     private(set) var locationServiceSessionLastID: String?
     private(set) var locationServiceSessionTransitionCount = 0
@@ -205,11 +271,13 @@ final class CoreLocationServiceController {
          },
          frequentBackgroundActivitySessionFactory: @escaping () -> CoreLocationServiceSessionHandle = {
              CLBackgroundActivitySessionHandle(session: CLBackgroundActivitySession())
-         }) {
+         },
+         oneShotProbe: CoreLocationOneShotProbeDriving = CoreLocationOneShotProbe()) {
         self.primaryManager = primaryManager
         self.frequentBackgroundManager = frequentBackgroundManager
         self.locationServiceSessionFactory = locationServiceSessionFactory
         self.frequentBackgroundActivitySessionFactory = frequentBackgroundActivitySessionFactory
+        self.oneShotProbe = oneShotProbe
     }
 
     var serviceStateSnapshot: CoreLocationServiceStateSnapshot {
@@ -431,6 +499,25 @@ final class CoreLocationServiceController {
 
     func requestFrequentBackgroundLocation() {
         frequentBackgroundManager.requestLocation()
+    }
+
+    @discardableResult
+    func requestIsolatedOneShotLocation(activityType: CLActivityType,
+                                        didReceive: @escaping (CLLocationManager, [CLLocation]) -> Void,
+                                        didFail: @escaping (CLLocationManager, Error) -> Void) -> Bool {
+        guard !isOneShotProbePending else { return false }
+        let started = oneShotProbe.request(activityType: activityType, didReceive: didReceive, didFail: didFail)
+        isOneShotProbePending = started
+        return started
+    }
+
+    func isIsolatedOneShotManager(_ manager: CLLocationManager) -> Bool {
+        oneShotProbe.owns(manager)
+    }
+
+    func cancelIsolatedOneShotLocation() {
+        oneShotProbe.cancel()
+        isOneShotProbePending = false
     }
 
     func stopLocationServiceSession(reason: String) {
